@@ -1,0 +1,11 @@
+services:
+  postgres:
+    build:
+      context: ..
+      dockerfile: tests/docker/postgres/postgresTest.dockerfile
+    environment:
+      POSTGRES_USER: test
+      POSTGRES_PASSWORD: test
+      POSTGRES_DB: test
+    ports:
+      - "5433:5432"

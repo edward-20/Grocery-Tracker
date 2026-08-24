@@ -1,0 +1,156 @@
+openapi: 3.0.0
+info:
+  title: Grocery Scraper Routes
+  description: API for the Grocery Comparison Frontend
+  version: 0.0.0
+servers:
+  - url: ausgroceriescomparison.store
+    description: Production Server for Frontend
+paths:
+  /ids:
+    get:
+      summary: Get the retailer ids of the products (limited to 10) that contain the query as a substring (non case-sensitive)
+      parameters:
+        - in: query
+          name: query
+          schema:
+            type: string
+          description: The retailer id of the product you want to search for
+      responses:
+        '200':    # status code
+          description: Retailer Ids were found matching the query
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref : '#/components/schemas/RetailerId'
+        '400':
+          description: Invalid query parameter
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '500':
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+  /names:
+    get:
+      summary: Get the product names (limited to 10) containing the query as a substring (case insensitive)
+      parameters:
+        - in: query
+          name: query
+          schema:
+            type: string
+          description: The name you want to search for
+      responses:
+        '200':
+          description: Products were found matching the name you searched for
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref : '#/components/schemas/ProductName'
+        '400':
+          description: Invalid query parameter
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '500':
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+  /categories:
+    get:
+      summary: Get the categories (limited to 10) with the query as a substring (case insensitive)
+      parameters:
+        - in: query
+          name: query
+          schema:
+            type: string
+          description: The category you want to search for
+      responses:
+        '200':
+          description: Categories were found matching the name you searched for
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref : '#/components/schemas/CategoryName'
+        '400':
+          description: Invalid query parameter
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '500':
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+  /brand:
+    get:
+      summary: Get the brands (limited to 10) with the query as a substring (case insensitive)
+      parameters:
+        - in: query
+          name: query
+          schema:
+            type: string
+          description: The brand you want to search for
+      responses:
+        '200':
+          description: Brands were found matching the name you searched for
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref : '#/components/schemas/BrandName'
+        '400':
+          description: Invalid query parameter
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '500':
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+components:
+  schemas:
+    Error:
+      type: object
+      required:
+        - message
+      properties:
+        message: 
+          type: string
+      example:
+        message: "Invalid query"
+    RetailerId:
+      type: string
+      example:
+        "109ruefw90vh"
+    ProductName:
+      type: string
+      example:
+        "Coco Puffs 100g chocolate cereal"    
+    CategoryName:
+      type: string
+      example:
+        "Fruit & Veg"
+    BrandName:
+      type: string
+      example:
+        "Coco Puffs"

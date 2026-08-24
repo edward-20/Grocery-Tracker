@@ -1,0 +1,41 @@
+{
+  "name": "grocery-scraper",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "db:init": "tsx src/db/init.ts",
+    "worker": "tsx src/worker.ts",
+    "cli": "tsx src/cli.ts",
+    "scrape-once": "tsx src/singleRun.ts",
+    "test": "vitest run",
+    "typecheck": "tsc --noEmit",
+    "graph": "tsx scripts/call-graph.ts",
+    "gen:woolworths-fixture": "tsx tests/fixture-generator-woolworths.ts && cd tests/fixtures/woolworths/parsed && ./fixture-correction.sh",
+    "gen:coles-fixture": "tsx tests/fixture-generator-coles.ts",
+    "db:test-up": "docker compose -f tests/compose.test.yaml up --build -d",
+    "db:test-down": "docker compose -f tests/compose.test.yaml down",
+    "experiment:up": "docker compose -f deploy/docker-compose.yaml up --build -d",
+    "experiment:down": "docker compose -f deploy/docker-compose.yaml down"
+  },
+  "dependencies": {
+    "@inquirer/prompts": "^8.5.2",
+    "node-cron": "^3.0.3",
+    "pg": "^8.21.0",
+    "playwright": "^1.50.1",
+    "playwright-extra": "^4.3.6",
+    "puppeteer-extra-plugin-stealth": "^2.11.2",
+    "yaml": "^2.7.0",
+    "zod": "^4.4.3"
+  },
+  "devDependencies": {
+    "@types/node": "^22.13.1",
+    "@types/node-cron": "^3.0.11",
+    "@types/pg": "^8.20.0",
+    "ts-morph": "^28.0.0",
+    "tsx": "^4.19.2",
+    "typescript": "^5.7.3",
+    "vitest": "^3.0.5"
+  },
+  "packageManager": "pnpm@11.6.0"
+}

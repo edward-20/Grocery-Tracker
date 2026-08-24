@@ -1,0 +1,452 @@
+[
+	{
+		"cents": 480,
+		"department": "Fruit & Vegetables",
+		"grams": 1000,
+		"id": "coles_id_1069160",
+		"name": "Fresh Celery Sticks Prepacked",
+		"store": "Coles",
+		"time": "2026-02-10T04:06:29.847755355"
+	},
+	{
+		"cents": 800,
+		"department": "Fruit & Vegetables",
+		"grams": 1000,
+		"id": "woolworths_sku1201",
+		"name": "Aust Roasted & Salted Peanuts",
+		"store": "Woolworths",
+		"time": "2026-02-10T04:06:34.909500761"
+	},
+	{
+		"cents": 1200,
+		"department": "Fruit & Vegetables",
+		"grams": 1000,
+		"id": "coles_id_1110570",
+		"name": "Australian Walnut Kernel",
+		"store": "Coles",
+		"time": "2026-02-10T04:06:34.009593786"
+	},
+	{
+		"cents": 320,
+		"department": "Fruit & Vegetables",
+		"grams": 1,
+		"id": "coles_id_1116601",
+		"name": "Herb Punnets Curry Leaves",
+		"store": "Coles",
+		"time": "2026-02-10T04:06:34.009936669"
+	},
+	{
+		"cents": 73,
+		"department": "Fruit & Vegetables",
+		"grams": 150,
+		"id": "woolworths_sku9999",
+		"name": "Creme Gold Washed Potatoes Loose",
+		"store": "Woolworths",
+		"time": "2026-02-10T04:06:28.909015633"
+	},
+	{
+		"cents": 700,
+		"department": "Fruit & Vegetables",
+		"grams": 1000,
+		"id": "coles_id_1206748",
+		"name": "Potatoes Washed",
+		"store": "Coles",
+		"time": "2026-02-10T04:06:28.908880297"
+	},
+	{
+		"cents": 290,
+		"department": "Fruit & Vegetables",
+		"grams": 1000,
+		"id": "woolworths_sku5432",
+		"name": "Microwave Bag",
+		"store": "Woolworths",
+		"time": "2026-02-10T04:06:34.909429257"
+	},
+	{
+		"cents": 700,
+		"department": "Fruit & Vegetables",
+		"grams": 1,
+		"id": "coles_id_1311877",
+		"name": "Creamy Basil Pasta Salad",
+		"store": "Coles",
+		"time": "2026-02-10T04:06:36.113444551"
+	},
+	{
+		"cents": 450,
+		"department": "Fruit & Vegetables",
+		"grams": 1000,
+		"id": "woolworths_sku8888",
+		"name": "Raspberries",
+		"store": "Woolworths",
+		"time": "2026-02-10T04:06:28.908739203"
+	},
+	{
+		"cents": 350,
+		"department": "Fruit & Vegetables",
+		"grams": 1000,
+		"id": "coles_id_134040",
+		"name": "Blackberries",
+		"store": "Coles",
+		"time": "2026-02-10T04:06:28.908819735"
+	},
+	{
+		"cents": 350,
+		"department": "Fruit & Vegetables",
+		"grams": 1000,
+		"id": "coles_id_1",
+		"name": "Someberries",
+		"store": "Coles",
+		"time": "2026-02-10T04:06:28.908819735"
+	},
+	{
+		"cents": 350,
+		"department": "Fruit & Vegetables",
+		"grams": 1000,
+		"id": "coles_id_2",
+		"name": "None_berries",
+		"store": "Coles",
+		"time": "2026-02-10T04:06:28.908819735"
+	},
+	{
+		"cents": 350,
+		"department": "Fruit & Vegetables",
+		"grams": 1000,
+		"id": "coles_id_3",
+		"name": "Choko",
+		"store": "Coles",
+		"time": "2026-02-10T04:06:28.908819735"
+	},
+	{
+		"cents": 350,
+		"department": "Fruit & Vegetables",
+		"grams": 1000,
+		"id": "coles_id_4",
+		"name": "Moko",
+		"store": "Coles",
+		"time": "2026-02-10T04:06:28.908819735"
+	},
+	{
+		"cents": 350,
+		"department": "Fruit & Vegetables",
+		"grams": 1000,
+		"id": "coles_id_4",
+		"name": "Pasd",
+		"store": "Coles",
+		"time": "2026-02-10T04:06:28.908819735"
+	},
+	{
+		"cents": 350,
+		"department": "Fruit & Vegetables",
+		"grams": 1000,
+		"id": "coles_id_5",
+		"name": "Makac",
+		"store": "Coles",
+		"time": "2026-02-10T04:06:28.908819735"
+	},
+	{
+		"cents": 350,
+		"department": "Fruit & Vegetables",
+		"grams": 1000,
+		"id": "coles_id_19",
+		"name": "Ioj",
+		"store": "Coles",
+		"time": "2026-02-10T04:06:28.908819735"
+	},
+	{
+		"cents": 350,
+		"department": "Fruit & Vegetables",
+		"grams": 1000,
+		"id": "coles_id_12012",
+		"name": "Aoic",
+		"store": "Coles",
+		"time": "2026-02-10T04:06:28.908819735"
+	},
+	{
+		"cents": 350,
+		"department": "Fruit & Vegetables",
+		"grams": 1000,
+		"id": "woolworths_sku20",
+		"name": "Acai",
+		"store": "Coles",
+		"time": "2026-02-10T04:06:28.908819735"
+	},
+	{
+		"cents": 350,
+		"department": "Fruit & Vegetables",
+		"grams": 1000,
+		"id": "woolworths_sku12903",
+		"name": "Macktruck",
+		"store": "Coles",
+		"time": "2026-02-10T04:06:28.908819735"
+	},
+	{
+		"cents": 350,
+		"department": "Fruit & Vegetables",
+		"grams": 1000,
+		"id": "woolworths_sku12913",
+		"name": "Siq",
+		"store": "Coles",
+		"time": "2026-02-10T04:06:28.908819735"
+	},
+	{
+		"cents": 350,
+		"department": "Fruit & Vegetables",
+		"grams": 1000,
+		"id": "woolworths_sku13",
+		"name": "Boof",
+		"store": "Coles",
+		"time": "2026-02-10T04:06:28.908819735"
+	},
+	{
+		"cents": 350,
+		"department": "Fruit & Vegetables",
+		"grams": 1000,
+		"id": "woolworths_sku123",
+		"name": "Bark",
+		"store": "Coles",
+		"time": "2026-02-10T04:06:28.908819735"
+	},
+	{
+		"cents": 350,
+		"department": "Fruit & Vegetables",
+		"grams": 1000,
+		"id": "woolworths_sku120932",
+		"name": "Saca",
+		"store": "Coles",
+		"time": "2026-02-10T04:06:28.908819735"
+	},
+	{
+		"cents": 350,
+		"department": "Fruit & Vegetables",
+		"grams": 1000,
+		"id": "woolworths_sku1290",
+		"name": "Rac",
+		"store": "Coles",
+		"time": "2026-02-10T04:06:28.908819735"
+	},
+	{
+		"cents": 350,
+		"department": "Fruit & Vegetables",
+		"grams": 1000,
+		"id": "woolworths_sku4",
+		"name": "S",
+		"store": "Coles",
+		"time": "2026-02-10T04:06:28.908819735"
+	},
+	{
+		"cents": 350,
+		"department": "Fruit & Vegetables",
+		"grams": 1000,
+		"id": "woolworths_sku41",
+		"name": "Sup",
+		"store": "Coles",
+		"time": "2026-02-10T04:06:28.908819735"
+	},
+	{
+		"cents": 350,
+		"department": "Fruit & Vegetables",
+		"grams": 1000,
+		"id": "woolworths_sku412",
+		"name": "Dog",
+		"store": "Coles",
+		"time": "2026-02-10T04:06:28.908819735"
+	},
+	{
+		"cents": 350,
+		"department": "Fruit & Vegetables",
+		"grams": 1000,
+		"id": "woolworths_sku4121",
+		"name": "No",
+		"store": "Coles",
+		"time": "2026-02-10T04:06:28.908819735"
+	},
+	{
+		"cents": 350,
+		"department": "Fruit & Vegetables",
+		"grams": 1000,
+		"id": "woolworths_sku122",
+		"name": "Perso",
+		"store": "Coles",
+		"time": "2026-02-10T04:06:28.908819735"
+	},
+	{
+		"cents": 350,
+		"department": "Fruit & Vegetables",
+		"grams": 1000,
+		"id": "coles_id_1091",
+		"name": "Gre",
+		"store": "Coles",
+		"time": "2026-02-10T04:06:28.908819735"
+	},
+	{
+		"cents": 350,
+		"department": "Fruit & Vegetables",
+		"grams": 1000,
+		"id": "coles_id_134041",
+		"name": "Me",
+		"store": "Coles",
+		"time": "2026-02-10T04:06:28.908819735"
+	},
+	{
+		"cents": 350,
+		"department": "Fruit & Vegetables",
+		"grams": 1000,
+		"id": "coles_id_1231",
+		"name": "Mack",
+		"store": "Coles",
+		"time": "2026-02-10T04:06:28.908819735"
+	},
+	{
+		"cents": 350,
+		"department": "Fruit & Vegetables",
+		"grams": 1000,
+		"id": "coles_id_45",
+		"name": "vbo",
+		"store": "Coles",
+		"time": "2026-02-10T04:06:28.908819735"
+	},
+	{
+		"cents": 350,
+		"department": "Fruit & Vegetables",
+		"grams": 1000,
+		"id": "coles_id_99",
+		"name": "Zq",
+		"store": "Coles",
+		"time": "2026-02-10T04:06:28.908819735"
+	},
+	{
+		"cents": 350,
+		"department": "Fruit & Vegetables",
+		"grams": 1000,
+		"id": "coles_id_33",
+		"name": "Fr",
+		"store": "Coles",
+		"time": "2026-02-10T04:06:28.908819735"
+	},
+	{
+		"cents": 350,
+		"department": "Fruit & Vegetables",
+		"grams": 1000,
+		"id": "coles_id_31",
+		"name": "Ba",
+		"store": "Coles",
+		"time": "2026-02-10T04:06:28.908819735"
+	},
+	{
+		"cents": 350,
+		"department": "Fruit & Vegetables",
+		"grams": 1000,
+		"id": "coles_id_102",
+		"name": "Getit",
+		"store": "Coles",
+		"time": "2026-02-10T04:06:28.908819735"
+	},
+	{
+		"cents": 350,
+		"department": "Fruit & Vegetables",
+		"grams": 1000,
+		"id": "coles_id_103",
+		"name": "Has",
+		"store": "Coles",
+		"time": "2026-02-10T04:06:28.908819735"
+	},
+	{
+		"cents": 350,
+		"department": "Fruit & Vegetables",
+		"grams": 1000,
+		"id": "coles_id_104",
+		"name": "Hie",
+		"store": "Coles",
+		"time": "2026-02-10T04:06:28.908819735"
+	},
+	{
+		"cents": 350,
+		"department": "Fruit & Vegetables",
+		"grams": 1000,
+		"id": "coles_id_105",
+		"name": "Mus",
+		"store": "Coles",
+		"time": "2026-02-10T04:06:28.908819735"
+	},
+	{
+		"cents": 350,
+		"department": "Fruit & Vegetables",
+		"grams": 1000,
+		"id": "coles_id_106",
+		"name": "Ba",
+		"store": "Coles",
+		"time": "2026-02-10T04:06:28.908819735"
+	},
+	{
+		"cents": 350,
+		"department": "Fruit & Vegetables",
+		"grams": 1000,
+		"id": "coles_id_107",
+		"name": "Po",
+		"store": "Coles",
+		"time": "2026-02-10T04:06:28.908819735"
+	},
+	{
+		"cents": 350,
+		"department": "Fruit & Vegetables",
+		"grams": 1000,
+		"id": "coles_id_108",
+		"name": "O",
+		"store": "Coles",
+		"time": "2026-02-10T04:06:28.908819735"
+	},
+	{
+		"cents": 350,
+		"department": "Fruit & Vegetables",
+		"grams": 1000,
+		"id": "coles_id_109",
+		"name": "V",
+		"store": "Coles",
+		"time": "2026-02-10T04:06:28.908819735"
+	},
+	{
+		"cents": 350,
+		"department": "Fruit & Vegetables",
+		"grams": 1000,
+		"id": "coles_id_110",
+		"name": "UI",
+		"store": "Coles",
+		"time": "2026-02-10T04:06:28.908819735"
+	},
+	{
+		"cents": 350,
+		"department": "Fruit & Vegetables",
+		"grams": 1000,
+		"id": "coles_id_111",
+		"name": "CW",
+		"store": "Coles",
+		"time": "2026-02-10T04:06:28.908819735"
+	},
+	{
+		"cents": 350,
+		"department": "Fruit & Vegetables",
+		"grams": 1000,
+		"id": "coles_id_112",
+		"name": "As",
+		"store": "Coles",
+		"time": "2026-02-10T04:06:28.908819735"
+	},
+	{
+		"cents": 350,
+		"department": "Fruit & Vegetables",
+		"grams": 1000,
+		"id": "coles_id_113",
+		"name": "Mus",
+		"store": "Coles",
+		"time": "2026-02-10T04:06:28.908819735"
+	},
+	{
+		"cents": 350,
+		"department": "Fruit & Vegetables",
+		"grams": 1000,
+		"id": "coles_id_114",
+		"name": "Gre",
+		"store": "Coles",
+		"time": "2026-02-10T04:06:28.908819735"
+	}
+]

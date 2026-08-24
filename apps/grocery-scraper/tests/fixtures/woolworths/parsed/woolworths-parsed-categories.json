@@ -1,0 +1,127 @@
+[
+	{
+	  "retailerDesignatedCategoryId": "1_A363395",
+	  "name": "Everyday Market",
+	  "path": "/shop/browse/everyday-market"
+	},
+	{
+	  "retailerDesignatedCategoryId": "1_31C28BC",
+	  "name": "Big Night In",
+	  "path": "/shop/browse/big-night-in"
+	},
+	{
+	  "retailerDesignatedCategoryId": "1_23CF4F6",
+	  "name": "Cookware Bonus Credits",
+	  "path": "/shop/browse/cookware-bonus-credits"
+	},
+	{
+	  "retailerDesignatedCategoryId": "1-E5BEE36E",
+	  "name": "Fruit & Veg",
+	  "path": "/shop/browse/fruit-veg"
+	},
+	{
+	  "retailerDesignatedCategoryId": "1_D5A2236",
+	  "name": "Poultry, Meat & Seafood",
+	  "path": "/shop/browse/poultry-meat-seafood"
+	},
+	{
+	  "retailerDesignatedCategoryId": "1_8AD6702",
+	  "name": "Dinner",
+	  "path": "/shop/browse/dinner"
+	},
+	{
+	  "retailerDesignatedCategoryId": "1_3151F6F",
+	  "name": "Deli",
+	  "path": "/shop/browse/deli"
+	},
+	{
+	  "retailerDesignatedCategoryId": "1_6E4F4E4",
+	  "name": "Dairy, Eggs & Fridge",
+	  "path": "/shop/browse/dairy-eggs-fridge"
+	},
+	{
+	  "retailerDesignatedCategoryId": "1_DEB537E",
+	  "name": "Bakery",
+	  "path": "/shop/browse/bakery"
+	},
+	{
+	  "retailerDesignatedCategoryId": "1_9E92C35",
+	  "name": "Lunch Box",
+	  "path": "/shop/browse/lunch-box"
+	},
+	{
+	  "retailerDesignatedCategoryId": "1_ACA2FC2",
+	  "name": "Freezer",
+	  "path": "/shop/browse/freezer"
+	},
+	{
+	  "retailerDesignatedCategoryId": "1_717445A",
+	  "name": "Snacks & Confectionery",
+	  "path": "/shop/browse/snacks-confectionery"
+	},
+	{
+	  "retailerDesignatedCategoryId": "1_39FD49C",
+	  "name": "Pantry",
+	  "path": "/shop/browse/pantry"
+	},
+	{
+	  "retailerDesignatedCategoryId": "1_F229FBE",
+	  "name": "International Foods",
+	  "path": "/shop/browse/international-foods"
+	},
+	{
+	  "retailerDesignatedCategoryId": "1_5AF3A0A",
+	  "name": "Drinks",
+	  "path": "/shop/browse/drinks"
+	},
+	{
+	  "retailerDesignatedCategoryId": "1_8E4DA6F",
+	  "name": "Beer, Wine & Spirits",
+	  "path": "/shop/browse/beer-wine-spirits"
+	},
+	{
+	  "retailerDesignatedCategoryId": "1_8D61DD6",
+	  "name": "Beauty",
+	  "path": "/shop/browse/beauty"
+	},
+	{
+	  "retailerDesignatedCategoryId": "1_894D0A8",
+	  "name": "Personal Care",
+	  "path": "/shop/browse/personal-care"
+	},
+	{
+	  "retailerDesignatedCategoryId": "1_9851658",
+	  "name": "Health & Wellness",
+	  "path": "/shop/browse/health-wellness"
+	},
+	{
+	  "retailerDesignatedCategoryId": "1_2432B58",
+	  "name": "Cleaning & Maintenance",
+	  "path": "/shop/browse/cleaning-maintenance"
+	},
+	{
+	  "retailerDesignatedCategoryId": "1_717A94B",
+	  "name": "Baby",
+	  "path": "/shop/browse/baby"
+	},
+	{
+	  "retailerDesignatedCategoryId": "1_61D6FEB",
+	  "name": "Pet",
+	  "path": "/shop/browse/pet"
+	},
+	{
+	  "retailerDesignatedCategoryId": "1_B863F57",
+	  "name": "Electronics",
+	  "path": "/shop/browse/electronics"
+	},
+	{
+	  "retailerDesignatedCategoryId": "1_DEA3ED5",
+	  "name": "Home & Lifestyle",
+	  "path": "/shop/browse/home-lifestyle"
+	},
+	{
+	  "retailerDesignatedCategoryId": "1_B63CF9E",
+	  "name": "Front of Store",
+	  "path": "/shop/browse/front-of-store"
+	}
+]

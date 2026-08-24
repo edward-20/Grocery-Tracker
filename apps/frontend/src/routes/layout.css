@@ -1,0 +1,291 @@
+@import 'tailwindcss';
+@plugin 'daisyui' {
+	themes:
+		grocery-light --default,
+		grocery-dark --prefersdark;
+}
+@plugin '@tailwindcss/forms';
+@plugin '@tailwindcss/typography';
+
+html {
+	scrollbar-gutter: stable;
+}
+
+.main-container {
+	@apply flex min-h-screen max-w-screen flex-col items-center justify-center;
+	background-color: var(--color-base-100);
+}
+
+/* just for width layout not a discernable component */
+.column-child {
+	@apply w-3/4 sm:w-3/4 md:w-1/2;
+}
+
+input {
+	background-color: var(--color-base-100);
+	color: var(--color-base-content);
+	border-color: var(--color-base-300)
+}
+input:focus {
+	border-color: var(--color-primary);
+}
+::placeholder {
+	color: var(--color-neutral);
+}
+
+label,
+legend {
+	@apply font-semibold;
+}
+
+label {
+	color: var(--color-base-content);
+}
+
+.collapse-title {
+	@apply p-0;
+}
+
+input[type='number'] {
+	@apply rounded-full;
+}
+
+.form-section-delimiter {
+	@apply border-t-1 border-dashed;
+	background-color: var(--color-base-300);
+}
+
+/* in order to make top corners pill like need to calculate the height, but this
+ * can't be parameterised so just do fixed values based on devices, only need to
+ * compute (0.5, height)
+ */
+.search-input {
+	@apply block w-full border-2 border-solid;
+}
+
+/* AAA-compliant custom daisyUI themes */
+@plugin 'daisyui/theme' {
+	name: 'grocery-light';
+	default: true;
+
+	--color-base-100: oklch(0.9883 0.0161 172.66);
+	--color-base-200: oklch(0.955  0.018  172.66);
+		/* cards, sections, subtle elevation */
+	--color-base-300: oklch(0.91   0.02   172.66);
+		/* borders, dividers, inputs */
+	--color-base-content: oklch(0.28 0.04 172.66);
+
+	--color-primary: oklch(0.6505 0.1372 234.66);	
+	--color-primary-content: oklch(0.20 0.03 234.66);
+
+	--color-secondary: oklch(0.4431 0.0376 282.8)
+	--color-secondary-content: oklch(0.95 0.01 282.8);
+
+	/* Accent - orange for deals, 6.5:1 on base-100 (border use) */
+	--color-accent: oklch(50% 0.25 80);
+	--color-accent-content: oklch(98% 0.01 80);
+
+	--color-neutral: oklch(0.45 0.02 172.66);
+	--color-neutral-content: oklch(0.95 0.01 172.66);
+
+	/* Status colours - all AAA compliant */
+	--color-info: oklch(45% 0.22 250);
+	--color-info-content: oklch(98% 0.01 250);
+	--color-success: oklch(45% 0.25 140);
+	--color-success-content: oklch(98% 0.01 140);
+	--color-warning: oklch(55% 0.25 80);
+	--color-warning-content: oklch(98% 0.01 80);
+	--color-error: oklch(45% 0.25 30);
+	--color-error-content: oklch(98% 0.01 30);
+
+	/* Border radius */
+	--radius-selector: 1rem;
+	--radius-field: 0.25rem;
+	--radius-box: 0.5rem;
+
+	--size-selector: 0.25rem;
+	--size-field: 0.25rem;
+	--border: 1px;
+	--depth: 1;
+	--noise: 0;
+}
+
+@plugin 'daisyui/theme' {
+	name: 'grocery-dark';
+	prefersdark: true;
+
+	/* Base surface colours - AAA compliant contrast */
+	--color-base-100: oklch(25% 0.05 100);
+	--color-base-200: oklch(30% 0.05 100);
+	--color-base-300: oklch(35% 0.05 100);
+	--color-base-content: oklch(95% 0.01 100);
+
+	/* Primary - lighter green for dark mode, 8.2:1 on base-100 */
+	--color-primary: oklch(60% 0.25 140);
+	--color-primary-content: oklch(25% 0.05 140);
+
+	/* Secondary - lighter blue for dark mode */
+	--color-secondary: oklch(60% 0.22 250);
+	--color-secondary-content: oklch(25% 0.05 250);
+
+	/* Accent - lighter orange for dark mode */
+	--color-accent: oklch(65% 0.25 80);
+	--color-accent-content: oklch(25% 0.05 80);
+
+	/* Neutral - medium gray */
+	--color-neutral: oklch(50% 0.05 100);
+	--color-neutral-content: oklch(95% 0.01 100);
+
+	/* Status colours - lighter for dark mode */
+	--color-info: oklch(60% 0.22 250);
+	--color-info-content: oklch(25% 0.05 250);
+	--color-success: oklch(60% 0.25 140);
+	--color-success-content: oklch(25% 0.05 140);
+	--color-warning: oklch(65% 0.25 80);
+	--color-warning-content: oklch(25% 0.05 80);
+	--color-error: oklch(60% 0.25 30);
+	--color-error-content: oklch(25% 0.05 30);
+
+	--radius-selector: 1rem;
+	--radius-field: 0.25rem;
+	--radius-box: 0.5rem;
+
+	--size-selector: 0.25rem;
+	--size-field: 0.25rem;
+	--border: 1px;
+	--depth: 1;
+	--noise: 0;
+}
+
+/* CSS variables for non-daisyUI components - AAA compliant */
+:root,
+[data-theme='grocery-light'] {
+	/* structure and layout */
+	/* page background, cards, sections, modals, inputs, tables */
+	--color-base-100: oklch(0.9883 0.0161 172.66);
+	--color-base-200: oklch(0.955  0.018  172.66);
+	/* cards, sections, subtle elevation */
+	--color-base-300: oklch(0.91   0.02   172.66);
+	/* borders, dividers, inputs */
+	--color-base-content: oklch(0.28 0.04 172.66);
+
+	/* primary actions */
+	/* primary buttons, focus states, active elements, key links */
+	--color-primary: oklch(0.6505 0.1372 234.66);	
+	--color-primary-content: oklch(0.20 0.03 234.66);
+
+	/* secondary actions, actions that matter but aren't main */
+	/* secondary buttons, filters/options, alternative actions, navigation elements */
+	--color-secondary: oklch(0.4431 0.0376 282.8)
+	--color-secondary-content: oklch(0.95 0.01 282.8);
+
+	/* Accent - orange for deals, 6.5:1 on base-100 (border use) */
+	--color-accent: oklch(50% 0.25 80);
+	--color-accent-content: oklch(98% 0.01 80);
+
+	/* low emphasis/utility */
+	/* sit between base content and surfaces, ui that shouldn't draw attention,
+	* disabled buttons, subtle buttons, placeholder text, secondary text, metadata,
+	* dividers, footers */
+	--color-neutral: oklch(0.45 0.02 172.66);
+	--color-neutral-content: oklch(0.95 0.01 172.66);
+
+	/* Status colours - all AAA compliant */
+	--color-info: oklch(45% 0.22 250);
+	--color-info-content: oklch(98% 0.01 250);
+	--color-success: oklch(45% 0.25 140);
+	--color-success-content: oklch(98% 0.01 140);
+	--color-warning: oklch(55% 0.25 80);
+	--color-warning-content: oklch(98% 0.01 80);
+	--color-error: oklch(45% 0.25 30);
+	--color-error-content: oklch(98% 0.01 30);
+
+	/* Border radius */
+	--radius-selector: 1rem;
+	--radius-field: 0.25rem;
+	--radius-box: 0.5rem;
+
+	--size-selector: 0.25rem;
+	--size-field: 0.25rem;
+	--border: 1px;
+	--depth: 1;
+	--noise: 0;
+}
+
+@media (prefers-color-scheme: dark) {
+	:root {
+		--color-base-100: oklch(25% 0.05 100);
+		--color-base-200: oklch(30% 0.05 100);
+		--color-base-300: oklch(35% 0.05 100);
+		--color-base-content: oklch(95% 0.01 100);
+
+		--color-primary: oklch(60% 0.25 140);
+		--color-primary-content: oklch(25% 0.05 140);
+
+		--color-secondary: oklch(60% 0.22 250);
+		--color-secondary-content: oklch(25% 0.05 250);
+
+		--color-accent: oklch(65% 0.25 80);
+		--color-accent-content: oklch(25% 0.05 80);
+
+		--color-neutral: oklch(50% 0.05 100);
+		--color-neutral-content: oklch(95% 0.01 100);
+
+		--color-info: oklch(60% 0.22 250);
+		--color-info-content: oklch(25% 0.05 250);
+		--color-success: oklch(60% 0.25 140);
+		--color-success-content: oklch(25% 0.05 140);
+		--color-warning: oklch(65% 0.25 80);
+		--color-warning-content: oklch(25% 0.05 80);
+		--color-error: oklch(60% 0.25 30);
+		--color-error-content: oklch(25% 0.05 30);
+
+		--radius-selector: 1rem;
+		--radius-field: 0.25rem;
+		--radius-box: 0.5rem;
+
+		--size-selector: 0.25rem;
+		--size-field: 0.25rem;
+		--border: 1px;
+		--depth: 1;
+		--noise: 0;
+	}
+}
+
+[data-theme='grocery-dark'] {
+	--color-base-100: oklch(25% 0.05 100);
+	--color-base-200: oklch(30% 0.05 100);
+	--color-base-300: oklch(35% 0.05 100);
+	--color-base-content: oklch(95% 0.01 100);
+
+	--color-primary: oklch(60% 0.25 140);
+	--color-primary-content: oklch(25% 0.05 140);
+
+	--color-secondary: oklch(60% 0.22 250);
+	--color-secondary-content: oklch(25% 0.05 250);
+
+	--color-accent: oklch(65% 0.25 80);
+	--color-accent-content: oklch(25% 0.05 80);
+
+	--color-neutral: oklch(50% 0.05 100);
+	--color-neutral-content: oklch(95% 0.01 100);
+
+	--color-info: oklch(60% 0.22 250);
+	--color-info-content: oklch(25% 0.05 250);
+	--color-success: oklch(60% 0.25 140);
+	--color-success-content: oklch(25% 0.05 140);
+	--color-warning: oklch(65% 0.25 80);
+	--color-warning-content: oklch(25% 0.05 80);
+	--color-error: oklch(60% 0.25 30);
+	--color-error-content: oklch(25% 0.05 30);
+
+	--radius-selector: 1rem;
+	--radius-field: 0.25rem;
+	--radius-box: 0.5rem;
+
+	--size-selector: 0.25rem;
+	--size-field: 0.25rem;
+	--border: 1px;
+	--depth: 1;
+	--noise: 0;
+}

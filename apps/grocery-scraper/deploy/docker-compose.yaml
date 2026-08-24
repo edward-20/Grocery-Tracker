@@ -1,0 +1,15 @@
+services:
+  postgres:
+    image: timescale/timescaledb:latest-pg17
+    environment:
+      POSTGRES_USER: experiment
+      POSTGRES_PASSWORD: experiment
+      POSTGRES_DB: groceries
+    ports:
+      - "5433:5432"
+    volumes:
+      - experiment_postgres_data:/var/lib/postgresql/data
+
+volumes:
+  experiment_postgres_data:
+    name: grocery-tracker-experiment-postgres-data

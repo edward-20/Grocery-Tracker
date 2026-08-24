@@ -1,0 +1,24 @@
+database:
+  host: 'localhost'
+  port: 5433
+  database: 'groceries'
+  user: 'experiment'
+  password: 'experiment'
+
+schedule:
+  cron: "0 3 * * *"
+
+browser:
+  headless: false
+
+scrape:
+  throttleBetweenPagesMs: 5000
+  navigationTimeoutMs: 45000
+
+retailers:
+  - name: Woolworths
+    enabled: true
+    productByProduct: false
+  - name: Coles
+    enabled: true
+    productByProduct: false
