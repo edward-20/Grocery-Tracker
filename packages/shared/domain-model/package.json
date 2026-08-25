@@ -1,5 +1,5 @@
 {
-  "name": "domain-model",
+  "name": "@grocery-tracker/domain-model",
   "version": "1.0.0",
   "description": "DDD domain model for Grocery Tracker application",
   "main": "./dist/index.js",
@@ -16,7 +16,6 @@
     "test": "echo \"Error: no test specified\" && exit 1",
     "build": "tsc"
   },
-  "devDep"
   "keywords": [],
   "author": "",
   "license": "ISC",
