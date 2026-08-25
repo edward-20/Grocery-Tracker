@@ -1,0 +1,24 @@
+{
+  "name": "domain-model",
+  "version": "1.0.0",
+  "description": "DDD domain model for Grocery Tracker application",
+  "main": "./dist/index.js",
+  "module": "./dist/index.mjs",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "import": "./dist/index.mjs",
+      "require": "./dist/index.js",
+      "types": "./dist/index.d.ts"
+    }
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "build": "tsc"
+  },
+  "devDep"
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "module"
+}
