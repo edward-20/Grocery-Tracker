@@ -4,17 +4,16 @@
   "description": "DDD domain model for Grocery Tracker application",
   "main": "./dist/index.js",
   "module": "./dist/index.mjs",
-  "types": "./dist/index.d.ts",
   "exports": {
     ".": {
+      "types": "./dist/index.d.ts",
       "import": "./dist/index.mjs",
-      "require": "./dist/index.js",
-      "types": "./dist/index.d.ts"
+      "require": "./dist/index.js"
     }
   },
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "build": "tsc"
+    "build": "tsup"
   },
   "keywords": [],
   "author": "",
@@ -22,7 +21,9 @@
   "type": "module",
   "dependencies": {
     "@types/node": "catalog:",
-    "add": "^2.0.9",
-    "typescript": "catalog:"
+    "add": "^2.0.9"
+  },
+  "devDependencies": {
+    "tsup": "catalog:"
   }
 }
