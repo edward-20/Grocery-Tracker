@@ -13,8 +13,7 @@
   "type": "module",
   "devDependencies": {
     "@grocery-tracker/domain-model": "workspace:^",
-    "tsup": "catalog:",
-    "zod": "^4.4.3"
+    "tsup": "catalog:"
   },
   "dependencies": {
     "@types/pg": "^8.23.1",
