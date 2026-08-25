@@ -15,5 +15,9 @@
     "@grocery-tracker/domain-model": "workspace:^",
     "tsup": "catalog:",
     "zod": "^4.4.3"
+  },
+  "dependencies": {
+    "@types/pg": "^8.23.1",
+    "pg": "^8.23.0"
   }
 }
