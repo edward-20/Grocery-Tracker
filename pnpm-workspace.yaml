@@ -2,13 +2,13 @@ packages:
   - 'apps/*'
   - 'packages/shared/*'
 allowBuilds:
-  esbuild: set this to true or false
-  msw: set this to true or false
-  protobufjs: set this to true or false
+  esbuild: true
+  msw: true
+  protobufjs: true
 catalog:
   typescript: ^5.9.3
   typescript-eslint: ^8.59.2
-  "@types/node": ^24.12.3
+  "@types/node": ^24.13.3
 catalogs:
   code-formatting:
     prettier: ^3.8.3

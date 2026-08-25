@@ -21,6 +21,8 @@
   "license": "ISC",
   "type": "module",
   "dependencies": {
+    "@types/node": "catalog:",
+    "add": "^2.0.9",
     "typescript": "catalog:"
   }
 }
