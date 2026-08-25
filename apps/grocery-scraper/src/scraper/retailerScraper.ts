@@ -1,5 +1,5 @@
 import { ScraperConfig } from "../config/types.js";
-import { Category, Product, Retailer } from "../entities.js";
+import { Category, Product, Retailer } from "@grocery-tracker/domain-model";
 
 export abstract class RetailerScraper {
   protected abstract retailerUrl : string;

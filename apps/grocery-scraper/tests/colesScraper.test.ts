@@ -5,7 +5,7 @@ import StealthPlugin from "puppeteer-extra-plugin-stealth"
 import { ColesScraper } from "../src/scraper/colesScraper.js";
 import { readFile } from "fs/promises";
 import { sleep } from "../src/utils/time.js";
-import { Category } from "../src/entities.js";
+import { Category } from "@grocery-tracker/domain-model";
 import { ScraperConfig } from "../src/config/types.js";
 
 const expectedCategoriesUnparsed = await readFile("tests/fixtures/coles/parsed/coles-parsed-categories.json", "utf-8");

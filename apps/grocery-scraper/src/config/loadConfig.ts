@@ -1,7 +1,6 @@
 import { readFileSync } from "node:fs";
 import { resolve } from "node:path";
 import YAML from "yaml";
-import { Retailer } from "../entities.js";
 
 type ConfigInput = {
   database?: {
@@ -28,6 +27,7 @@ type ConfigInput = {
   }>;
 };
 import { ScraperConfig } from "./types.js";
+import { Retailer } from "@grocery-tracker/domain-model";
 
 export function loadConfig(configPath = "config/scraper.yaml"): ScraperConfig {
   const absolutePath = resolve(configPath);

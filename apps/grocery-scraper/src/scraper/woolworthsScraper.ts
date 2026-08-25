@@ -3,9 +3,8 @@ import { chromium, Browser, Page, BrowserContext } from "playwright";
 import { sleep } from "../utils/time.js";
 import * as z from "zod";
 import { Unit } from "../db/repository.js";
-import { Category, Product, ValueAtTime } from "../entities.js";
+import { Category, Product, ValueAtTime, Retailer } from "@grocery-tracker/domain-model";
 import { ScraperConfig } from "../config/types.js";
-import { Retailer } from "../entities.js";
 
 const WoolworthsCategoriesPayload = z.object({
   Categories: z.array(z.object({

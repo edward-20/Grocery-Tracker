@@ -1,4 +1,4 @@
-import { Category, Product, ValueAtTime } from "../../src/entities.js";
+import { Category, Product, ValueAtTime } from "@grocery-tracker/domain-model";
 function generateRandomString(length: number) {
   let result = '';
   const characters =

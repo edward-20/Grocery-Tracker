@@ -1,6 +1,6 @@
 import { Pool } from "pg";
 import { RetailerRepository, CategoryRepository, ProductRepository } from "./repository.js";
-import { Retailer, Category, Product, ValueAtTime, UnitOfMeasurement } from "../entities.js";
+import { Retailer, Category, Product, ValueAtTime, UnitOfMeasurement } from "@grocery-tracker/domain-model";
 
 type CrossRetailerId = {
   cross_retailer_id: string;

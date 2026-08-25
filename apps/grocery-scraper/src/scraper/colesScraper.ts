@@ -5,7 +5,7 @@ import { sleep } from "../utils/time.js";
 import { Page } from "playwright";
 import { Unit } from "../db/repository.js";
 import { ScraperConfig } from "../config/types.js";
-import { Category, Product, Retailer, ValueAtTime } from "../entities.js";
+import { Category, Product, Retailer, ValueAtTime } from "@grocery-tracker/domain-model";
 
 const ColesCategoriesPayload = z.object({
   pageProps: z.object({

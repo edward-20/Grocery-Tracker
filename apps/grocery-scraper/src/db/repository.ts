@@ -1,5 +1,5 @@
 import * as z from "zod";
-import { Retailer, Category, Product } from "../entities.js";
+import { Retailer, Category, Product } from "@grocery-tracker/domain-model";
 
 export const UnitSchema = z.union([
   z.literal("Each"), z.literal("Kg"), z.literal("g"), z.literal("L"), z.literal("mL"), z.literal("SS"), z.literal("sheets"), z.literal("m"), z.literal("kgM")

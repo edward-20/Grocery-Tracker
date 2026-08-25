@@ -3,7 +3,7 @@ import { Browser } from "playwright";
 import { chromium } from "playwright-extra";
 import { WoolworthsScraper } from "../src/scraper/woolworthsScraper.js";
 import { readFile, readdir } from "fs/promises";
-import { Category, Product } from "../src/entities.js";
+import { Category, Product } from "@grocery-tracker/domain-model";
 import { ScraperConfig } from "../src/config/types.js";
 import StealthPlugin from "puppeteer-extra-plugin-stealth"
 

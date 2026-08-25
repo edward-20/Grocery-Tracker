@@ -3,7 +3,7 @@ import { ColesScraper } from "./colesScraper.js";
 import { WoolworthsScraper } from "./woolworthsScraper.js";
 import { RetailerScraper } from "./retailerScraper.js";
 import { ProductRepository } from "../db/repository.js";
-import { Category, Product, Retailer } from "../entities.js";
+import { Category, Retailer } from "@grocery-tracker/domain-model";
 import { Pool } from "pg";
 import { PostgresCategoryRepository, PostgresProductRepository, PostgresRetailerRepository } from "../db/postgresRepository.js";
 import { shuffle } from "../utils/shuffle.js";
