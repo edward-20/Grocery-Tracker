@@ -263,6 +263,64 @@ export class PostgresProductRepository implements ProductRepository {
 }
 
   async findSimilarBy<K extends Exclude<keyof Product, "currentValue" | "uid" | "category">>(key: K, value: Product[K], limit?: number): Promise<Product[]> {
+  const client = await this.dbPool.connect();
+
+  let field: "retailer_id" | "retailer_product_id" | "id" | "cross_retailer_id" | "gtin_format" | "name" | "brand" | "path" | "description" | "image_url";
+
+  switch (key) {
+    case "description": 
+    case "name":
+    case "path":
+    case "brand":
+      field = key 
+      break;
+    case "retailer":
+      field = "retailer_id"
+      break
+    case "retailerProductId":
+      field = "retailer_product_id"
+      break;
+    default:
+      throw new Error(`Provided a non-valid key to the repository findBy method: ${key}`)
+  }
+
+  try {
+    // if asked for a retailer, need to query to find the retailer_id
+    let retailer_id;
+    if (field === "retailer_id") {
+      const retailerRes = await client.query("SELECT id FROM retailers WHERE name = $1", [value]);
+      if (retailerRes.rowCount !== 1) {
+        throw new Error(`Couldn't find the retailer asked for from findBy: ${value}`);
+      }
+      retailer_id = retailerRes.rows[0].id;
+    }
+
+    // if its retailer, then there's no similar look up, otherwise can you ilike
+    let productsRes;
+    if (field === "retailer_id") {
+      productsRes = await client.query(`SELECT * FROM products WHERE $1 = $2 LIMIT $3`, [field, retailer_id, limit ?? 10]);
+    } else {
+      productsRes = await client.query(`SELECT * FROM products WHERE $1 ILIKE $2 LIMIT $3`, [field, `%${value}%`, limit ?? 10]);
+    }
+    const productRows: ProductRow[] = productsRes.rows;
+
+    // for each product row find its latest value 
+    const valueRows: ValueAtTimeRow[] = await Promise.all(productRows.map(async (productRow): Promise<ValueAtTimeRow> => {
+      const valueRes = await client.query(`SELECT * from value_at_times WHERE product_id = $1 ORDER BY time LIMIT 1;`, [productRow.id]);
+      if (valueRes.rowCount !== 1) {
+        throw new Error(`Didn't find a one to one relationship between a product and its current value in the database ${productRow.id}`)
+      }
+      return valueRes.rows[0];
+    }));
+
+    return Promise.all(productRows.map(async (productRow, i) => {
+      return await this.productRowToProductEntity(productRow, valueRows[i]);
+    }));
+  } catch (error) {
+    throw new Error("Failed to find products", {cause: error});
+  } finally {
+    client.release();
+  }
   }
 }
 
