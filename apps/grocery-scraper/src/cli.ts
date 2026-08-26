@@ -1,10 +1,10 @@
 import { loadConfig } from "./config/loadConfig.js";
-import { makeConnectionPool } from "./db/createPool.js";
-import { select, input, confirm } from "@inquirer/prompts";
+import { makeConnectionPool } from "@grocery-tracker/db";
+import { select } from "@inquirer/prompts";
 import { WoolworthsScraper } from "./scraper/woolworthsScraper.js";
 import { RetailerScraper } from "./scraper/retailerScraper.js";
-import { PostgresCategoryRepository, PostgresProductRepository } from "./db/postgresRepository.js";
-import { CategoryRepository, ProductRepository } from "./db/repository.js";
+import { PostgresCategoryRepository, PostgresProductRepository } from "@grocery-tracker/db";
+import { CategoryRepository, ProductRepository } from "@grocery-tracker/db";
 import { ColesScraper } from "./scraper/colesScraper.js";
 
 const config = loadConfig(process.env.SCRAPER_CONFIG);

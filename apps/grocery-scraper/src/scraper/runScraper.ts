@@ -2,10 +2,9 @@ import { ScraperConfig } from "../config/types.js";
 import { ColesScraper } from "./colesScraper.js";
 import { WoolworthsScraper } from "./woolworthsScraper.js";
 import { RetailerScraper } from "./retailerScraper.js";
-import { ProductRepository } from "../db/repository.js";
 import { Category, Retailer } from "@grocery-tracker/domain-model";
 import { Pool } from "pg";
-import { PostgresCategoryRepository, PostgresProductRepository, PostgresRetailerRepository } from "../db/postgresRepository.js";
+import { ProductRepository, PostgresCategoryRepository, PostgresProductRepository, PostgresRetailerRepository } from "@grocery-tracker/db";
 import { shuffle } from "../utils/shuffle.js";
 
 export async function runScrape(config: ScraperConfig, pool: Pool): Promise<{ errors: number, productsScraped: number }> {

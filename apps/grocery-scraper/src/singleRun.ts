@@ -1,4 +1,4 @@
-import { makeConnectionPool } from "./db/createPool.js";
+import { makeConnectionPool } from "@grocery-tracker/db";
 import { loadConfig } from "./config/loadConfig.js";
 import { runScrape } from "./scraper/runScraper.js";
 

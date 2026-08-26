@@ -1,6 +1,6 @@
 import cron from "node-cron";
 import { loadConfig } from "./config/loadConfig.js";
-import { makeConnectionPool } from "./db/createPool.js";
+import { makeConnectionPool } from "@grocery-tracker/db";
 import { runScrape } from "./scraper/runScraper.js";
 
 const config = loadConfig(process.env.SCRAPER_CONFIG);

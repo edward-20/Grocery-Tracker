@@ -1,6 +1,5 @@
 import { beforeEach, afterAll, beforeAll, describe, expect, it } from "vitest";
-import { CategoryRepository, ProductRepository } from "../../src/db/repository.js";
-import { PostgresCategoryRepository, PostgresProductRepository } from "../../src/db/postgresRepository.js";
+import { CategoryRepository, ProductRepository, PostgresCategoryRepository, PostgresProductRepository } from "@grocery-tracker/db";
 import { Pool } from "pg";
 import { simpleCategory, productToProductRow, productToValueRow, categoriesAndTheirProducts, categoriesAndTheirProductsWithMultiplePricePoints } from "./helper.js";
 
