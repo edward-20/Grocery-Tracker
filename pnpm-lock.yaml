@@ -360,6 +360,12 @@ importers:
 
   apps/grocery-scraper:
     dependencies:
+      '@grocery-tracker/db':
+        specifier: workspace:*
+        version: link:../../packages/shared/db
+      '@grocery-tracker/domain-model':
+        specifier: workspace:*
+        version: link:../../packages/shared/domain-model
       '@inquirer/prompts':
         specifier: ^8.5.2
         version: 8.6.0(@types/node@24.13.3)
