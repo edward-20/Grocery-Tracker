@@ -1,5 +1,4 @@
-import { Product, Unit } from "../src/db/repository.js";
-
+import { Product } from "@grocery-tracker/domain-model";
 import { ColesProductsPagePayload, ColesProductUnitNonNullablePricing } from "../src/scraper/colesScraper.js";
 import { readFile, writeFile, readdir } from "fs/promises";
 

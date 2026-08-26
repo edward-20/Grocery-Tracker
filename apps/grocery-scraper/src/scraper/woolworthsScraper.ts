@@ -2,8 +2,8 @@ import { RetailerScraper } from "./retailerScraper.js";
 import { chromium, Browser, Page, BrowserContext } from "playwright";
 import { sleep } from "../utils/time.js";
 import * as z from "zod";
-import { Unit } from "../db/repository.js";
-import { Category, Product, ValueAtTime, Retailer } from "@grocery-tracker/domain-model";
+
+import { Category, Product, ValueAtTime, Retailer, UnitOfMeasurement } from "@grocery-tracker/domain-model";
 import { ScraperConfig } from "../config/types.js";
 
 const WoolworthsCategoriesPayload = z.object({
@@ -161,7 +161,7 @@ export class WoolworthsScraper extends RetailerScraper {
     }))
   }
 
-  private parseRawUnit(rawUnit: string) : Unit {
+  private parseRawUnit(rawUnit: string) : UnitOfMeasurement {
     switch(rawUnit) {
       case "EA":
         return "Each";

@@ -3,9 +3,8 @@ import * as z from "zod";
 import { Browser, BrowserContext, chromium } from "playwright";
 import { sleep } from "../utils/time.js";
 import { Page } from "playwright";
-import { Unit } from "../db/repository.js";
 import { ScraperConfig } from "../config/types.js";
-import { Category, Product, Retailer, ValueAtTime } from "@grocery-tracker/domain-model";
+import { Category, Product, Retailer, UnitOfMeasurement, ValueAtTime } from "@grocery-tracker/domain-model";
 
 const ColesCategoriesPayload = z.object({
   pageProps: z.object({
@@ -136,7 +135,7 @@ export class ColesScraper extends RetailerScraper {
     return `https://shop.coles.com.au/wcsstore/Coles-CAS/images/${productIdString[0]}/${productIdString[1]}/${productIdString[2]}/${productIdString}-zm.jpg`;
   }
 
-  private normaliseUnitOfMeasurement(uom: string): Unit {
+  private normaliseUnitOfMeasurement(uom: string): UnitOfMeasurement {
     switch (uom) {
       case "ea": return "Each";
       case "g": return "g";
