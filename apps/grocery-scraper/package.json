@@ -19,6 +19,8 @@
     "experiment:down": "docker compose -f deploy/docker-compose.yaml down"
   },
   "dependencies": {
+    "@grocery-tracker/db": "workspace:*",
+    "@grocery-tracker/domain-model": "workspace:*",
     "@inquirer/prompts": "^8.5.2",
     "node-cron": "^3.0.3",
     "pg": "^8.21.0",
