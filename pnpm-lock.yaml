@@ -409,6 +409,9 @@ importers:
 
   packages/shared/db:
     dependencies:
+      '@types/node':
+        specifier: 'catalog:'
+        version: 24.13.3
       '@types/pg':
         specifier: ^8.23.1
         version: 8.23.1

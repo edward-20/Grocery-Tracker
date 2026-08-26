@@ -7,6 +7,7 @@ type DatabaseConfig = {
   user: string,
   password: string
 } 
+
 export function makeConnectionPool(config: DatabaseConfig) : Pool {
   const pool = new Pool({
     ...config
