@@ -3,7 +3,7 @@ import { loadConfig } from "./config/loadConfig.js";
 import { runScrape } from "./scraper/runScraper.js";
 
 const config = loadConfig(process.env.SCRAPER_CONFIG);
-const pool = makeConnectionPool();
+const pool = makeConnectionPool(config.database);
 
 try {
   const summary = await runScrape(config, pool);

@@ -19,7 +19,7 @@ async function runScheduledScrape(): Promise<void> {
   }
 
   running = true;
-  const pool = makeConnectionPool();
+  const pool = makeConnectionPool(config.database);
 
   try {
     const summary = await runScrape(config, pool);
