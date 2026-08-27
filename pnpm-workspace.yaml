@@ -18,4 +18,4 @@ catalogs:
   frontend:
     vite: ^7.3.3
   testing:
-    vitest: ^4.1.5
+    vitest: ^4.1.11

@@ -233,7 +233,7 @@ catalogs:
       version: 7.3.6
   testing:
     vitest:
-      specifier: ^4.1.5
+      specifier: ^4.1.11
       version: 4.1.11
 
 importers:
@@ -431,6 +431,9 @@ importers:
       tsup:
         specifier: 'catalog:'
         version: 8.5.1(jiti@2.7.0)(postcss@8.5.26)(supports-color@7.2.0)(tsx@4.23.12)(typescript@5.9.3)(yaml@2.9.0)
+      vitest:
+        specifier: catalog:testing
+        version: 4.1.11(@types/node@24.13.3)(@vitest/browser-playwright@4.1.11)(jsdom@29.1.1)(msw@2.15.0(@types/node@24.13.3)(typescript@5.9.3))(vite@7.3.6(@types/node@24.13.3)(jiti@2.7.0)(lightningcss@1.32.0)(tsx@4.23.12)(yaml@2.9.0))
 
   packages/shared/domain-model:
     dependencies:

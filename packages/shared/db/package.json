@@ -11,7 +11,7 @@
     }
   },
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
+    "test": "vitest run",
     "build": "tsup"
   },
   "keywords": [],
@@ -20,7 +20,8 @@
   "type": "module",
   "devDependencies": {
     "@grocery-tracker/domain-model": "workspace:^",
-    "tsup": "catalog:"
+    "tsup": "catalog:",
+    "vitest": "catalog:testing"
   },
   "dependencies": {
     "@types/node": "catalog:",
