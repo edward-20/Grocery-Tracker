@@ -19,13 +19,13 @@
   "license": "ISC",
   "type": "module",
   "devDependencies": {
-    "@grocery-tracker/domain-model": "workspace:^",
     "tsup": "catalog:",
-    "vitest": "catalog:testing"
+    "vitest": "catalog:testing",
+    "@types/node": "catalog:",
+    "@types/pg": "^8.23.1"
   },
   "dependencies": {
-    "@types/node": "catalog:",
-    "@types/pg": "^8.23.1",
+    "@grocery-tracker/domain-model": "workspace:^",
     "pg": "^8.23.0"
   }
 }

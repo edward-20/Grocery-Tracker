@@ -415,19 +415,19 @@ importers:
 
   packages/shared/db:
     dependencies:
+      '@grocery-tracker/domain-model':
+        specifier: workspace:^
+        version: link:../domain-model
+      pg:
+        specifier: ^8.23.0
+        version: 8.23.0
+    devDependencies:
       '@types/node':
         specifier: 'catalog:'
         version: 24.13.3
       '@types/pg':
         specifier: ^8.23.1
         version: 8.23.1
-      pg:
-        specifier: ^8.23.0
-        version: 8.23.0
-    devDependencies:
-      '@grocery-tracker/domain-model':
-        specifier: workspace:^
-        version: link:../domain-model
       tsup:
         specifier: 'catalog:'
         version: 8.5.1(jiti@2.7.0)(postcss@8.5.26)(supports-color@7.2.0)(tsx@4.23.12)(typescript@5.9.3)(yaml@2.9.0)
