@@ -2,9 +2,11 @@ packages:
   - 'apps/*'
   - 'packages/shared/*'
 allowBuilds:
+  cpu-features: set this to true or false
   esbuild: true
   msw: true
   protobufjs: true
+  ssh2: set this to true or false
 catalog:
   typescript: ^5.9.3
   typescript-eslint: ^8.59.2

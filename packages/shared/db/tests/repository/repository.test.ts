@@ -2,25 +2,47 @@ import { beforeEach, afterAll, beforeAll, describe, expect, it } from "vitest";
 import { CategoryRepository, ProductRepository, PostgresCategoryRepository, PostgresProductRepository } from "@grocery-tracker/db";
 import { Pool } from "pg";
 import { simpleCategory, productToProductRow, productToValueRow, categoriesAndTheirProducts, categoriesAndTheirProductsWithMultiplePricePoints } from "./helper.js";
+import { PostgreSqlContainer } from "@testcontainers/postgresql";
+import { readFile } from "node:fs/promises";
 
+let container: Awaited<
+  ReturnType<PostgreSqlContainer["start"]>
+>;
 let pool: Pool;
 let woolworthsRetailerId: number;
 let colesRetailerId: number;
 
-beforeAll(() => {
+beforeAll(async () => {
+  container = await new PostgreSqlContainer("timescale/timescaledb:latest-pg16")
+  .withDatabase("test")
+  .withUsername("test")
+  .withPassword("test")
+  .start();
+
   pool = new Pool({
-    connectionString: `postgresql://test:test@localhost:5433/test`
+    host: container.getHost(),
+    port: container.getMappedPort(5432),
+    database: container.getDatabase(),
+    user: container.getUsername(),
+    password: container.getPassword(),
   });
-  pool.on('error', (err, client) => {
+
+  // take the schema.sql to initialise
+  const sql = await readFile(
+    '../src/schema.sql',
+    'utf-8'
+  );
+  await pool.query(sql);
+
+  pool.on('error', (err) => {
     console.error('Unexpected error on idle client', err);
     process.exit(-1);
   })
 })
 
 afterAll(async () => {
-  console.log("Ending pool...");
   await pool.end();
-  console.log("Pool ended");
+  await container.stop();
 })
 
 describe("CategoryRepository", () => {

@@ -19,10 +19,12 @@
   "license": "ISC",
   "type": "module",
   "devDependencies": {
-    "tsup": "catalog:",
-    "vitest": "catalog:testing",
+    "@testcontainers/postgresql": "^12.1.0",
     "@types/node": "catalog:",
-    "@types/pg": "^8.23.1"
+    "@types/pg": "^8.23.1",
+    "testcontainers": "^12.1.0",
+    "tsup": "catalog:",
+    "vitest": "catalog:testing"
   },
   "dependencies": {
     "@grocery-tracker/domain-model": "workspace:^",
