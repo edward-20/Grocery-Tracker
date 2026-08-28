@@ -29,7 +29,7 @@ beforeAll(async () => {
 
   // take the schema.sql to initialise
   const sql = await readFile(
-    '../src/schema.sql',
+    new URL("../../src/schema.sql", import.meta.url),
     'utf-8'
   );
   await pool.query(sql);
@@ -38,7 +38,7 @@ beforeAll(async () => {
     console.error('Unexpected error on idle client', err);
     process.exit(-1);
   })
-})
+}, 0)
 
 afterAll(async () => {
   await pool.end();

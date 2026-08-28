@@ -7,7 +7,7 @@ const config = loadConfig(process.env.SCRAPER_CONFIG);
 const pool = makeConnectionPool(config.database);
 
 const sql = await readFile(
-  './src/db/schema.sql',
+  new URL("../src/db/schema.sql", import.meta.url), // this needs to be fixed
   'utf-8'
 )
 
