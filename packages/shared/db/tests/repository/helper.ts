@@ -157,7 +157,7 @@ export function productToProductRow(product: Product) {
     brand: product.brand ?? null,
     image_url: product.imageUrl ?? null,
     cross_retailer_id: product.crossProductIdentity?.crossRetailerId ?? null,
-    gtin_format: product.crossProductIdentity?.crossRetailerId ?? null
+    gtin_format: product.crossProductIdentity?.gtinFormat ?? null
   }
 }
 
