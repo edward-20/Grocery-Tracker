@@ -83,6 +83,38 @@ describe("CategoryRepository", () => {
       client.release();
     }
   })
+
+  it.each(categoriesAndTheirProducts)("can create a category", async (categoryAndProducts) => {
+    const categoryRepository = new PostgresCategoryRepository(pool);
+    const category = categoryAndProducts.category;
+    await categoryRepository.createOrUpdate(category);
+
+    const client = await pool.connect();
+
+    try {
+      const categoriesRes = await client.query("SELECT * FROM categories;");
+
+      expect(categoriesRes.rowCount).toEqual(1);
+      expect(categoriesRes.rows[0]).toMatchObject({
+        retailer_id: category.retailer === "Woolworths" ? woolworthsRetailerId : colesRetailerId,
+        path: category.path,
+        retailer_designated_category_id: category.retailerDesignatedCategoryId,
+        name: category.name
+      })
+    } finally {
+      client.release();
+    }
+  })
+
+  it.each(categoriesAndTheirProducts)("can create a category and find the result", async (categoryAndProducts) => {
+    const categoryRepository = new PostgresCategoryRepository(pool);
+    const category = categoryAndProducts.category;
+    await categoryRepository.createOrUpdate(category);
+
+    const categoriesRepRes = await categoryRepository.findBy("retailerDesignatedCategoryId", category.retailerDesignatedCategoryId);
+    expect(categoriesRepRes).toHaveLength(1);
+    expect(categoriesRepRes[0]).toMatchObject(category);
+  })
 })
 
 describe("ProductRepository", () => {
@@ -286,4 +318,31 @@ describe("ProductRepository", () => {
     }
   })
 
+  it.each(categoriesAndTheirProducts)("can create products and find them", async (categoryAndProducts) => {
+    const categoryRepository = new PostgresCategoryRepository(pool);
+    await categoryRepository.createOrUpdate(categoryAndProducts.category);
+
+    const productRepository: ProductRepository = new PostgresProductRepository(pool);
+    
+    for (const product of categoryAndProducts.products) {
+      await productRepository.createOrUpdate(product);
+
+      const findByNameRes = await productRepository.findBy("name", product.name);
+      const findByCrossProductId = await productRepository.findBy("crossProductIdentity", product.crossProductIdentity);
+      const findByPath = await productRepository.findBy("path", product.path);
+      const findByBrand = await productRepository.findBy("brand", product.brand);
+      const findByImageUrl = await productRepository.findBy("imageUrl", product.imageUrl);
+      const findByDescription = await productRepository.findBy("description", product.description);
+      const findByRetailerProductId = await productRepository.findBy("retailerProductId", product.retailerProductId);
+
+      expect(findByNameRes).toEqual(expect.arrayContaining([ product]));
+      expect(findByCrossProductId).toEqual(expect.arrayContaining([ product]));
+      expect(findByPath).toEqual(expect.arrayContaining([ product]));
+      expect(findByBrand).toEqual(expect.arrayContaining([ product]));
+      expect(findByImageUrl).toEqual(expect.arrayContaining([ product]));
+      expect(findByDescription).toEqual(expect.arrayContaining([ product]));
+      expect(findByRetailerProductId).toEqual(expect.arrayContaining([ product]));
+    }
+
+  })
 });

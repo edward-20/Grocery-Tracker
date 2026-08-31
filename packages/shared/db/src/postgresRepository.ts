@@ -303,7 +303,6 @@ export class PostgresCategoryRepository implements CategoryRepository {
       const retailerRes = await client.query("SELECT name FROM retailers WHERE id = $1;", [categoryRow.retailer_id]);
       const retailer = retailerRes.rows[0].name;
 
-      client.release();
       return {
         retailer: retailer,
         retailerDesignatedCategoryId: categoryRow.retailer_designated_category_id,
@@ -311,8 +310,9 @@ export class PostgresCategoryRepository implements CategoryRepository {
         path: categoryRow.path,
       }
     } catch (error) {
-      client.release();
       throw error;
+    } finally {
+      client.release();
     }
   }
 
@@ -354,84 +354,96 @@ export class PostgresCategoryRepository implements CategoryRepository {
   async findBy<K extends keyof Category>(key: K, value: Category[K], limit?: number): Promise<Category[]> {
     const client = await this.dbPool.connect();
 
-    let field : "retailer_id" | "path" | "retailer_designated_category_id" | "name";
+    try {
+      let field : "retailer_id" | "path" | "retailer_designated_category_id" | "name";
 
-    switch (key) {
-      case "name":
-      case "path":
-        field = key; 
-        break;
-      case "retailer":
-        field = "retailer_id"
-        break;
-      case "retailerDesignatedCategoryId":
-        field = "retailer_designated_category_id"
-        break;
-      default:
-        throw new Error(`Provided a non-valid key to the repository findBy method: ${key}`);
-    }
-
-    let retailer_id;
-    if (field === "retailer_id") {
-      const retailerRes = await client.query("SELECT id FROM retailers WHERE name = $1", [value]);
-      if (retailerRes.rowCount !== 1) {
-        throw new Error(`Couldn't find the retailer asked for from findBy: ${value}`);
+      switch (key) {
+        case "name":
+        case "path":
+          field = key; 
+          break;
+        case "retailer":
+          field = "retailer_id"
+          break;
+        case "retailerDesignatedCategoryId":
+          field = "retailer_designated_category_id"
+          break;
+        default:
+          throw new Error(`Provided a non-valid key to the repository findBy method: ${key}`);
       }
-      retailer_id = retailerRes.rows[0].id;
+
+      let retailer_id;
+      if (field === "retailer_id") {
+        const retailerRes = await client.query("SELECT id FROM retailers WHERE name = $1", [value]);
+        if (retailerRes.rowCount !== 1) {
+          throw new Error(`Couldn't find the retailer asked for from findBy: ${value}`);
+        }
+        retailer_id = retailerRes.rows[0].id;
+      }
+
+      const categoriesRes = await client.query(`SELECT * FROM categories WHERE $1 = $2 LIMIT $3`, [field, field === "retailer_id" ? retailer_id : value, limit ?? 10]);
+
+      const categoryRows = categoriesRes.rows;
+
+      return Promise.all(categoryRows.map(async (categoryRow: CategoryRow) => {
+        return await this.categoryRowToCategoryEntity(categoryRow);
+      }));
+    } catch (error) {
+      throw error;
+    } finally {
+      client.release();
     }
-
-    const categoriesRes = await client.query(`SELECT * FROM categories WHERE $1 = $2 LIMIT $3`, [field, field === "retailer_id" ? retailer_id : value, limit ?? 10]);
-
-    const categoryRows = categoriesRes.rows;
-
-    return Promise.all(categoryRows.map(async (categoryRow: CategoryRow) => {
-      return await this.categoryRowToCategoryEntity(categoryRow);
-    }));
   }
 
   async findSimilarBy<K extends keyof Category>(key: K, value: Category[K], limit?: number): Promise<Category[]> {
     const client = await this.dbPool.connect();
 
-    let field : "retailer_id" | "path" | "retailer_designated_category_id" | "name";
+    try {
+      let field : "retailer_id" | "path" | "retailer_designated_category_id" | "name";
 
-    switch (key) {
-      case "name":
-      case "path":
-        field = key; 
-        break;
-      case "retailer":
-        field = "retailer_id"
-        break;
-      case "retailerDesignatedCategoryId":
-        field = "retailer_designated_category_id"
-        break;
-      default:
-        throw new Error(`Provided a non-valid key to the repository findBy method: ${key}`);
-    }
-
-
-    let retailer_id;
-    if (field === "retailer_id") {
-      const retailerRes = await client.query("SELECT id FROM retailers WHERE name = $1", [value]);
-      if (retailerRes.rowCount !== 1) {
-        throw new Error(`Couldn't find the retailer asked for from findBy: ${value}`);
+      switch (key) {
+        case "name":
+        case "path":
+          field = key; 
+          break;
+        case "retailer":
+          field = "retailer_id"
+          break;
+        case "retailerDesignatedCategoryId":
+          field = "retailer_designated_category_id"
+          break;
+        default:
+          throw new Error(`Provided a non-valid key to the repository findBy method: ${key}`);
       }
-      retailer_id = retailerRes.rows[0].id;
+
+
+      let retailer_id;
+      if (field === "retailer_id") {
+        const retailerRes = await client.query("SELECT id FROM retailers WHERE name = $1", [value]);
+        if (retailerRes.rowCount !== 1) {
+          throw new Error(`Couldn't find the retailer asked for from findBy: ${value}`);
+        }
+        retailer_id = retailerRes.rows[0].id;
+      }
+
+      // if its retailer, then there's no similar look up, otherwise can you ilike
+      let categoriesRes;
+      if (field === "retailer_id") {
+        categoriesRes = await client.query(`SELECT * FROM categories WHERE $1 = $2 LIMIT $3`, ["retailer_id", retailer_id, limit ?? 10]);
+      } else {
+        categoriesRes = await client.query(`SELECT * FROM categories WHERE $1 ILIKE $2 LIMIT $3`, [field, value, limit ?? 10]);
+      }
+
+      const categoryRows: CategoryRow[] = categoriesRes.rows;
+
+      return Promise.all(categoryRows.map(async (categoryRow: CategoryRow) => {
+        return await this.categoryRowToCategoryEntity(categoryRow);
+      }));
+    } catch (error) {
+      throw error;
+    } finally {
+      client.release();
     }
-
-    // if its retailer, then there's no similar look up, otherwise can you ilike
-    let categoriesRes;
-    if (field === "retailer_id") {
-      categoriesRes = await client.query(`SELECT * FROM categories WHERE $1 = $2 LIMIT $3`, ["retailer_id", retailer_id, limit ?? 10]);
-    } else {
-      categoriesRes = await client.query(`SELECT * FROM categories WHERE $1 ILIKE $2 LIMIT $3`, [field, value, limit ?? 10]);
-    }
-
-    const categoryRows: CategoryRow[] = categoriesRes.rows;
-
-    return Promise.all(categoryRows.map(async (categoryRow: CategoryRow) => {
-      return await this.categoryRowToCategoryEntity(categoryRow);
-    }));
   }
 }
 
