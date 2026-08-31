@@ -1,6 +1,21 @@
-type CrossProductIdentity = {
+export type CrossProductIdentity = {
   crossRetailerId: string;
   gtinFormat: number;
+}
+
+export function isCrossProductIdentity(
+  value: unknown
+): value is CrossProductIdentity {
+  if (typeof value !== "object" || value === null) {
+    return false;
+  }
+
+  const obj = value as Record<string, unknown>;
+
+  return (
+    typeof obj.crossRetailerId === "string" &&
+    typeof obj.gtinFormat === "number"
+  );
 }
 
 export type ProductConstructorProps = {

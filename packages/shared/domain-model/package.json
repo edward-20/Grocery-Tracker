@@ -3,6 +3,7 @@
   "version": "1.0.0",
   "description": "DDD domain model for Grocery Tracker application",
   "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
   "module": "./dist/index.mjs",
   "exports": {
     ".": {
