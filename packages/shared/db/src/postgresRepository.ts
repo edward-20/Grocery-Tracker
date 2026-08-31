@@ -1,7 +1,6 @@
 import { Pool, QueryResult } from "pg";
 import { RetailerRepository, CategoryRepository, ProductRepository } from "./repository.js";
-import { Retailer, Category, Product, ValueAtTime, UnitOfMeasurement, CrossProductIdentity } from "@grocery-tracker/domain-model";
-import { isCrossProductIdentity } from "@grocery-tracker/domain-model";
+import { Retailer, Category, Product, ValueAtTime, UnitOfMeasurement, isCrossProductIdentity} from "@grocery-tracker/domain-model";
 
 type CrossRetailerId = {
   cross_retailer_id: string;
@@ -224,7 +223,7 @@ export class PostgresProductRepository implements ProductRepository {
       // need to construct the value rows
     } else if (key === "crossProductIdentity") {
       if (isCrossProductIdentity(value)) {
-        productsRes = await client.query(`SELECT * FROM products WHERE cross_retailer_id = $1 AND gtin_format = $2 LIMIT $3`, [value.crossProductIdentity, value.gtinFormat, limit ?? 10]);
+        productsRes = await client.query(`SELECT * FROM products WHERE cross_retailer_id = $1 AND gtin_format = $2 LIMIT $3`, [value.crossRetailerId, value.gtinFormat, limit ?? 10]);
       } else {
         throw "Provided key: crossProductIdentity but value not CrossProductIdentity to ProductRepository findBy";
       }
