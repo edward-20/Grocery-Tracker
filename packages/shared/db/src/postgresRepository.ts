@@ -224,8 +224,12 @@ export class PostgresProductRepository implements ProductRepository {
       if (isCrossProductIdentity(value)) {
         productsRes = await client.query(`SELECT * FROM products WHERE cross_retailer_id = $1 AND gtin_format = $2 LIMIT $3`, [value.crossRetailerId, value.gtinFormat, limit ?? 10]);
       } else {
-        throw "Provided key: crossProductIdentity but value not CrossProductIdentity to ProductRepository findBy";
+        throw `Provided key: crossProductIdentity but value: ${value} not CrossProductIdentity to ProductRepository findBy`;
       }
+    } else if (key === "imageUrl") {
+      productsRes = await client.query(`SELECT * FROM products WHERE image_url = $1 LIMIT $2`, [value, limit ?? 10]);
+    } else if (key === "retailerProductId") {
+      productsRes = await client.query(`SELECT * FROM products WHERE retailer_product_id = $1 LIMIT $2`, [value, limit ?? 10]);
     } else {
       productsRes = await client.query(`SELECT * FROM products WHERE ${key} = $1 LIMIT $2`, [value, limit ?? 10]);
     }
@@ -263,11 +267,15 @@ export class PostgresProductRepository implements ProductRepository {
         }
         const retailer_id = retailerRes.rows[0].id;
         productsRes = await client.query(`SELECT * FROM products WHERE retailer_id = $1 LIMIT $2`, [retailer_id, limit ?? 10]);
+      } else if (key === "retailerProductId") {
+        productsRes = await client.query(`SELECT * FROM products WHERE retailer_product_id = $1 LIMIT $2`, [value, limit ?? 10]);
+      } else if (key === "imageUrl") {
+        productsRes = await client.query(`SELECT * FROM products WHERE image_url = $1 LIMIT $2`, [value, limit ?? 10]);
       } else if (key === "crossProductIdentity") {
         if (isCrossProductIdentity(value)) {
           productsRes = await client.query(`SELECT * FROM products WHERE cross_retailer_id ILIKE $1 AND gtin_format = $2 LIMIT $3`, [`%${value.crossRetailerId}%`, `%${value.gtinFormat}%`, limit ?? 10]);
         } else {
-          throw "Provided key: crossProductIdentity but value not CrossProductIdentity to ProductRepository findBy";
+          throw `Provided key: crossProductIdentity but value: ${value} not CrossProductIdentity to ProductRepository findBy`;
         }
       } else {
         productsRes = await client.query(`SELECT * FROM products WHERE ${key} = $1 LIMIT $2`, [`%${value}%`, limit ?? 10]);

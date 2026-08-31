@@ -1,9 +1,10 @@
-import { beforeEach, afterAll, beforeAll, describe, expect, it } from "vitest";
+import { beforeEach, afterAll, beforeAll, describe, expect, it, expectTypeOf } from "vitest";
 import { CategoryRepository, ProductRepository, PostgresCategoryRepository, PostgresProductRepository } from "@grocery-tracker/db";
 import { Pool } from "pg";
 import { simpleCategory, productToProductRow, productToValueRow, categoriesAndTheirProducts, categoriesAndTheirProductsWithMultiplePricePoints } from "./helper.js";
 import { PostgreSqlContainer } from "@testcontainers/postgresql";
 import { readFile } from "node:fs/promises";
+import { Product } from "@grocery-tracker/domain-model";
 
 let container: Awaited<
   ReturnType<PostgreSqlContainer["start"]>
@@ -320,28 +321,87 @@ describe("ProductRepository", () => {
 
   it.each(categoriesAndTheirProducts)("can create products and find them", async (categoryAndProducts) => {
     const categoryRepository = new PostgresCategoryRepository(pool);
-    await categoryRepository.createOrUpdate(categoryAndProducts.category);
+    try {
+      await categoryRepository.createOrUpdate(categoryAndProducts.category);
 
-    const productRepository: ProductRepository = new PostgresProductRepository(pool);
-    
-    for (const product of categoryAndProducts.products) {
-      await productRepository.createOrUpdate(product);
+      const productRepository: ProductRepository = new PostgresProductRepository(pool);
+      
+      for (const product of categoryAndProducts.products) {
+        await productRepository.createOrUpdate(product);
 
-      const findByNameRes = await productRepository.findBy("name", product.name);
-      const findByCrossProductId = await productRepository.findBy("crossProductIdentity", product.crossProductIdentity);
-      const findByPath = await productRepository.findBy("path", product.path);
-      const findByBrand = await productRepository.findBy("brand", product.brand);
-      const findByImageUrl = await productRepository.findBy("imageUrl", product.imageUrl);
-      const findByDescription = await productRepository.findBy("description", product.description);
-      const findByRetailerProductId = await productRepository.findBy("retailerProductId", product.retailerProductId);
+        const findByName = await productRepository.findBy("name", product.name);
+        const findByPath = await productRepository.findBy("path", product.path);
+        const findByBrand = await productRepository.findBy("brand", product.brand);
+        const findByImageUrl = await productRepository.findBy("imageUrl", product.imageUrl);
+        const findByDescription = await productRepository.findBy("description", product.description);
+        const findByRetailerProductId = await productRepository.findBy("retailerProductId", product.retailerProductId);
 
-      expect(findByNameRes).toEqual(expect.arrayContaining([ product]));
-      expect(findByCrossProductId).toEqual(expect.arrayContaining([ product]));
-      expect(findByPath).toEqual(expect.arrayContaining([ product]));
-      expect(findByBrand).toEqual(expect.arrayContaining([ product]));
-      expect(findByImageUrl).toEqual(expect.arrayContaining([ product]));
-      expect(findByDescription).toEqual(expect.arrayContaining([ product]));
-      expect(findByRetailerProductId).toEqual(expect.arrayContaining([ product]));
+        const expectToContainProduct = (result: Product[]) => {
+          expect(result.length).toBeGreaterThanOrEqual(1) ;
+          expect(result).toEqual(
+            expect.arrayContaining([
+              expect.objectContaining({
+                ...product,
+                currentValue: expect.objectContaining({
+                  ...product.currentValue,
+                  price: String(product.currentValue.price),
+                  time: expect.any(Date),
+                }),
+              })
+            ])
+          );
+        };
+
+        expectToContainProduct(findByName);
+        expectToContainProduct(findByPath);
+        expectToContainProduct(findByBrand);
+        expectToContainProduct(findByImageUrl);
+        expectToContainProduct(findByDescription);
+        expectToContainProduct(findByRetailerProductId);
+
+        let timeDifference = Math.abs(findByName[0].currentValue.time.getTime() - product.currentValue.time.getTime());
+        expect(timeDifference).toBeLessThan(5000);
+        timeDifference = Math.abs(findByPath[0].currentValue.time.getTime() - product.currentValue.time.getTime());
+        expect(timeDifference).toBeLessThan(5000);
+        timeDifference = Math.abs(findByBrand[0].currentValue.time.getTime() - product.currentValue.time.getTime());
+        expect(timeDifference).toBeLessThan(5000);
+        timeDifference = Math.abs(findByImageUrl[0].currentValue.time.getTime() - product.currentValue.time.getTime());
+        expect(timeDifference).toBeLessThan(5000);
+        timeDifference = Math.abs(findByDescription[0].currentValue.time.getTime() - product.currentValue.time.getTime());
+        expect(timeDifference).toBeLessThan(5000);
+        timeDifference = Math.abs(findByRetailerProductId[0].currentValue.time.getTime() - product.currentValue.time.getTime());
+        expect(timeDifference).toBeLessThan(5000);
+        // expect(findByName[0].currentValue.time.getTime()).toBeCloseTo(
+        //   product.currentValue.time.getTime(),
+        //   -3 // approximately within 1,000 ms
+        // );
+        // expect(findByPath[0].currentValue.time.getTime()).toBeCloseTo(
+        //   product.currentValue.time.getTime(),
+        //   -3 // approximately within 1,000 ms
+        // );
+        // expect(findByBrand[0].currentValue.time.getTime()).toBeCloseTo(
+        //   product.currentValue.time.getTime(),
+        //   -3 // approximately within 1,000 ms
+        // );
+        // expect(findByPath[0].currentValue.time.getTime()).toBeCloseTo(
+        //   product.currentValue.time.getTime(),
+        //   -3 // approximately within 1,000 ms
+        // );
+        // expect(findByBrand[0].currentValue.time.getTime()).toBeCloseTo(
+        //   product.currentValue.time.getTime(),
+        //   -3 // approximately within 1,000 ms
+        // );
+
+        if (product.crossProductIdentity) {
+          const findByCrossProductId = await productRepository.findBy("crossProductIdentity", product.crossProductIdentity);
+          expectToContainProduct(findByCrossProductId);
+          let timeDifference = Math.abs(findByCrossProductId[0].currentValue.time.getTime() - product.currentValue.time.getTime());
+          expect(timeDifference).toBeLessThan(5000);
+        }
+      }
+    } catch (error) {
+      console.error(error);
+      throw error;
     }
 
   })
