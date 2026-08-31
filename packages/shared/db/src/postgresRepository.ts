@@ -227,7 +227,7 @@ export class PostgresProductRepository implements ProductRepository {
         throw "Provided key: crossProductIdentity but value not CrossProductIdentity to ProductRepository findBy";
       }
     } else {
-      productsRes = await client.query(`SELECT * FROM products WHERE $1 = $2`, [key, value, limit ?? 10]);
+      productsRes = await client.query(`SELECT * FROM products WHERE ${key} = $1 LIMIT $2`, [value, limit ?? 10]);
     }
 
     const productRows = productsRes.rows;
@@ -270,8 +270,9 @@ export class PostgresProductRepository implements ProductRepository {
           throw "Provided key: crossProductIdentity but value not CrossProductIdentity to ProductRepository findBy";
         }
       } else {
-        productsRes = await client.query(`SELECT * FROM products WHERE $1 = $2`, [key, `%${value}%`, limit ?? 10]);
+        productsRes = await client.query(`SELECT * FROM products WHERE ${key} = $1 LIMIT $2`, [`%${value}%`, limit ?? 10]);
       }
+
 
       const productRows = productsRes.rows;
       // for each product row find its latest value 
@@ -381,7 +382,7 @@ export class PostgresCategoryRepository implements CategoryRepository {
         retailer_id = retailerRes.rows[0].id;
       }
 
-      const categoriesRes = await client.query(`SELECT * FROM categories WHERE $1 = $2 LIMIT $3`, [field, field === "retailer_id" ? retailer_id : value, limit ?? 10]);
+      const categoriesRes = await client.query(`SELECT * FROM categories WHERE ${field} = $1 LIMIT $2`, [field === "retailer_id" ? retailer_id : value, limit ?? 10]);
 
       const categoryRows = categoriesRes.rows;
 
@@ -429,9 +430,9 @@ export class PostgresCategoryRepository implements CategoryRepository {
       // if its retailer, then there's no similar look up, otherwise can you ilike
       let categoriesRes;
       if (field === "retailer_id") {
-        categoriesRes = await client.query(`SELECT * FROM categories WHERE $1 = $2 LIMIT $3`, ["retailer_id", retailer_id, limit ?? 10]);
+        categoriesRes = await client.query(`SELECT * FROM categories WHERE retailer_id = $1 LIMIT $2`, [retailer_id, limit ?? 10]);
       } else {
-        categoriesRes = await client.query(`SELECT * FROM categories WHERE $1 ILIKE $2 LIMIT $3`, [field, value, limit ?? 10]);
+        categoriesRes = await client.query(`SELECT * FROM categories WHERE ${field} ILIKE $1 LIMIT $2`, [value, limit ?? 10]);
       }
 
       const categoryRows: CategoryRow[] = categoriesRes.rows;
