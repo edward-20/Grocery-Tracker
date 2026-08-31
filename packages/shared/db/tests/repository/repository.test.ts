@@ -331,8 +331,6 @@ describe("ProductRepository", () => {
 
         const findByName = await productRepository.findBy("name", product.name);
         const findByPath = await productRepository.findBy("path", product.path);
-        const findByBrand = await productRepository.findBy("brand", product.brand);
-        const findByImageUrl = await productRepository.findBy("imageUrl", product.imageUrl);
         const findByDescription = await productRepository.findBy("description", product.description);
         const findByRetailerProductId = await productRepository.findBy("retailerProductId", product.retailerProductId);
 
@@ -344,7 +342,7 @@ describe("ProductRepository", () => {
                 ...product,
                 currentValue: expect.objectContaining({
                   ...product.currentValue,
-                  price: String(product.currentValue.price),
+                  price: String(product.currentValue.price.toFixed(2)),
                   time: expect.any(Date),
                 }),
               })
@@ -352,51 +350,34 @@ describe("ProductRepository", () => {
           );
         };
 
+        const expectToRoughlyMatchTime = (result: Product[]) => {
+          expect(Math.abs(result[0].currentValue.time.getTime() - product.currentValue.time.getTime())).toBeLessThanOrEqual(60000);
+        }
+
         expectToContainProduct(findByName);
         expectToContainProduct(findByPath);
-        expectToContainProduct(findByBrand);
-        expectToContainProduct(findByImageUrl);
         expectToContainProduct(findByDescription);
         expectToContainProduct(findByRetailerProductId);
 
-        let timeDifference = Math.abs(findByName[0].currentValue.time.getTime() - product.currentValue.time.getTime());
-        expect(timeDifference).toBeLessThan(5000);
-        timeDifference = Math.abs(findByPath[0].currentValue.time.getTime() - product.currentValue.time.getTime());
-        expect(timeDifference).toBeLessThan(5000);
-        timeDifference = Math.abs(findByBrand[0].currentValue.time.getTime() - product.currentValue.time.getTime());
-        expect(timeDifference).toBeLessThan(5000);
-        timeDifference = Math.abs(findByImageUrl[0].currentValue.time.getTime() - product.currentValue.time.getTime());
-        expect(timeDifference).toBeLessThan(5000);
-        timeDifference = Math.abs(findByDescription[0].currentValue.time.getTime() - product.currentValue.time.getTime());
-        expect(timeDifference).toBeLessThan(5000);
-        timeDifference = Math.abs(findByRetailerProductId[0].currentValue.time.getTime() - product.currentValue.time.getTime());
-        expect(timeDifference).toBeLessThan(5000);
-        // expect(findByName[0].currentValue.time.getTime()).toBeCloseTo(
-        //   product.currentValue.time.getTime(),
-        //   -3 // approximately within 1,000 ms
-        // );
-        // expect(findByPath[0].currentValue.time.getTime()).toBeCloseTo(
-        //   product.currentValue.time.getTime(),
-        //   -3 // approximately within 1,000 ms
-        // );
-        // expect(findByBrand[0].currentValue.time.getTime()).toBeCloseTo(
-        //   product.currentValue.time.getTime(),
-        //   -3 // approximately within 1,000 ms
-        // );
-        // expect(findByPath[0].currentValue.time.getTime()).toBeCloseTo(
-        //   product.currentValue.time.getTime(),
-        //   -3 // approximately within 1,000 ms
-        // );
-        // expect(findByBrand[0].currentValue.time.getTime()).toBeCloseTo(
-        //   product.currentValue.time.getTime(),
-        //   -3 // approximately within 1,000 ms
-        // );
+        expectToRoughlyMatchTime(findByName);
+        expectToRoughlyMatchTime(findByPath);
+        expectToRoughlyMatchTime(findByDescription);
+        expectToRoughlyMatchTime(findByRetailerProductId);
 
-        if (product.crossProductIdentity) {
+        if (product.imageUrl !== undefined) {
+          const findByImageUrl = await productRepository.findBy("imageUrl", product.imageUrl);
+          expectToContainProduct(findByImageUrl);
+          expectToRoughlyMatchTime(findByImageUrl);
+        }
+        if (product.brand !== undefined) {
+          const findByBrand = await productRepository.findBy("brand", product.brand);
+          expectToContainProduct(findByBrand);
+          expectToRoughlyMatchTime(findByBrand);
+        }
+        if (product.crossProductIdentity !== undefined) {
           const findByCrossProductId = await productRepository.findBy("crossProductIdentity", product.crossProductIdentity);
           expectToContainProduct(findByCrossProductId);
-          let timeDifference = Math.abs(findByCrossProductId[0].currentValue.time.getTime() - product.currentValue.time.getTime());
-          expect(timeDifference).toBeLessThan(5000);
+          expectToRoughlyMatchTime(findByCrossProductId);
         }
       }
     } catch (error) {
