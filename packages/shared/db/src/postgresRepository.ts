@@ -1,6 +1,7 @@
-import { Pool } from "pg";
+import { Pool, QueryResult } from "pg";
 import { RetailerRepository, CategoryRepository, ProductRepository } from "./repository.js";
-import { Retailer, Category, Product, ValueAtTime, UnitOfMeasurement } from "@grocery-tracker/domain-model";
+import { Retailer, Category, Product, ValueAtTime, UnitOfMeasurement, CrossProductIdentity } from "@grocery-tracker/domain-model";
+import { isCrossProductIdentity } from "@grocery-tracker/domain-model";
 
 type CrossRetailerId = {
   cross_retailer_id: string;
@@ -210,39 +211,28 @@ export class PostgresProductRepository implements ProductRepository {
   async findBy<K extends Exclude<keyof Product, "currentValue" | "uid" | "category">>(key: K, value: Product[K], limit?: number): Promise<Product[]> {
   const client = await this.dbPool.connect();
 
-  let field: "retailer_id" | "retailer_product_id" | "id" | "cross_retailer_id" | "gtin_format" | "name" | "brand" | "path" | "description" | "image_url";
-
-  switch (key) {
-    case "description": 
-    case "name":
-    case "path":
-    case "brand":
-      field = key 
-      break;
-    case "retailer":
-      field = "retailer_id"
-      break
-    case "retailerProductId":
-      field = "retailer_product_id"
-      break;
-    default:
-      throw new Error(`Provided a non-valid key to the repository findBy method: ${key}`)
-  }
-
   try {
+    let productsRes: QueryResult<any>;
     // if asked for a retailer, need to query to find the retailer_id
-    let retailer_id;
-    if (field === "retailer_id") {
+    if (key === "retailer") {
       const retailerRes = await client.query("SELECT id FROM retailers WHERE name = $1", [value]);
       if (retailerRes.rowCount !== 1) {
         throw new Error(`Couldn't find the retailer asked for from findBy: ${value}`);
       }
-      retailer_id = retailerRes.rows[0].id;
+      const retailer_id = retailerRes.rows[0].id;
+      productsRes = await client.query(`SELECT * FROM products WHERE retailer_id = $1 LIMIT $2`, [retailer_id, limit ?? 10]);
+      // need to construct the value rows
+    } else if (key === "crossProductIdentity") {
+      if (isCrossProductIdentity(value)) {
+        productsRes = await client.query(`SELECT * FROM products WHERE cross_retailer_id = $1 AND gtin_format = $2 LIMIT $3`, [value.crossProductIdentity, value.gtinFormat, limit ?? 10]);
+      } else {
+        throw "Provided key: crossProductIdentity but value not CrossProductIdentity to ProductRepository findBy";
+      }
+    } else {
+      productsRes = await client.query(`SELECT * FROM products WHERE $1 = $2`, [key, value, limit ?? 10]);
     }
 
-    const productsRes = await client.query(`SELECT * FROM products WHERE $1 = $2 LIMIT $3`, [field, field === "retailer_id" ? retailer_id : value, limit ?? 10]);
-    const productRows: ProductRow[] = productsRes.rows;
-
+    const productRows = productsRes.rows;
     // for each product row find its latest value 
     const valueRows: ValueAtTimeRow[] = await Promise.all(productRows.map(async (productRow): Promise<ValueAtTimeRow> => {
       const valueRes = await client.query(`SELECT * from value_at_times WHERE product_id = $1 ORDER BY time LIMIT 1;`, [productRow.id]);
@@ -255,6 +245,21 @@ export class PostgresProductRepository implements ProductRepository {
     return Promise.all(productRows.map(async (productRow, i) => {
       return await this.productRowToProductEntity(productRow, valueRows[i]);
     }));
+    // const productsRes = await client.query(`SELECT * FROM products WHERE $1 = $2 LIMIT $3`, [field, field === "retailer_id" ? retailer_id : value, limit ?? 10]);
+    // const productRows: ProductRow[] = productsRes.rows;
+
+    // // for each product row find its latest value 
+    // const valueRows: ValueAtTimeRow[] = await Promise.all(productRows.map(async (productRow): Promise<ValueAtTimeRow> => {
+    //   const valueRes = await client.query(`SELECT * from value_at_times WHERE product_id = $1 ORDER BY time LIMIT 1;`, [productRow.id]);
+    //   if (valueRes.rowCount !== 1) {
+    //     throw new Error(`Didn't find a one to one relationship between a product and its current value in the database ${productRow.id}`)
+    //   }
+    //   return valueRes.rows[0];
+    // }));
+
+    // return Promise.all(productRows.map(async (productRow, i) => {
+    //   return await this.productRowToProductEntity(productRow, valueRows[i]);
+    // }));
   } catch (error) {
     throw new Error("Failed to find products", {cause: error});
   } finally {
