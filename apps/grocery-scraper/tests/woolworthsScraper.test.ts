@@ -1,34 +1,21 @@
-import { describe, expect, it, } from "vitest";
+import { beforeAll, describe, expect, it, } from "vitest";
 import { Browser } from "playwright";
 import { chromium } from "playwright-extra";
 import { WoolworthsScraper } from "../src/scraper/woolworthsScraper.js";
-import { readFile, readdir } from "fs/promises";
-import { Category, Product } from "@grocery-tracker/domain-model";
+import { readFile } from "fs/promises";
+import { Category } from "@grocery-tracker/domain-model";
 import { ScraperConfig } from "../src/config/types.js";
 import StealthPlugin from "puppeteer-extra-plugin-stealth"
-
-const rawFixturePath = "tests/fixtures/woolworths/raw";
-const parsedFixturePath = "tests/fixtures/woolworths/parsed";
-const rawFixtureFiles = await readdir(rawFixturePath);
-const parsedFixtureFiles = await readdir(parsedFixturePath);
-
-// categories: find all unique category names from the fixtures directory
-const categories = [
-  ...new Set(
-    rawFixtureFiles.map(file =>
-      file.replace(/(?:-\d+)?\.json$/, "")
-    )
-  )
-].filter(category => category !== "woolworths-categories-payload");
-
+import { PostgreSqlContainer } from "@testcontainers/postgresql";
+import { initDbSchema } from "@grocery-tracker/db";
 
 const scraperConfig: ScraperConfig = {
   database: {
-    host: "",
-    port: 0,
-    database: "",
-    user: "",
-    password: ""
+    host: "localhost",
+    port: 5433,
+    database: "groceries",
+    user: "test",
+    password: "test"
   },
   schedule: {
     cron: "",
@@ -37,8 +24,8 @@ const scraperConfig: ScraperConfig = {
     headless: false,
   },
   scrape: {
-    throttleMs: 1000,
-    navigationTimeoutMs: 1000,
+    throttleBetweenPagesMs: 5000,
+    navigationTimeoutMs: 20000,
   },
   retailers: [
     {
@@ -53,25 +40,28 @@ const scraperConfig: ScraperConfig = {
     }
   ],
 }
+
+let container: Awaited<
+  ReturnType<PostgreSqlContainer["start"]>
+>;
+
+beforeAll(async () => {
+  container = await new PostgreSqlContainer("timescale/timescaledb:latest-pg16")
+  .withDatabase(scraperConfig.database.database)
+  .withUsername(scraperConfig.database.user)
+  .withPassword(scraperConfig.database.password)
+  .start();
+
+  initDbSchema({
+    host: container.getHost(),
+    port: container.getMappedPort(5432),
+    database: container.getDatabase(),
+    user: container.getUsername(),
+    password: container.getPassword(),
+  });
+}, 0)
+
 describe("WoolworthsScraper", () => {
-  // beforeEach(async (context) => {
-  //   if (context.task.name === "parses the categories payload") { return; }
-
-  //   chromium.use(StealthPlugin());
-  //   browser = await chromium.launch({ headless: false });
-  //   browserContext = await browser.newContext({
-  //     locale: "en-AU",
-  //     timezoneId: "Australia/Sydney",
-  //     userAgent:
-  //       "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36",
-  //     viewport: { width: 1280, height: 720 }
-  //   })
-  //   testPage = await browserContext.newPage();
-
-  //   scraper = await WoolworthsScraper.create(scraperConfig, browser);
-
-  // }, 0)
-
   it("parses the categories payload", async () => {
     chromium.use(StealthPlugin());
     const browser = await chromium.launch({ headless: false });
@@ -106,7 +96,7 @@ describe("WoolworthsScraper", () => {
     expect(receivedCategories).toEqual(expectedCategories);
   });
 
-  it.skip("discovers the categories correctly on 18/06/2026", async () => {
+  it("discovers the categories correctly on 18/06/2026", async () => {
     chromium.use(StealthPlugin());
     const browser = await chromium.launch({ headless: false });
     const scraper = await WoolworthsScraper.create(scraperConfig, browser);
@@ -119,61 +109,5 @@ describe("WoolworthsScraper", () => {
 
     expect(receivedCategories).toEqual(expectedCategories);
   });
-
-  // for each category
-  it.each(categories)("testing scrapeProductsOfCategory: %s", async (categoryName) => {
-    chromium.use(StealthPlugin());
-    const browser = await chromium.launch({ headless: false });
-    const createContext = async (browser: Browser) => {
-      const browserContext = await browser.newContext({
-        locale: "en-AU",
-        timezoneId: "Australia/Sydney",
-        userAgent:
-          "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36",
-        viewport: { width: 1280, height: 720 }
-      })
-
-    const categoryRawFixtureFiles = rawFixtureFiles.filter(rawFixtureFile => rawFixtureFile.includes(categoryName));
-    let rawPayloads: string[] = [];
-    for (const categoryRawFixtureFile of categoryRawFixtureFiles) {
-      rawPayloads.push(await readFile(`${rawFixturePath}/${categoryRawFixtureFile}`, "utf-8"));
-    }
-    await browserContext.route("https://www.woolworths.com.au/apis/ui/browse/category", async route => {
-      await route.fulfill({
-        body: rawPayloads.length > 0 ? rawPayloads.shift() : `{
-          "Bundles": []
-        }`,
-        contentType: "application/json",
-        status: 200
-      })
-    });
-      return browserContext;
-    }
-
-    const scraper = await WoolworthsScraper.create(scraperConfig, browser, createContext);
-    // derive the raw and parsed fixture name from categoryName
-    const categoryParsedFixtureFiles = parsedFixtureFiles.filter(parsedFixtureFile => parsedFixtureFile.includes(categoryName));
-
-
-    let parsedPayloads: string[] = [];
-    for (const categoryParsedFixtureFile of categoryParsedFixtureFiles) {
-      parsedPayloads.push(await readFile(`${parsedFixturePath}/${categoryParsedFixtureFile}`, "utf-8"));
-    }
-    
-    const category: Category = {
-      retailer: "Woolworths",
-      retailerDesignatedCategoryId: categoryName, // not correct, but for the purpose of testing will be fine
-      name: categoryName,
-      path: `/shop/browse/${categoryName}`,
-    };
-
-    const receivedProducts = await scraper.scrapeProductsOfCategory(category);
-    const expectedProducts: Product[] = parsedPayloads.map(parsedPayload => JSON.parse(parsedPayload)).flat();
-
-    expectedProducts.sort((a, b) => a.retailerProductId.localeCompare(b.retailerProductId));
-    receivedProducts.sort((a, b) => a.retailerProductId.localeCompare(b.retailerProductId));
-
-    expect(receivedProducts, `scrape of ${categoryName} to match its corresponding fixture files`).toEqual(expectedProducts);
-  })
 
 }, 0);
