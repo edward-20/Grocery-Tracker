@@ -1,4 +1,4 @@
-import { makeConnectionPool } from "@grocery-tracker/db";
+import { makeConnectionPool, initDbSchema, isInitialised } from "@grocery-tracker/db";
 import { loadConfig } from "./config/loadConfig.js";
 import { runScrape } from "./scraper/runScraper.js";
 
@@ -6,6 +6,12 @@ const config = loadConfig(process.env.SCRAPER_CONFIG);
 const pool = makeConnectionPool(config.database);
 
 try {
+  const initialisedStatus = await isInitialised(config.database);
+  if (initialisedStatus.status === "not-initialised") {
+    initDbSchema(config.database);
+  } else if (initialisedStatus.status === "broken") {
+    throw new Error("Database is broken");
+  }
   const summary = await runScrape(config, pool);
   console.log(
     `Scheduled scrape complete: ${summary.productsScraped} scanned product(s), ` +
