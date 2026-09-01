@@ -6,9 +6,10 @@ import { RetailerScraper } from "./scraper/retailerScraper.js";
 import { PostgresCategoryRepository, PostgresProductRepository } from "@grocery-tracker/db";
 import { CategoryRepository, ProductRepository } from "@grocery-tracker/db";
 import { ColesScraper } from "./scraper/colesScraper.js";
+import { isInitialised, initDbSchema } from "@grocery-tracker/db";
 
 const config = loadConfig(process.env.SCRAPER_CONFIG);
-const pool = makeConnectionPool();
+const pool = makeConnectionPool(config.database);
 
 const action = await select({
   message: "Which retailer?",
@@ -48,6 +49,12 @@ const selectedCategory = await select({
 console.log(`Scraping ${action}: ${selectedCategory}`);
 
 try {
+  const initialisedStatus = await isInitialised(config.database);
+  if (initialisedStatus.status === "not-initialised") {
+    initDbSchema(config.database);
+  } else if (initialisedStatus.status === "broken") {
+    throw new Error("Database is broken");
+  }
   const categoryRepository: CategoryRepository = new PostgresCategoryRepository(pool);
 
   const category = categories.find((c) => c.name === selectedCategory);

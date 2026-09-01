@@ -4,19 +4,14 @@
   "private": true,
   "type": "module",
   "scripts": {
-    "db:init": "tsx src/db/init.ts",
     "worker": "tsx src/worker.ts",
     "cli": "tsx src/cli.ts",
-    "scrape-once": "tsx src/singleRun.ts",
+    "singleRun": "tsx src/singleRun.ts",
     "test": "vitest run",
     "typecheck": "tsc --noEmit",
     "graph": "tsx scripts/call-graph.ts",
     "gen:woolworths-fixture": "tsx tests/fixture-generator-woolworths.ts && cd tests/fixtures/woolworths/parsed && ./fixture-correction.sh",
-    "gen:coles-fixture": "tsx tests/fixture-generator-coles.ts",
-    "db:test-up": "docker compose -f tests/compose.test.yaml up --build -d",
-    "db:test-down": "docker compose -f tests/compose.test.yaml down",
-    "experiment:up": "docker compose -f deploy/docker-compose.yaml up --build -d",
-    "experiment:down": "docker compose -f deploy/docker-compose.yaml down"
+    "gen:coles-fixture": "tsx tests/fixture-generator-coles.ts"
   },
   "dependencies": {
     "@grocery-tracker/db": "workspace:*",
@@ -35,6 +30,7 @@
     "@types/node-cron": "^3.0.11",
     "@types/pg": "^8.20.0",
     "ts-morph": "^28.0.0",
+    "tsup": "catalog:",
     "tsx": "^4.19.2",
     "typescript": "catalog:",
     "vitest": "catalog:testing"
