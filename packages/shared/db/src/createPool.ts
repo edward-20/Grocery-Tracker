@@ -1,6 +1,6 @@
 import { Pool } from "pg";
 
-type DatabaseConfig = {
+export type DatabaseConfig = {
   host: string,
   port: number,
   database: string,
