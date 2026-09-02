@@ -21,5 +21,5 @@ export async function GET({ url } : RequestEvent ) { // return type this functio
 
 	const matchingProducts = await productRepository.findSimilarBy("retailerProductId", query);
 
-	return matchingProducts.map(product => product.retailerProductId);
+	return json(matchingProducts.map(product => product.retailerProductId));
 }

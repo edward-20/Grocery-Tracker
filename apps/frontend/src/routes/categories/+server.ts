@@ -21,5 +21,5 @@ export async function GET({ url } : RequestEvent ) { // return type this functio
 
 	const matchingCategories = await categoryRepository.findBy("name", query);
 
-	return matchingCategories.map(category => category.name);
+	return json(matchingCategories.map(category => category.name));
 }

@@ -4,7 +4,7 @@ import { mockIdSearch } from '$lib/server/mock-queries';
 import type { RequestEvent } from './$types';
 import { PostgresProductRepository, type ProductRepository } from "@grocery-tracker/db";
 import { makeConnectionPool } from '@grocery-tracker/db';
-export async function GET({ url } : RequestEvent ) { // return type this function
+export async function GET({ url } : RequestEvent ) {
 	const query = url.searchParams.get('query') ?? '';
 	if (USE_MOCK_DATA === 'true') {
 		return json(mockIdSearch(query));
@@ -21,5 +21,5 @@ export async function GET({ url } : RequestEvent ) { // return type this functio
 
 	const matchingProducts = await productRepository.findBy("brand", query);
 
-	return matchingProducts.map(product => product.brand);
+	return json(matchingProducts.map(product => product.brand));
 }
