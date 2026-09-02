@@ -1,4 +1,4 @@
-import { beforeEach, afterAll, beforeAll, describe, expect, it, expectTypeOf } from "vitest";
+import { beforeEach, afterAll, beforeAll, describe, expect, it } from "vitest";
 import { CategoryRepository, ProductRepository, PostgresCategoryRepository, PostgresProductRepository } from "@grocery-tracker/db";
 import { Pool } from "pg";
 import { simpleCategory, productToProductRow, productToValueRow, categoriesAndTheirProducts, categoriesAndTheirProductsWithMultiplePricePoints } from "./helper.js";
@@ -329,10 +329,10 @@ describe("ProductRepository", () => {
       for (const product of categoryAndProducts.products) {
         await productRepository.createOrUpdate(product);
 
-        const findByName = await productRepository.findBy("name", product.name);
-        const findByPath = await productRepository.findBy("path", product.path);
-        const findByDescription = await productRepository.findBy("description", product.description);
-        const findByRetailerProductId = await productRepository.findBy("retailerProductId", product.retailerProductId);
+        const findByName = await productRepository.findBy({key: "name", value: product.name});
+        const findByPath = await productRepository.findBy({key: "path", value: product.path});
+        const findByDescription = await productRepository.findBy({key: "description", value: product.description});
+        const findByRetailerProductId = await productRepository.findBy({key: "retailerProductId", value: product.retailerProductId});
 
         const expectToContainProduct = (result: Product[]) => {
           expect(result.length).toBeGreaterThanOrEqual(1) ;
@@ -365,17 +365,17 @@ describe("ProductRepository", () => {
         expectToRoughlyMatchTime(findByRetailerProductId);
 
         if (product.imageUrl !== undefined) {
-          const findByImageUrl = await productRepository.findBy("imageUrl", product.imageUrl);
+          const findByImageUrl = await productRepository.findBy({key: "imageUrl", value: product.imageUrl});
           expectToContainProduct(findByImageUrl);
           expectToRoughlyMatchTime(findByImageUrl);
         }
         if (product.brand !== undefined) {
-          const findByBrand = await productRepository.findBy("brand", product.brand);
+          const findByBrand = await productRepository.findBy({key: "brand", value: product.brand});
           expectToContainProduct(findByBrand);
           expectToRoughlyMatchTime(findByBrand);
         }
         if (product.crossProductIdentity !== undefined) {
-          const findByCrossProductId = await productRepository.findBy("crossProductIdentity", product.crossProductIdentity);
+          const findByCrossProductId = await productRepository.findBy({key: "crossProductIdentity", value: product.crossProductIdentity});
           expectToContainProduct(findByCrossProductId);
           expectToRoughlyMatchTime(findByCrossProductId);
         }

@@ -1,9 +1,14 @@
 import { DatabaseConfig, makeConnectionPool } from "./createPool.js";
-import schema from "./schema.sql";
+import { readFile } from "node:fs/promises";
 
 export async function initDbSchema(databaseConfig: DatabaseConfig) {
   const pool = makeConnectionPool(databaseConfig);
 
+  // take the schema.sql to initialise
+  const schema = await readFile(
+    new URL("./schema.sql", import.meta.url),
+    'utf-8'
+  );
   const client = await pool.connect();
   try {
     await client.query(schema);
