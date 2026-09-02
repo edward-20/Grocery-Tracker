@@ -1,15 +1,5 @@
 <script lang="ts">
-	/*
-	 * TBD:
-	 * pagination on search results page (search?q=shoes&page=2&pageSize=20)
-
-	 	Search Bar Area on Search Results Page (like google)
-	 * search bar (name) at the top of the search results page
-	 * home page icon
-	 * search by id 
-	 * advanced search option
-	 */
-	import { SearchBar } from '$lib/components/search-bar';
+	import SearchBar from "$lib/components/search-bar/search-bar.svelte";
 
 	let isNameSearch = $state(true);
 
@@ -68,27 +58,5 @@
 				>
 			{/if}
 		</div>
-		<!--
-				What can we filter by?
-					* Name
-					* Store
-					* Location
-					* Department
-					* ID
-					* Cost
-					* Cost Change
-					* Weight
-			-->
-		<!--
-				Todos:
-				* results page highlights what matches from the search
-				* an option to do an advanced search -> prettify with an accordion
-					* location fuzzy search -> suggestions
-					* department fuzzy search -> suggestions
-					* ID fuzzy search
-					* Cost -> max and min slider bar -> show the analytics on price changes
-					* Cost Change -> slider bar with analytics
-					* Weight -> slider bar with analytics
-			-->
 	</form>
 </div>

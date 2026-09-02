@@ -53,16 +53,11 @@
 			const input = event.currentTarget;
 			if (suggestions.length !== 0) {
 				if (event.key === 'ArrowDown') {
-					console.log('hello1');
 					selectedSuggestionIndex = wrap(selectedSuggestionIndex + 1);
-					console.log(selectedSuggestionIndex);
 				} else {
-					console.log('hello2');
 					selectedSuggestionIndex = wrap(selectedSuggestionIndex - 1);
-					console.log(selectedSuggestionIndex);
 				}
 			} else {
-				console.log('hello3');
 				selectedSuggestionIndex = -1;
 			}
 			// change the input to the new selected suggested index

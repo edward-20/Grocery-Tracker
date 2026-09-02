@@ -2,7 +2,7 @@
 	import { fade } from 'svelte/transition';
 	import { resolve } from '$app/paths';
 
-	import { SearchBar } from '$lib/components/search-bar';
+	import SearchBar from '$lib/components/search-bar/search-bar.svelte';
 
 	// range slider
 	// TBD: get a histogram for the price slider
@@ -18,7 +18,7 @@
 	// main search
 	let nameQuery = $state('');
 	// department search
-	let departmentQuery = $state('');
+	let categoryQuery = $state('');
 </script>
 
 <div class="border-b-1 border-solid p-4">
@@ -142,10 +142,10 @@ none"
 		</div>
 	</fieldset>
 	<SearchBar
-		query={departmentQuery}
-		url="/departments"
-		name="departments"
-		label="Departments"
+		query={categoryQuery}
+		url="/categories"
+		name="categories"
+		label="Categories"
 		placeholder="Hams and Cheese"
 	></SearchBar>
 	<div class="mt-4 flex flex-row items-center gap-2">
