@@ -27,7 +27,7 @@ type ValueAtTimeRow = {
 
   unit_price: number | null;
   unit_price_quantity: number | null;
-  unit_price_unit_of_measurement: string | null;
+  unit_price_unit_of_measurement: UnitOfMeasurement | null;
 
   size: string;
   price: number;
@@ -117,6 +117,19 @@ export class PostgresProductRepository implements ProductRepository {
       client.release();
     }
   };
+
+  private valueAtTimeRowToValueAtTimeEntity(valueAtTimeRow: ValueAtTimeRow): ValueAtTime {
+    return {
+      size: valueAtTimeRow.size,
+      price: valueAtTimeRow.price,
+      time: valueAtTimeRow.time,
+      unitPricing: valueAtTimeRow.unit_price && valueAtTimeRow.unit_price_quantity && valueAtTimeRow.unit_price_unit_of_measurement ? {
+        unitPrice: valueAtTimeRow.unit_price,
+        unitPriceQuantity: valueAtTimeRow.unit_price_quantity,
+        unitPriceUnitofMeasurement: valueAtTimeRow.unit_price_unit_of_measurement
+      } : undefined
+    };
+  }
 
   async createOrUpdate(
     product: Product 
@@ -372,6 +385,39 @@ export class PostgresProductRepository implements ProductRepository {
       client.release();
     }
 
+  }
+
+  async findWithPriceHistory(productId: number, timeRange?: Range): Promise<{ product: Product; history: ValueAtTime[]; }> {
+    const client = await this.dbPool.connect();
+    try {
+      let productRes: QueryResult<any>;
+        
+      productRes = await client.query(`SELECT * FROM product WHERE id = $1`, [productId]);
+      if (productRes.rowCount !== 1) {
+        throw new Error("Unexpectedly returned more than one product");
+      }
+      const productRow = productRes.rows[0];
+      // find all the value rows within the time range for the product
+      const valueAtTimesRes = timeRange ? 
+        await client.query(`SELECT * FROM value_at_times WHERE product_id = $1 WHERE TIME BETWEEN $2 AND $3 ORDER BY time DESC`, [productId, timeRange[0], timeRange[1]]) 
+        : await client.query(`SELECT * FROM value_at_times WHERE product_id = $1 ORDER BY time DESC`, [productId]);
+
+      // fint the most recent value_at_times row
+      const mostRecentValueAtTimeRes = await client.query(`SELECT * FROM value_at_times WHERE product_id = $1 ORDER BY time DESC LIMIT 1`, [productId]);
+      if (mostRecentValueAtTimeRes.rowCount !== 1) {
+        throw `Couldn't get the latest value for product ${productId}`;
+      }
+
+      const product = await this.productRowToProductEntity(productRow, mostRecentValueAtTimeRes.rows[0]);
+      return {
+        product,
+        history: valueAtTimesRes.rows.map(valueAtTimeRow => this.valueAtTimeRowToValueAtTimeEntity(valueAtTimeRow))
+      }
+    } catch (error) {
+      throw new Error("Failed to find products", {cause: error});
+    } finally {
+      client.release();
+    }
   }
 }
 
