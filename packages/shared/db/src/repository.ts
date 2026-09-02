@@ -1,10 +1,19 @@
-import { Retailer, Category, Product } from "@grocery-tracker/domain-model";
+import { Retailer, Category, Product, ValueAtTime } from "@grocery-tracker/domain-model";
 
 export type Range = [number, number];
 
 export type SearchableKeyOfProduct = Exclude<keyof Product, "currentValue" | "uid" | "category">;
 
 export function isRangeType(range: [number, number]): range is Range {
+  if (range[0] <= range[1]) {
+    return true;
+  }
+  return false;
+}
+
+export type TimeRange = [Date, Date];
+
+export function isTimeRangeType(range: [Date, Date]): range is TimeRange {
   if (range[0] <= range[1]) {
     return true;
   }
@@ -33,6 +42,11 @@ export interface ProductRepository {
     }, 
     range?: Range
   ): Promise<Product[]>;
+
+  findWithPriceHistory(productId: number, timeRange?: Range): Promise<{
+    product: Product,
+    history: ValueAtTime[]
+  }>;
 };
 
 export interface CategoryRepository {
