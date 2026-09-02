@@ -1,5 +1,5 @@
 import { Pool, QueryResult } from "pg";
-import { RetailerRepository, CategoryRepository, ProductRepository } from "./repository.js";
+import { RetailerRepository, CategoryRepository, ProductRepository, Range, SearchableKeyOfProduct } from "./repository.js";
 import { Retailer, Category, Product, ValueAtTime, UnitOfMeasurement, isCrossProductIdentity} from "@grocery-tracker/domain-model";
 
 type CrossRetailerId = {
@@ -46,6 +46,11 @@ type CategoryRow = {
   id: number;
   retailer_designated_category_id: string;
   name: string;
+}
+
+type SqlFilter = {
+  columnName: "retailer_id" | "retailer_product_id" | "cross_retailer_id" | "gtin_format" | "name" | "brand" | "path" | "description" | "image_url",
+  value: any
 }
 
 export class PostgresProductRepository implements ProductRepository {
@@ -207,80 +212,92 @@ export class PostgresProductRepository implements ProductRepository {
     }
   }
 
-  async findBy<K extends Exclude<keyof Product, "currentValue" | "uid" | "category">>(key: K, value: Product[K], limit?: number): Promise<Product[]> {
-  const client = await this.dbPool.connect();
-
-  try {
-    let productsRes: QueryResult<any>;
-    // if asked for a retailer, need to query to find the retailer_id
-    if (key === "retailer") {
-      const retailerRes = await client.query("SELECT id FROM retailers WHERE name = $1", [value]);
-      if (retailerRes.rowCount !== 1) {
-        throw new Error(`Couldn't find the retailer asked for from findBy: ${value}`);
-      }
-      const retailer_id = retailerRes.rows[0].id;
-      productsRes = await client.query(`SELECT * FROM products WHERE retailer_id = $1 LIMIT $2`, [retailer_id, limit ?? 10]);
-    } else if (key === "crossProductIdentity") {
-      if (isCrossProductIdentity(value)) {
-        productsRes = await client.query(`SELECT * FROM products WHERE cross_retailer_id = $1 AND gtin_format = $2 LIMIT $3`, [value.crossRetailerId, value.gtinFormat, limit ?? 10]);
-      } else {
-        throw `Provided key: crossProductIdentity but value: ${value} not CrossProductIdentity to ProductRepository findBy`;
-      }
-    } else if (key === "imageUrl") {
-      productsRes = await client.query(`SELECT * FROM products WHERE image_url = $1 LIMIT $2`, [value, limit ?? 10]);
-    } else if (key === "retailerProductId") {
-      productsRes = await client.query(`SELECT * FROM products WHERE retailer_product_id = $1 LIMIT $2`, [value, limit ?? 10]);
-    } else {
-      productsRes = await client.query(`SELECT * FROM products WHERE ${key} = $1 LIMIT $2`, [value, limit ?? 10]);
-    }
-
-    const productRows = productsRes.rows;
-    // for each product row find its latest value 
-    const valueRows: ValueAtTimeRow[] = await Promise.all(productRows.map(async (productRow): Promise<ValueAtTimeRow> => {
-      const valueRes = await client.query(`SELECT * from value_at_times WHERE product_id = $1 ORDER BY time LIMIT 1;`, [productRow.id]);
-      if (valueRes.rowCount !== 1) {
-        throw new Error(`Didn't find a one to one relationship between a product and its current value in the database ${productRow.id}`)
-      }
-      return valueRes.rows[0];
-    }));
-
-    return Promise.all(productRows.map(async (productRow, i) => {
-      return await this.productRowToProductEntity(productRow, valueRows[i]);
-    }));
-  } catch (error) {
-    throw new Error("Failed to find products", {cause: error});
-  } finally {
-    client.release();
-  }
-}
-
-  async findSimilarBy<K extends Exclude<keyof Product, "currentValue" | "uid" | "category">>(key: K, value: Product[K], limit?: number): Promise<Product[]> {
-    const client = await this.dbPool.connect();
-
-    try {
-      let productsRes: QueryResult<any>;
-      // if asked for a retailer, need to query to find the retailer_id
-      if (key === "retailer") {
-        const retailerRes = await client.query("SELECT id FROM retailers WHERE name = $1", [value]);
+  private async filterToSqlCondition<K extends SearchableKeyOfProduct>(filter: {key: K, value: Product[K]}): Promise<SqlFilter[]> {
+    if (filter.key === "retailer") {
+      const client = await this.dbPool.connect();
+      try {
+        const retailerRes = await client.query("SELECT id FROM retailers WHERE name = $1", [filter.value]);
         if (retailerRes.rowCount !== 1) {
-          throw new Error(`Couldn't find the retailer asked for from findBy: ${value}`);
+          throw new Error(`Couldn't find the retailer asked for from findBy: ${filter.value}`);
         }
         const retailer_id = retailerRes.rows[0].id;
-        productsRes = await client.query(`SELECT * FROM products WHERE retailer_id = $1 LIMIT $2`, [retailer_id, limit ?? 10]);
-      } else if (key === "retailerProductId") {
-        productsRes = await client.query(`SELECT * FROM products WHERE retailer_product_id = $1 LIMIT $2`, [value, limit ?? 10]);
-      } else if (key === "imageUrl") {
-        productsRes = await client.query(`SELECT * FROM products WHERE image_url = $1 LIMIT $2`, [value, limit ?? 10]);
-      } else if (key === "crossProductIdentity") {
-        if (isCrossProductIdentity(value)) {
-          productsRes = await client.query(`SELECT * FROM products WHERE cross_retailer_id ILIKE $1 AND gtin_format = $2 LIMIT $3`, [`%${value.crossRetailerId}%`, `%${value.gtinFormat}%`, limit ?? 10]);
-        } else {
-          throw `Provided key: crossProductIdentity but value: ${value} not CrossProductIdentity to ProductRepository findBy`;
+        return ([{
+          columnName: "retailer_id",
+          value: retailer_id
+        }]);
+      } catch (error) {
+        throw error;
+      } finally {
+        client.release();
+      }
+    } else if (filter.key === "crossProductIdentity") {
+      if (isCrossProductIdentity(filter.value)) {
+        return ([
+          {
+            columnName: "gtin_format",
+            value: filter.value.gtinFormat
+          },
+          {
+            columnName: "cross_retailer_id",
+            value: filter.value.crossRetailerId
+          }
+        ]);
+      } else {
+        throw `Provided key: crossProductIdentity but value: ${filter.value} not CrossProductIdentity to ProductRepository findBy`;
+      }
+    } else if (filter.key === "imageUrl") {
+      return ([{
+        columnName: "image_url",
+        value: filter.value
+      }]);
+    } else if (filter.key === "retailerProductId") {
+      return ([{
+        columnName: "retailer_product_id",
+        value: filter.value
+      }]);
+    } else {
+      if (filter.key !== "brand" && filter.key !== "name" && filter.key !== "path" && filter.key !== "description") {
+        throw `Provided key: ${filter.key} doesn't fit into searchable product key constraints`
+      }
+      return ([{
+        columnName: filter.key,
+        value: filter.value
+      }])
+    }
+  }
+
+  async findBy<K extends SearchableKeyOfProduct>(filter: { key: K; value: Product[K]; }[] | { key: K; value: Product[K]; }, range?: Range): Promise<Product[]> {
+    const client = await this.dbPool.connect();
+    try {
+      let sqlConditions: SqlFilter[] = [];
+      if (Array.isArray(filter)) {
+        for (const f of filter) {
+          sqlConditions.push(...(await this.filterToSqlCondition(f)));
         }
       } else {
-        productsRes = await client.query(`SELECT * FROM products WHERE ${key} = $1 LIMIT $2`, [`%${value}%`, limit ?? 10]);
+        sqlConditions.push(...(await this.filterToSqlCondition(filter)));
       }
 
+      let productsRes: QueryResult<any>;
+
+      const conditions = sqlConditions.map(
+        (filter, i) => `"${filter.columnName}" = $${i + 1}`
+      );
+      const values = sqlConditions.map(filter => filter.value);
+
+      const query = range ? `
+        SELECT *
+        FROM products
+        WHERE ${conditions.join(" AND ")}
+        OFFSET ${range[0]}
+        LIMIT ${range[1]}
+      ` : `
+        SELECT *
+        FROM products
+        WHERE ${conditions.join(" AND ")}
+      `;
+        
+      productsRes = await client.query(query, values);
 
       const productRows = productsRes.rows;
       // for each product row find its latest value 
@@ -300,6 +317,61 @@ export class PostgresProductRepository implements ProductRepository {
     } finally {
       client.release();
     }
+  }
+  
+  async findSimilarBy<K extends SearchableKeyOfProduct>(filter: { key: K; value: Product[K]; }[] | { key: K; value: Product[K]; }, range?: Range): Promise<Product[]> {
+    const client = await this.dbPool.connect();
+    try {
+      let sqlConditions: SqlFilter[] = [];
+      if (Array.isArray(filter)) {
+        for (const f of filter) {
+          sqlConditions.push(...(await this.filterToSqlCondition(f)));
+        }
+      } else {
+        sqlConditions.push(...(await this.filterToSqlCondition(filter)));
+      }
+
+      let productsRes: QueryResult<any>;
+
+      // if its a string can do ilike otherwise no
+      const conditions = sqlConditions.map(
+        (filter, i) => `"${filter.columnName}" ILIKE $${i + 1}`
+      );
+      const values = sqlConditions.map(filter => filter.value);
+
+      const query = range ? `
+        SELECT *
+        FROM products
+        WHERE ${conditions.join(" AND ")}
+        OFFSET ${range[0]}
+        LIMIT ${range[1]}
+      ` : `
+        SELECT *
+        FROM products
+        WHERE ${conditions.join(" AND ")}
+      `;
+        
+      productsRes = await client.query(query, values);
+
+      const productRows = productsRes.rows;
+      // for each product row find its latest value 
+      const valueRows: ValueAtTimeRow[] = await Promise.all(productRows.map(async (productRow): Promise<ValueAtTimeRow> => {
+        const valueRes = await client.query(`SELECT * from value_at_times WHERE product_id = $1 ORDER BY time LIMIT 1;`, [productRow.id]);
+        if (valueRes.rowCount !== 1) {
+          throw new Error(`Didn't find a one to one relationship between a product and its current value in the database ${productRow.id}`)
+        }
+        return valueRes.rows[0];
+      }));
+
+      return Promise.all(productRows.map(async (productRow, i) => {
+        return await this.productRowToProductEntity(productRow, valueRows[i]);
+      }));
+    } catch (error) {
+      throw new Error("Failed to find products", {cause: error});
+    } finally {
+      client.release();
+    }
+
   }
 }
 
