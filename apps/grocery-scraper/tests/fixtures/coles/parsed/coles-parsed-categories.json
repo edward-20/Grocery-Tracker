@@ -2,112 +2,134 @@
 	{
 	  "retailerDesignatedCategoryId": "8904801",
 	  "name": "Back to School",
-	  "path": "/browse/back-to-school"
+	  "path": "/browse/back-to-school",
+		"retailer": "Coles"
 	},
 	{
 	  "retailerDesignatedCategoryId": "891716390",
 	  "name": "Bonus Credit Products",
-	  "path": "/browse/bonus-credit-products"
+	  "path": "/browse/bonus-credit-products",
+		"retailer": "Coles"
 	},
 	{
 	  "retailerDesignatedCategoryId": "772566492",
 	  "name": "Big Pack Value",
-	  "path": "/browse/big-pack-value"
+	  "path": "/browse/big-pack-value",
+		"retailer": "Coles"
 	},
 	{
 	  "retailerDesignatedCategoryId": "551677585",
 	  "name": "Deliver More Range",
-	  "path": "/browse/deliver-more-range"
+	  "path": "/browse/deliver-more-range",
+		"retailer": "Coles"
 	},
 	{
 	  "retailerDesignatedCategoryId": "7238",
 	  "name": "Meat & Seafood",
-	  "path": "/browse/meat-seafood"
+	  "path": "/browse/meat-seafood",
+		"retailer": "Coles"
 	},
 	{
 	  "retailerDesignatedCategoryId": "2100",
 	  "name": "Fruit & Vegetables",
-	  "path": "/browse/fruit-vegetables"
+	  "path": "/browse/fruit-vegetables",
+		"retailer": "Coles"
 	},
 	{
 	  "retailerDesignatedCategoryId": "8906007",
 	  "name": "Down Down",
-	  "path": "/browse/down-down"
+	  "path": "/browse/down-down",
+		"retailer": "Coles"
 	},
 	{
 	  "retailerDesignatedCategoryId": "1300",
 	  "name": "Dairy, Eggs & Fridge",
-	  "path": "/browse/dairy-eggs-fridge"
+	  "path": "/browse/dairy-eggs-fridge",
+		"retailer": "Coles"
 	},
 	{
 	  "retailerDesignatedCategoryId": "8892906",
 	  "name": "Bakery",
-	  "path": "/browse/bakery"
+	  "path": "/browse/bakery",
+		"retailer": "Coles"
 	},
 	{
 	  "retailerDesignatedCategoryId": "8892715",
 	  "name": "Deli",
-	  "path": "/browse/deli"
+	  "path": "/browse/deli",
+		"retailer": "Coles"
 	},
 	{
 	  "retailerDesignatedCategoryId": "10302",
 	  "name": "Pantry",
-	  "path": "/browse/pantry"
+	  "path": "/browse/pantry",
+		"retailer": "Coles"
 	},
 	{
 	  "retailerDesignatedCategoryId": "674112512",
 	  "name": "Dietary & World Foods",
-	  "path": "/browse/dietary-world-foods"
+	  "path": "/browse/dietary-world-foods",
+		"retailer": "Coles"
 	},
 	{
 	  "retailerDesignatedCategoryId": "8916201",
 	  "name": "Chips, Chocolates & Snacks",
-	  "path": "/browse/chips-chocolates-snacks"
+	  "path": "/browse/chips-chocolates-snacks",
+		"retailer": "Coles"
 	},
 	{
 	  "retailerDesignatedCategoryId": "11456",
 	  "name": "Drinks",
-	  "path": "/browse/drinks"
+	  "path": "/browse/drinks",
+		"retailer": "Coles"
 	},
 	{
 	  "retailerDesignatedCategoryId": "85946",
 	  "name": "Liquorland",
-	  "path": "/browse/liquorland"
+	  "path": "/browse/liquorland",
+		"retailer": "Coles"
 	},
 	{
 	  "retailerDesignatedCategoryId": "85471",
 	  "name": "Frozen",
-	  "path": "/browse/frozen"
+	  "path": "/browse/frozen",
+		"retailer": "Coles"
 	},
 	{
 	  "retailerDesignatedCategoryId": "910869560",
 	  "name": "Cleaning & Laundry",
-	  "path": "/browse/cleaning-laundry"
+	  "path": "/browse/cleaning-laundry",
+		"retailer": "Coles"
 	},
 	{
 	  "retailerDesignatedCategoryId": "15083",
 	  "name": "Health & Beauty",
-	  "path": "/browse/health-beauty"
+	  "path": "/browse/health-beauty",
+		"retailer": "Coles"
 	},
 	{
 	  "retailerDesignatedCategoryId": "15603",
 	  "name": "Baby",
-	  "path": "/browse/baby"
+	  "path": "/browse/baby",
+		"retailer": "Coles"
 	},
 	{
 	  "retailerDesignatedCategoryId": "16427",
 	  "name": "Pet",
-	  "path": "/browse/pet"
+	  "path": "/browse/pet",
+		"retailer": "Coles"
 	},
 	{
 	  "retailerDesignatedCategoryId": "910912322",
 	  "name": "Home & Garden",
-	  "path": "/browse/home-garden"
+	  "path": "/browse/home-garden",
+		"retailer": "Coles"
 	},
 	{
 	  "retailerDesignatedCategoryId": "17490",
 	  "name": "Tobacco",
-	  "path": "/browse/tobacco"
+	  "path": "/browse/tobacco",
+		"retailer": "Coles"
 	}
 
 ]
