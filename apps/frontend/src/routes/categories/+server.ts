@@ -2,7 +2,7 @@ import { HOST, PORT, DATABASE, USER, PASSWORD, USE_MOCK_DATA } from '$env/static
 import { json } from '@sveltejs/kit';
 import { mockIdSearch } from '$lib/server/mock-queries';
 import type { RequestEvent } from './$types';
-import { PostgresProductRepository, type ProductRepository } from "@grocery-tracker/db";
+import { PostgresCategoryRepository, type CategoryRepository } from "@grocery-tracker/db";
 import { makeConnectionPool } from '@grocery-tracker/db';
 export async function GET({ url } : RequestEvent ) { // return type this function
 	const query = url.searchParams.get('query') ?? '';
@@ -17,9 +17,9 @@ export async function GET({ url } : RequestEvent ) { // return type this functio
 		user: USER,
 		password: PASSWORD
 	});
-	const productRepository: ProductRepository = new PostgresProductRepository(pool);
+	const categoryRepository: CategoryRepository = new PostgresCategoryRepository(pool);
 
-	const matchingProducts = await productRepository.findSimilarBy("name", query);
+	const matchingCategories = await categoryRepository.findBy("name", query);
 
-	return matchingProducts.map(product => product.name);
+	return matchingCategories.map(category => category.name);
 }
