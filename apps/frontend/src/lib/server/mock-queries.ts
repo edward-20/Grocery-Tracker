@@ -109,14 +109,24 @@ export function mockNameSearch(query: string): string[] {
 
 export function mockIdSearch(query: string): string[] {
 	const lower = query.toLowerCase();
-	return MOCK_PRODUCTS.filter((p) => p.id.toLowerCase().includes(lower))
-		.map((p) => p.id)
+	return MOCK_PRODUCTS.filter((p) => p.retailerProductId.toLowerCase().includes(lower))
+		.map((p) => p.retailerProductId)
 		.slice(0, 10);
 }
 
-export function mockDepartmentSearch(query: string): string[] {
+export function mockCategorySearch(query: string): string[] {
 	const lower = query.toLowerCase();
-	return DEPARTMENTS.filter((d) => d.toLowerCase().includes(lower)).slice(0, 10);
+	return CATEGORIES.filter((d) => d.name.includes(lower)).slice(0, 10).map(category => category.name);
+}
+
+export function mockBrandSearch(query: string): string[] {
+	const lower = query.toLowerCase();
+	function hasBrand(product: Product): product is Product & {
+		brand: string
+	} {
+		return product.brand ? false : true;
+	}
+	return MOCK_PRODUCTS.filter(hasBrand).filter((d) => d.brand.includes(lower)).slice(0, 10).map(product => product.brand);
 }
 
 export type MockProduct = {

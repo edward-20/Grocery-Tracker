@@ -1,13 +1,13 @@
 import { HOST, PORT, DATABASE, USER, PASSWORD, USE_MOCK_DATA } from '$env/static/private';
 import { json } from '@sveltejs/kit';
-import { mockIdSearch } from '$lib/server/mock-queries';
+import { mockNameSearch } from '$lib/server/mock-queries';
 import type { RequestEvent } from './$types';
 import { PostgresProductRepository, type ProductRepository } from "@grocery-tracker/db";
 import { makeConnectionPool } from '@grocery-tracker/db';
 export async function GET({ url } : RequestEvent ) { // return type this function
 	const query = url.searchParams.get('query') ?? '';
 	if (USE_MOCK_DATA === 'true') {
-		return json(mockIdSearch(query));
+		return json(mockNameSearch(query));
 	}
 
 	const pool = makeConnectionPool({
