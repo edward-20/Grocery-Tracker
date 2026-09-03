@@ -14,7 +14,12 @@
   "scripts": {
     "test": "vitest run",
     "build": "tsup",
-    "dev": "tsup --watch"
+    "dev": "tsup --watch",
+    "start": "docker compose up -d",
+    "stop": "docker compose down",
+    "reset": "tsx scripts/reset.ts",
+    "seed": "tsx scripts/seed.ts"
+
   },
   "keywords": [],
   "author": "",
