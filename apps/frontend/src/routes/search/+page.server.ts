@@ -10,7 +10,7 @@ export type SearchPageLoadResponse =
 	| { type: 'success'; items: Product[]; totalPages: number };
 
 export const load: PageServerLoad = async ({ url }): Promise<SearchPageLoadResponse> => {
-
+	console.log(url.searchParams);
 	if (USE_MOCK_DATA) {
 		return mockProductSearch(url);
 	}
@@ -40,7 +40,7 @@ export const load: PageServerLoad = async ({ url }): Promise<SearchPageLoadRespo
 			}
 		])
 
-		const totalPages = Math.floor(products.length / 20);
+		const totalPages = Math.ceil(products.length / 20);
 		return {
 			type: "success",
 			items: products.slice((page - 1) * 20, page * 20),

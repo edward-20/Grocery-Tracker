@@ -32,7 +32,7 @@
 </script>
 
 <div class="border-b-solid border-b-1 p-4">
-	<form action="/search">
+	<form action="/search" method="GET">
 		{#if isNameSearch}
 			<SearchBar
 				bind:query={nameQuery}
