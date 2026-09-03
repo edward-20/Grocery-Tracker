@@ -11,7 +11,7 @@
 	let { data }: PageProps = $props();
 	import SearchBar from '$lib/components/search-bar/search-bar.svelte';
 	let isNameSearch = $state(true);
-	let nameQuery = $state(page.url.searchParams.get('product') ?? '');
+	let nameQuery = $state(page.url.searchParams.get('name') ?? '');
 	let idQuery = $state(page.url.searchParams.get('id') ?? '');
 
 	// pagination
@@ -75,7 +75,7 @@
 	</form>
 </div>
 {#if data.type !== 'success'}
-	<p>An error occurred while trying to fetch data.</p>
+	<p>An error occurred while trying to fetch data. {data.reason}</p>
 {:else}
 	<ul>
 		{#each data.items as item (item.uid)}
