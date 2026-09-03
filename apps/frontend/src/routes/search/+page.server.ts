@@ -10,7 +10,6 @@ export type SearchPageLoadResponse =
 	| { type: 'success'; items: Product[]; totalPages: number };
 
 export const load: PageServerLoad = async ({ url }): Promise<SearchPageLoadResponse> => {
-	console.log(url.searchParams);
 	if (USE_MOCK_DATA) {
 		return mockProductSearch(url);
 	}
