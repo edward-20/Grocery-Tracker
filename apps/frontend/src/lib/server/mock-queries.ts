@@ -79,7 +79,7 @@ function generateRandomValueAtTime(): ValueAtTime {
   return new ValueAtTime(generateRandomString(3), Number((Math.random()*100).toFixed(2)), new Date());
 }
 
-const MOCK_PRODUCTS: Product[]= Array.from({length: 500}).map(() => {
+const MOCK_PRODUCTS: Product[]= Array.from({length: 1000}).map(() => {
 	return new Product({
 		retailer: Math.random() > 0.5 ? "Woolworths" : "Coles",
 	  	retailerProductId: generateRandomString(10),
@@ -137,11 +137,10 @@ export function mockProductSearch(url: URL): SearchPageLoadResponse {
   const result = MOCK_PRODUCTS
       .filter(product => product.name.toLowerCase().includes(nameSearch ?? ""))
       .filter(product => product.retailerProductId.toLowerCase().includes(idSearch ?? ""))
-      .slice((page - 1) * 20, page * 20);
 
   return { 
     type: "success",
     items: result.slice((page - 1) * 20, page * 20),
-    totalPages: result.length
+    totalPages: Math.floor(result.length / 20)
   }
 }
