@@ -37,20 +37,13 @@ opencode, but other version controlled files may appear in the future to support
 other agentic development tools.
 To recreate this project with the same configuration:
 
-```sh
-# recreate this project
-npx sv create --template minimal --types ts --add prettier eslint tailwindcss="plugins:typography,forms" --install npm Grocery_Comparison
-```
-
 ## Developing
 
 Once you've created a project and installed dependencies with `npm install` (or `pnpm install` or `yarn`), start a development server:
 
-```sh
+```
 npm run dev
-
-# or start the server and open the app in a new browser tab
-npm run dev -- --open
+pnpm dev
 ```
 
 ## Building
@@ -67,10 +60,17 @@ You can preview the production build with `npm run preview`.
 
 # branch naming conventions follow 
 lowercase, kebab case.
-## InfluxDB Cloud Serverless
 
-This app queries with **SQL** via `@influxdata/influxdb3-client` (same idea as `client.query(sql, 'YourDb')` in the official getting started guide).
+## Pages
+`/search`
+Goes to the search pages, much like what would you see with a search engine. The
+possible query parameters are:
+`name` which represents the string query for the name of the product
+`id` which represents the string query for the retailer id of the product
+`page` which represents the page number wanted for the search result page
 
-Set **`INFLUXDB_DATABASE`** to your **database name** in Cloud (e.g. `Groc`) — the same name you pass as the second argument to `query()` in the Node tutorial.
-
-Required env vars: `INFLUXDB_URL`, `INFLUXDB_TOKEN`, `INFLUXDB_DATABASE`, `INFLUXDB_PRODUCT_TABLE` (measurement / table name, e.g. `product`).
+More complex queries arise from the advanced search. Make the advanced search an
+upcoming feature and deal with these queries later on
+`store` is either "Woolworths" or "Coles"
+`minPrice` and `maxPrice` defines the range for the price
+`categories` represents the string query for the category name

@@ -22,7 +22,7 @@
 				<SearchBar
 					bind:query={nameQuery}
 					url="/names"
-					name="product"
+					name="name"
 					label="Search by product name"
 					placeholder="Peanut Butter"
 				></SearchBar>

@@ -9,7 +9,7 @@
 	import { resolve } from '$app/paths';
 	import { page } from '$app/state';
 	let { data }: PageProps = $props();
-	import { SearchBar } from '$lib/components/search-bar';
+	import SearchBar from '$lib/components/search-bar/search-bar.svelte';
 	let isNameSearch = $state(true);
 	let nameQuery = $state(page.url.searchParams.get('product') ?? '');
 	let idQuery = $state(page.url.searchParams.get('id') ?? '');
@@ -28,6 +28,7 @@
 		let bottomIndex = topIndex - 9 > 0 ? topIndex - 9 : 1;
 		return Array.from({ length: topIndex - bottomIndex + 1 }, (_, index) => bottomIndex + index);
 	});
+
 </script>
 
 <div class="border-b-solid border-b-1 p-4">
@@ -77,21 +78,23 @@
 	<p>An error occurred while trying to fetch data.</p>
 {:else}
 	<ul>
-		{#each data.items as item (item.id)}
+		{#each data.items as item (item.uid)}
 			<li class="border-b-1 p-3">
 				<strong>{item.name}</strong><br />
-				<p>{item.store}</p>
-				<p>Location: {item.location}</p>
-				<p>Department: {item.department}</p>
-				<p class="text-sm">ID: {item.id}</p>
-				<p>Cost: {item.cents}</p>
-				<p>Cost Change: {item.cents_change}</p>
-				<p>Weight: {item.grams}</p>
-				<p>
-					<a class="link" style="color: var(--color-primary);" href={resolve(`/product/${encodeURIComponent(item.id as string)}`)}
-						>Price history & chart</a
-					>
-				</p>
+				<p>{item.retailer}</p>
+				<p>Category: {item.name}</p>
+				<p class="text-sm">ID: {item.retailerProductId}</p>
+				<p>Cost: {item.currentValue.price}</p>
+				<p>Size: {item.currentValue.size}</p>
+				<p>Unit Pricing: {item.currentValue.unitPricing === undefined ? "N/A" : 
+					item.currentValue.unitPricing.unitPrice + "/" 
+					+ item.currentValue.unitPricing.unitPriceQuantity 
+					+ item.currentValue.unitPricing.unitPriceUnitofMeasurement
+				}</p>
+				<a class="link" style="color: var(--color-primary);"
+				href={resolve(`/product/${encodeURIComponent(item.uid as string)}`)}
+					>Price history & chart</a
+				>
 			</li>
 		{/each}
 	</ul>
@@ -103,7 +106,7 @@
 			{#if currentPage > 1}
 				<li class="inline">
 					<a class="link" style="color: var(--color-secondary);"
-						href={`/search?product=${encodeURIComponent(nameQuery)}&page=${currentPage - 1}`}
+						href={`/search?name=${encodeURIComponent(nameQuery)}&page=${currentPage - 1}`}
 						onclick={() => { pageNumber-- }}
 					>Previous</a>
 				</li>
@@ -120,7 +123,7 @@
 				<!--eslint-disable-next-line svelte/no-navigation-without-resolve-->
 				<li class={`inline p-3 ${currentPage === pageValue ? '!font-extrabold' : '!font-thin'}`}>
 					<a class="link" style="color: var(--color-secondary);"
-						href={`/search?product=${encodeURIComponent(nameQuery)}&page=${pageValue}`} aria-current={currentPage === pageValue}
+						href={`/search?name=${encodeURIComponent(nameQuery)}&page=${pageValue}`} aria-current={currentPage === pageValue}
 						onclick={() => {pageNumber = pageValue}}
 						>{pageValue}</a
 					>
@@ -129,7 +132,7 @@
 			{#if currentPage < data.totalPages}
 				<li class="inline">
 					<a class="link" style="color: var(--color-secondary);"
-						href={`/search?product=${encodeURIComponent(nameQuery)}&page=${currentPage + 1}`} 
+						href={`/search?name=${encodeURIComponent(nameQuery)}&page=${currentPage + 1}`} 
 						onclick={() => { pageNumber++ }}
 					>Next</a>
 				</li>

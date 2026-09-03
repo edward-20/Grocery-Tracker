@@ -1,6 +1,5 @@
-import type { PricePoint } from '$lib/types/price-point';
 import { Product, ValueAtTime, type Category } from '@grocery-tracker/domain-model';
-
+import type { SearchPageLoadResponse } from '../../routes/search/+page.server';
 
 const CATEGORIES: Category[] = [
 	{
@@ -129,73 +128,20 @@ export function mockBrandSearch(query: string): string[] {
 	return MOCK_PRODUCTS.filter(hasBrand).filter((d) => d.brand.includes(lower)).slice(0, 10).map(product => product.brand);
 }
 
-export type MockProduct = {
-	name: string;
-	store: 'Coles' | 'Woolworths';
-	location: string;
-	department: string;
-	id: string;
-	cents: number;
-	grams: number;
-	cents_change: number;
-	time: string;
-};
+// full mock of the search page
+export function mockProductSearch(url: URL): SearchPageLoadResponse {
+  const nameSearch = url.searchParams.get('name')?.toLowerCase();
+  const page = parseInt(url.searchParams.get('page') ?? '1');
+  const idSearch = url.searchParams.get("id")?.toLowerCase();
 
-export function mockProductSearch(params: {
-	name?: string;
-	store?: string[];
-	department?: string;
-	id?: string;
-	minPrice?: number;
-	maxPrice?: number;
-	page: number;
-	pageSize: number;
-}): { items: MockProduct[]; total: number } {
-	let filtered = [...MOCK_PRODUCTS];
+  const result = MOCK_PRODUCTS
+      .filter(product => product.name.toLowerCase().includes(nameSearch ?? ""))
+      .filter(product => product.retailerProductId.toLowerCase().includes(idSearch ?? ""))
+      .slice((page - 1) * 20, page * 20);
 
-	if (params.name) {
-		const lower = params.name.toLowerCase();
-		filtered = filtered.filter((p) => p.name.toLowerCase().includes(lower));
-	}
-
-	if (params.store && params.store.length === 1) {
-		filtered = filtered.filter((p) => p.store === params.store![0]);
-	}
-
-	if (params.department) {
-		filtered = filtered.filter((p) => p.department === params.department);
-	}
-
-	if (params.id) {
-		filtered = filtered.filter((p) => p.id === params.id);
-	}
-
-	if (params.minPrice !== undefined) {
-		filtered = filtered.filter((p) => p.cents >= params.minPrice! * 100);
-	}
-
-	if (params.maxPrice !== undefined) {
-		filtered = filtered.filter((p) => p.cents <= params.maxPrice! * 100);
-	}
-
-	const total = filtered.length;
-	const start = (params.page - 1) * params.pageSize;
-	const items: MockProduct[] = filtered.slice(start, start + params.pageSize).map((p) => ({
-		...p,
-		location: 'Melbourne CBD',
-		cents_change: Math.floor(Math.random() * 200) - 100,
-		store: p.store as 'Coles' | 'Woolworths'
-	}));
-
-	return { items, total };
-}
-
-export function mockProductDetail(id: string): PricePoint[] {
-	return MOCK_PRODUCTS.filter((p) => p.id === id).map((p) => ({
-		time: p.time,
-		store: p.store,
-		cents: p.cents,
-		name: p.name,
-		grams: p.grams
-	}));
+  return { 
+    type: "success",
+    items: result.slice((page - 1) * 20, page * 20),
+    totalPages: result.length
+  }
 }
