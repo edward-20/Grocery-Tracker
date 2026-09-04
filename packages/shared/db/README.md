@@ -11,11 +11,11 @@ can be populated with realistic data.
 
 In order to fulfill purpose 2, an environment file (`.env`) must be placed in
 the root of the monorepo with the following variables:
-`HOST`
-`DATABASE`
-`USER`
-`PASSWORD`
-`PORT`
+`DB_HOST`
+`DB_DATABASE`
+`DB_USER`
+`DB_PASSWORD`
+`DB_PORT`
 
 ## Scripts and Lifecycle
 `pnpm dev` is for the first purpose, in that it provides a temporary build.

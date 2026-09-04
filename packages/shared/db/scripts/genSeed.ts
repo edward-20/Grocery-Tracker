@@ -9,17 +9,17 @@ try {
   const { stdout } = await execFileAsync(
     'pg_dump',
     [
-        '-h', process.env.HOST!,
-        '-p', process.env.PORT!,
-        '-U', process.env.USER!,
-        '-d', process.env.DATABASE!,
+        '-h', process.env.DB_HOST!,
+        '-p', process.env.DB_PORT!,
+        '-U', process.env.DB_USER!,
+        '-d', process.env.DB_DATABASE!,
         '--data-only',
         '--inserts'
     ],
     {
         env: {
             ...process.env,
-            PGPASSWORD: process.env.PASSWORD
+            PGPASSWORD: process.env.DB_PASSWORD
         }
     }
   );

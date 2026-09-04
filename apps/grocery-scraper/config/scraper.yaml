@@ -1,9 +1,9 @@
 database:
   host: 'localhost'
   port: 5433
-  database: 'groceries'
-  user: 'experiment'
-  password: 'experiment'
+  database: 'groceries-dev'
+  user: 'dev'
+  password: 'dev'
 
 schedule:
   cron: "0 3 * * *"

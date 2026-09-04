@@ -1,4 +1,4 @@
-import { HOST, PORT, DATABASE, USER, PASSWORD, USE_MOCK_DATA } from '$env/static/private';
+import { DB_HOST, DB_PORT, DB_DATABASE, DB_USER, DB_PASSWORD, USE_MOCK_DATA } from '$env/static/private';
 import { json } from '@sveltejs/kit';
 import { mockNameSearch } from '$lib/server/mock-queries';
 import type { RequestEvent } from './$types';
@@ -11,11 +11,11 @@ export async function GET({ url } : RequestEvent ) { // return type this functio
 	}
 
 	const pool = makeConnectionPool({
-		host: HOST,
-		port: Number(PORT),
-		database: DATABASE,
-		user: USER,
-		password: PASSWORD
+		host: DB_HOST,
+		port: Number(DB_PORT),
+		database: DB_DATABASE,
+		user: DB_USER,
+		password: DB_PASSWORD
 	});
 	const productRepository: ProductRepository = new PostgresProductRepository(pool);
 

@@ -2,11 +2,11 @@ services:
   postgres:
     image: timescale/timescaledb:latest-pg17
     environment:
-      POSTGRES_DB: ${DATABASE}
-      POSTGRES_USER: ${USER}
-      POSTGRES_PASSWORD: ${PASSWORD}
+      POSTGRES_DB: ${DB_DATABASE}
+      POSTGRES_USER: ${DB_USER}
+      POSTGRES_PASSWORD: ${DB_PASSWORD}
     ports:
-      - "5432:${PORT}"
+      - "5432:${DB_PORT}"
     volumes:
       - postgres_data:/var/lib/postgresql/data
 

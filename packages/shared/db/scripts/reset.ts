@@ -3,15 +3,15 @@ import { readFile } from "fs/promises";
 import { readdir } from "fs/promises";
 
 try {
-  if (process.env.HOST === undefined || process.env.PORT === undefined || process.env.DATABASE === undefined || process.env.USER === undefined || process.env.PASSWORD === undefined) {
+  if (process.env.DB_HOST === undefined || process.env.DB_PORT === undefined || process.env.DB_DATABASE === undefined || process.env.DB_USER === undefined || process.env.DB_PASSWORD === undefined) {
     throw ".env file wasn't written"
   }
   const pool = new Pool({
-    host: process.env.HOST,
-    port: Number(process.env.PORT),
-    database: process.env.DATABASE,
-    user: process.env.USER,
-    password: process.env.PASSWORD
+    host: process.env.DB_HOST,
+    port: Number(process.env.DB_PORT),
+    database: process.env.DB_DATABASE,
+    user: process.env.DB_USER,
+    password: process.env.DB_PASSWORD
   });
 
 
