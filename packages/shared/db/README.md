@@ -35,7 +35,7 @@ with data. They are sourced from `seed/<last-migration-number>/<date>.sql` with
 the latest date being used by default.
 
 At this point you are free to make further data changes to the database, after
-which you can run `snapshot:data` which will capture that data into a sql file
+which you can run `gen:seed` which will capture that data into a sql file
 and save it as a seed file. **You must manually remove the INSERT into retailers
 from this seed file or change it to be idempotent. This is a kludge and will be
 fixed in later versions of this package.**
@@ -54,8 +54,8 @@ Files of the form `seed/<number>/<date>.sql` indicate that up to migration
 `<number>`, any of those seed files will work.
 
 # Future Plans
-* Implement `pnpm snapshot:schema` or `gen:migration` to automatically generate a
-sql file which captures the schema diff between the current live postgres container and
-the latest version (tools such as migra or sqitch may be useful)
+* Implement `gen:migration` to automatically generate a sql file which captures
+the schema diff between the current live postgres container and the latest
+version (tools such as migra or sqitch may be useful)
 * make `isInitialised` better implemented to match what the latest version
 states the schema is

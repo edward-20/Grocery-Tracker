@@ -18,7 +18,8 @@
     "start": "docker compose up -d",
     "stop": "docker compose down",
     "reset": "tsx scripts/reset.ts",
-    "seed": "tsx scripts/seed.ts"
+    "seed": "tsx scripts/seed.ts",
+    "gen:seed": "tsx scripts/genSeed.ts"
 
   },
   "keywords": [],
