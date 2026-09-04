@@ -15,11 +15,11 @@
     "test": "vitest run",
     "build": "tsup",
     "dev": "tsup --watch",
-    "start": "docker compose up -d",
+    "start": "docker compose --env-file ../../../.env up -d",
     "stop": "docker compose down",
-    "reset": "tsx scripts/reset.ts",
-    "seed": "tsx scripts/seed.ts",
-    "gen:seed": "tsx scripts/genSeed.ts"
+    "reset": "tsx --env-file=../../../.env scripts/reset.ts",
+    "seed": "tsx --env-file=../../../.env scripts/seed.ts",
+    "gen:seed": "tsx --env-file=../../../.env scripts/genSeed.ts"
 
   },
   "keywords": [],
