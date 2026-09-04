@@ -16,7 +16,7 @@
     "build": "tsup",
     "dev": "tsup --watch",
     "start": "docker compose --env-file ../../../.env up -d",
-    "stop": "docker compose down",
+    "stop": "docker compose --env-file ../../../.env down",
     "reset": "tsx --env-file=../../../.env scripts/reset.ts",
     "seed": "tsx --env-file=../../../.env scripts/seed.ts",
     "gen:seed": "tsx --env-file=../../../.env scripts/genSeed.ts"
