@@ -30,7 +30,7 @@ try {
     seedFiles = (await readdir(new URL(`../seed/baseSchema/`, import.meta.url))).sort();
   }
   const seedFileName = seedFiles.at(-1);
-  const seed = await readFile(new URL(`../seed/${lastMigrationNumber ?? "baseSchema"}/${seedFileName}`), "utf8");
+  const seed = await readFile(new URL(`../seed/${lastMigrationNumber ?? "baseSchema"}/${seedFileName}`, import.meta.url), "utf8");
   await client.query(seed);
 } catch (error) {
   console.error(error);

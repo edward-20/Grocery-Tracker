@@ -32,9 +32,9 @@ try {
   const lastMigrationNumber = match ? match[1] : undefined;
 
   if (lastMigrationNumber) {
-    await writeFile(new URL(`../seed/${lastMigrationNumber}/${(new Date()).getTime()}`), stdout);
+    await writeFile(new URL(`../seed/${lastMigrationNumber}/${(new Date()).getTime()}`, import.meta.url), stdout);
   } else {
-    await writeFile(new URL(`../seed/baseSchema/${(new Date()).getTime()}`), stdout);
+    await writeFile(new URL(`../seed/baseSchema/${(new Date()).getTime()}`, import.meta.url), stdout);
   }
 } catch (error) {
   console.error(error);
