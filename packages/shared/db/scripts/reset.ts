@@ -25,7 +25,7 @@ try {
   await client.query(baseSchema);
 
   // run the migrations
-  for (const file of (await readdir(new URL("../migrations/schema.sql", import.meta.url))).sort()) {
+  for (const file of (await readdir(new URL("../migrations/", import.meta.url))).sort()) {
     const migration = await readFile(new URL(`../migrations/${file}`, import.meta.url), "utf8");
     await client.query(migration);
   }
