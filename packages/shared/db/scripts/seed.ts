@@ -2,19 +2,20 @@ import { Pool } from "pg";
 import { readFile } from "fs/promises";
 import { readdir } from "fs/promises";
 
+const pool = new Pool({
+  host: process.env.DB_HOST,
+  port: Number(process.env.DB_PORT),
+  database: process.env.DB_DATABASE,
+  user: process.env.DB_USER,
+  password: process.env.DB_PASSWORD
+});
+
+const client = await pool.connect();
+
 try {
   if (process.env.DB_HOST === undefined || process.env.DB_PORT === undefined || process.env.DB_DATABASE === undefined || process.env.DB_USER === undefined || process.env.DB_PASSWORD === undefined) {
     throw ".env file wasn't written"
   }
-  const pool = new Pool({
-    host: process.env.DB_HOST,
-    port: Number(process.env.DB_PORT),
-    database: process.env.DB_DATABASE,
-    user: process.env.DB_USER,
-    password: process.env.DB_PASSWORD
-  });
-
-  const client = await pool.connect();
 
   // find out what the latest migration was
   const migrationFiles = await readdir(new URL("../migrations/schema.sql", import.meta.url));
@@ -34,4 +35,7 @@ try {
   await client.query(seed);
 } catch (error) {
   console.error(error);
+} finally {
+  client.release();
+  await pool.end();
 }
