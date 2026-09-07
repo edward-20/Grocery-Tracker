@@ -1,10 +1,12 @@
 import { RetailerScraper } from "./retailerScraper.js";
 import * as z from "zod";
-import { Browser, BrowserContext, chromium } from "playwright";
+import { Browser, BrowserContext } from "playwright";
+import { chromium } from "playwright-extra";
 import { sleep } from "../utils/time.js";
 import { Page } from "playwright";
 import { ScraperConfig } from "../config/types.js";
 import { Category, Product, Retailer, UnitOfMeasurement, ValueAtTime } from "@grocery-tracker/domain-model";
+import StealthPlugin from "puppeteer-extra-plugin-stealth"
 
 const ColesCategoriesPayload = z.object({
   pageProps: z.object({
@@ -80,6 +82,7 @@ export class ColesScraper extends RetailerScraper {
   static async create(config: ScraperConfig, browser?: Browser, createContext?: (browser: Browser) => Promise<BrowserContext>) {
     // if there's no browser supplied to the factory function
     if (!browser) {
+      chromium.use(StealthPlugin())
       browser = await chromium.launch({ headless: config.browser.headless });
     }
     let context: BrowserContext;
@@ -112,6 +115,9 @@ export class ColesScraper extends RetailerScraper {
       const contentsJSONParsed = JSON.parse(contents ?? "");
       const parsedContents = nextDataPayload.parse(contentsJSONParsed);
       return parsedContents.buildId;
+    } catch (error) {
+      console.error(error);
+      throw error;
     } finally {
       await page.close();
     }
