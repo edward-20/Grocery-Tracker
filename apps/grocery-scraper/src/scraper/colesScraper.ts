@@ -220,28 +220,32 @@ export class ColesScraper extends RetailerScraper {
   }
 
   async *scrapeProductsOfCategory(category: Category) : AsyncGenerator<Product> {
-    if (this.apiVersion === "") {
-      this.apiVersion = await this.getAPIVersion();
-    }
-    await sleep(5_000);
     const page = await this.context.newPage();
-    // go to the api to get product page data for the first page
-    for (const product of await this.getProductPageData(page, category)) {
-      yield product;
-    }
+    try {
+      if (this.apiVersion === "") {
+        this.apiVersion = await this.getAPIVersion();
+      }
+      await sleep(5_000);
+      // go to the api to get product page data for the first page
+      for (const product of await this.getProductPageData(page, category)) {
+        yield product;
+      }
 
-    let pageNumber = 2; 
-    while (true) {
-        await sleep(this.config.scrape.throttleBetweenPagesMs);
-        // get the api
-        const parsedProductsOfPage = await this.getProductPageData(page, category, pageNumber);
-        for (const product of parsedProductsOfPage) {
-          yield product;
-        }
-        if (parsedProductsOfPage.length === 0) {
-          return;
-        }
-        pageNumber++;
+      let pageNumber = 2; 
+      while (true) {
+          await sleep(this.config.scrape.throttleBetweenPagesMs);
+          // get the api
+          const parsedProductsOfPage = await this.getProductPageData(page, category, pageNumber);
+          for (const product of parsedProductsOfPage) {
+            yield product;
+          }
+          if (parsedProductsOfPage.length === 0) {
+            return;
+          }
+          pageNumber++;
+      }
+    } finally {
+      page.close();
     }
   }
 
