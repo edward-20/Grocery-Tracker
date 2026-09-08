@@ -346,18 +346,16 @@ export class PostgresProductRepository implements ProductRepository {
       const query = range ? `
         SELECT *
         FROM products
-        WHERE ${sqlConditions.map(sqlFilter => sqlFilter.whereClause).join(" AND ")}
+        ${sqlConditions.length === 0 ? "" : "WHERE"} ${sqlConditions.map(sqlFilter => sqlFilter.whereClause).join(" AND ")}
         OFFSET ${range[0]}
         LIMIT ${range[1]}
       ` : `
         SELECT *
         FROM products
-        WHERE ${sqlConditions.map(sqlFilter => sqlFilter.whereClause).join(" AND ")}
+        ${sqlConditions.length === 0 ? "" : "WHERE"} ${sqlConditions.map(sqlFilter => sqlFilter.whereClause).join(" AND ")}
         LIMIT 10
       `;
         
-      console.log(query);
-      console.log(sqlConditions.map(sqlFilter => sqlFilter.value));
       productsRes = await client.query(query, sqlConditions.map(sqlFilter => sqlFilter.value));
 
       const productRows = productsRes.rows;
@@ -397,13 +395,13 @@ export class PostgresProductRepository implements ProductRepository {
       const query = range ? `
         SELECT *
         FROM products
-        WHERE ${sqlConditions.map(sqlFilter => sqlFilter.whereClause).join(" AND ")}
+        ${sqlConditions.length === 0 ? "" : "WHERE"} ${sqlConditions.map(sqlFilter => sqlFilter.whereClause).join(" AND ")}
         OFFSET ${range[0]}
         LIMIT ${range[1]}
       ` : `
         SELECT *
         FROM products
-        WHERE ${sqlConditions.map(sqlFilter => sqlFilter.whereClause).join(" AND ")}
+        ${sqlConditions.length === 0 ? "" : "WHERE"} ${sqlConditions.map(sqlFilter => sqlFilter.whereClause).join(" AND ")}
         LIMIT 10
       `;
         
