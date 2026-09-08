@@ -49,8 +49,8 @@ type CategoryRow = {
 }
 
 type SqlFilter = {
-  columnName: "retailer_id" | "retailer_product_id" | "cross_retailer_id" | "gtin_format" | "name" | "brand" | "path" | "description" | "image_url",
-  value: any
+  whereClause: string,
+  value: [any]
 }
 
 export class PostgresProductRepository implements ProductRepository {
@@ -225,7 +225,8 @@ export class PostgresProductRepository implements ProductRepository {
     }
   }
 
-  private async filterToSqlCondition<K extends SearchableKeyOfProduct>(filter: {key: K, value: Product[K]}): Promise<SqlFilter[]> {
+  private async filtersToSqlConditions<K extends SearchableKeyOfProduct>(filters: {key: K, value: Product[K]}[], similar: boolean): Promise<SqlFilter[]> {
+    throw "Not implemented";
     if (filter.key === "retailer") {
       const client = await this.dbPool.connect();
       try {
@@ -234,10 +235,10 @@ export class PostgresProductRepository implements ProductRepository {
           throw new Error(`Couldn't find the retailer asked for from findBy: ${filter.value}`);
         }
         const retailer_id = retailerRes.rows[0].id;
-        return ([{
-          columnName: "retailer_id",
-          value: retailer_id
-        }]);
+        return [{
+          whereClause: `retailer_id = $1`,
+          value: [retailer_id]
+        }]
       } catch (error) {
         throw error;
       } finally {
@@ -282,35 +283,30 @@ export class PostgresProductRepository implements ProductRepository {
   async findBy<K extends SearchableKeyOfProduct>(filter: { key: K; value: Product[K]; }[] | { key: K; value: Product[K]; }, range?: Range): Promise<Product[]> {
     const client = await this.dbPool.connect();
     try {
-      let sqlConditions: SqlFilter[] = [];
-      if (Array.isArray(filter)) {
-        for (const f of filter) {
-          sqlConditions.push(...(await this.filterToSqlCondition(f)));
-        }
+      let arrayFilter;
+      if (!Array.isArray(filter)) {
+        arrayFilter = [filter];
       } else {
-        sqlConditions.push(...(await this.filterToSqlCondition(filter)));
+        arrayFilter = filter;
       }
 
-      let productsRes: QueryResult<any>;
+      let sqlConditions: SqlFilter[] = await this.filtersToSqlConditions(arrayFilter, false);
 
-      const conditions = sqlConditions.map(
-        (filter, i) => `"${filter.columnName}" = $${i + 1}`
-      );
-      const values = sqlConditions.map(filter => filter.value);
+      let productsRes: QueryResult<any>;
 
       const query = range ? `
         SELECT *
         FROM products
-        WHERE ${conditions.join(" AND ")}
+        WHERE ${sqlConditions.map(sqlFilter => sqlFilter.whereClause).join(" AND ")}
         OFFSET ${range[0]}
         LIMIT ${range[1]}
       ` : `
         SELECT *
         FROM products
-        WHERE ${conditions.join(" AND ")}
+        WHERE ${sqlConditions.map(sqlFilter => sqlFilter.whereClause).join(" AND ")}
       `;
         
-      productsRes = await client.query(query, values);
+      productsRes = await client.query(query, sqlConditions.map(sqlFilter => sqlFilter.value));
 
       const productRows = productsRes.rows;
       // for each product row find its latest value 
@@ -335,36 +331,30 @@ export class PostgresProductRepository implements ProductRepository {
   async findSimilarBy<K extends SearchableKeyOfProduct>(filter: { key: K; value: Product[K]; }[] | { key: K; value: Product[K]; }, range?: Range): Promise<Product[]> {
     const client = await this.dbPool.connect();
     try {
-      let sqlConditions: SqlFilter[] = [];
-      if (Array.isArray(filter)) {
-        for (const f of filter) {
-          sqlConditions.push(...(await this.filterToSqlCondition(f)));
-        }
+      let arrayFilter;
+      if (!Array.isArray(filter)) {
+        arrayFilter = [filter];
       } else {
-        sqlConditions.push(...(await this.filterToSqlCondition(filter)));
+        arrayFilter = filter;
       }
 
-      let productsRes: QueryResult<any>;
+      let sqlConditions: SqlFilter[] = await this.filtersToSqlConditions(arrayFilter, true);
 
-      // if its a string can do ilike otherwise no
-      const conditions = sqlConditions.map(
-        (filter, i) => `"${filter.columnName}" ILIKE $${i + 1}`
-      );
-      const values = sqlConditions.map(filter => filter.value);
+      let productsRes: QueryResult<any>;
 
       const query = range ? `
         SELECT *
         FROM products
-        WHERE ${conditions.join(" AND ")}
+        WHERE ${sqlConditions.map(sqlFilter => sqlFilter.whereClause).join(" AND ")}
         OFFSET ${range[0]}
         LIMIT ${range[1]}
       ` : `
         SELECT *
         FROM products
-        WHERE ${conditions.join(" AND ")}
+        WHERE ${sqlConditions.map(sqlFilter => sqlFilter.whereClause).join(" AND ")}
       `;
         
-      productsRes = await client.query(query, values);
+      productsRes = await client.query(query, sqlConditions.map(sqlFilter => sqlFilter.value));
 
       const productRows = productsRes.rows;
       // for each product row find its latest value 
@@ -384,7 +374,6 @@ export class PostgresProductRepository implements ProductRepository {
     } finally {
       client.release();
     }
-
   }
 
   async findWithPriceHistory(productId: number, timeRange?: Range): Promise<{ product: Product; history: ValueAtTime[]; }> {
