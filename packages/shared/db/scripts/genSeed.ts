@@ -3,6 +3,7 @@ import { promisify } from 'node:util';
 import { writeFile } from 'node:fs/promises';
 import { readdir } from 'node:fs/promises';
 
+// uses docker compose to dump a psql file
 try {
   const execFileAsync = promisify(execFile);
 

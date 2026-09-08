@@ -1,16 +1,12 @@
-import { Pool } from "pg";
-import { readFile } from "fs/promises";
+import { readFile } from "node:fs/promises";
 import { readdir } from "fs/promises";
+import { execFile } from 'node:child_process';
+import { promisify } from 'node:util';
+import { spawn } from "node:child_process";
 
-const pool = new Pool({
-  host: process.env.DB_HOST,
-  port: Number(process.env.DB_PORT),
-  database: process.env.DB_DATABASE,
-  user: process.env.DB_USER,
-  password: process.env.DB_PASSWORD
-});
 
-const client = await pool.connect();
+// uses docker compose to run psql commands from seed file
+const execFileAsync = promisify(execFile);
 
 try {
   if (process.env.DB_HOST === undefined || process.env.DB_PORT === undefined || process.env.DB_DATABASE === undefined || process.env.DB_USER === undefined || process.env.DB_PASSWORD === undefined) {
@@ -18,7 +14,7 @@ try {
   }
 
   // find out what the latest migration was
-  const migrationFiles = await readdir(new URL("../migrations/schema.sql", import.meta.url));
+  const migrationFiles = await readdir(new URL("../migrations/", import.meta.url));
   const lastMigrationFile = migrationFiles.sort().at(-1);
 
   const match = lastMigrationFile?.match(/^(\d+)\.migration\.sql$/);
@@ -31,11 +27,36 @@ try {
     seedFiles = (await readdir(new URL(`../seed/baseSchema/`, import.meta.url))).sort();
   }
   const seedFileName = seedFiles.at(-1);
-  const seed = await readFile(new URL(`../seed/${lastMigrationNumber ?? "baseSchema"}/${seedFileName}`, import.meta.url), "utf8");
-  await client.query(seed);
+
+  const seed = await readFile(
+    new URL(`../seed/${lastMigrationNumber ?? "baseSchema"}/${seedFileName}`, import.meta.url),
+    'utf8'
+  );
+
+  const child = spawn(
+    'docker',
+    [
+      'compose',
+      '-f', './compose.yaml',
+      'exec',
+      '-T',
+      'postgres',
+      'psql',
+      '-U', process.env.DB_USER!,
+      '-d', process.env.DB_DATABASE!,
+    ],
+    {
+      stdio: ['pipe', 'pipe', 'pipe'],
+      env: {
+        ...process.env,
+        PGPASSWORD: process.env.DB_PASSWORD,
+      },
+    }
+  );
+
+  child.stdin.write(seed);
+  child.stdin.end();
+
 } catch (error) {
   console.error(error);
-} finally {
-  client.release();
-  await pool.end();
 }
