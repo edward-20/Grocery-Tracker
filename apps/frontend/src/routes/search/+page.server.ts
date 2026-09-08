@@ -10,7 +10,7 @@ export type SearchPageLoadResponse =
 	| { type: 'success'; items: Product[]; totalPages: number };
 
 export const load: PageServerLoad = async ({ url }): Promise<SearchPageLoadResponse> => {
-	if (USE_MOCK_DATA) {
+	if (USE_MOCK_DATA === "true") {
 		return mockProductSearch(url);
 	}
 	// using the name search, id search and the page use the repository methods
@@ -28,7 +28,7 @@ export const load: PageServerLoad = async ({ url }): Promise<SearchPageLoadRespo
 		});
 		const productRepository: ProductRepository = new PostgresProductRepository(pool);
 
-		const products = await productRepository.findBy([
+		const products = await productRepository.findSimilarBy([
 			{
 				key: "name",
 				value: nameSearch ?? ""
@@ -37,12 +37,23 @@ export const load: PageServerLoad = async ({ url }): Promise<SearchPageLoadRespo
 				key: "retailerProductId",
 				value: idSearch ?? ""
 			}
-		])
+		], [(page - 1) * 20, page * 20]);
 
-		const totalPages = Math.ceil(products.length / 20);
+		const allProducts = await productRepository.findSimilarBy([
+			{
+				key: "name",
+				value: nameSearch ?? ""
+			},
+			{
+				key: "retailerProductId",
+				value: idSearch ?? ""
+			}
+		], [(page - 1) * 20, page * 20]);
+
+		const totalPages = Math.ceil(allProducts.length / 20);
 		return {
 			type: "success",
-			items: products.slice((page - 1) * 20, page * 20),
+			items: products,
 			totalPages
 		}
 	} catch (error) {

@@ -353,7 +353,6 @@ export class PostgresProductRepository implements ProductRepository {
         SELECT *
         FROM products
         ${sqlConditions.length === 0 ? "" : "WHERE"} ${sqlConditions.map(sqlFilter => sqlFilter.whereClause).join(" AND ")}
-        LIMIT 10
       `;
         
       productsRes = await client.query(query, sqlConditions.map(sqlFilter => sqlFilter.value));
@@ -402,7 +401,6 @@ export class PostgresProductRepository implements ProductRepository {
         SELECT *
         FROM products
         ${sqlConditions.length === 0 ? "" : "WHERE"} ${sqlConditions.map(sqlFilter => sqlFilter.whereClause).join(" AND ")}
-        LIMIT 10
       `;
         
       console.log(query);
