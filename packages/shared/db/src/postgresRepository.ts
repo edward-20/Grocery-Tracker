@@ -50,7 +50,7 @@ type CategoryRow = {
 
 type SqlFilter = {
   whereClause: string,
-  value: [any]
+  value: any
 }
 
 export class PostgresProductRepository implements ProductRepository {
@@ -226,58 +226,107 @@ export class PostgresProductRepository implements ProductRepository {
   }
 
   private async filtersToSqlConditions<K extends SearchableKeyOfProduct>(filters: {key: K, value: Product[K]}[], similar: boolean): Promise<SqlFilter[]> {
-    throw "Not implemented";
-    if (filter.key === "retailer") {
-      const client = await this.dbPool.connect();
-      try {
-        const retailerRes = await client.query("SELECT id FROM retailers WHERE name = $1", [filter.value]);
-        if (retailerRes.rowCount !== 1) {
-          throw new Error(`Couldn't find the retailer asked for from findBy: ${filter.value}`);
-        }
-        const retailer_id = retailerRes.rows[0].id;
-        return [{
-          whereClause: `retailer_id = $1`,
-          value: [retailer_id]
-        }]
-      } catch (error) {
-        throw error;
-      } finally {
-        client.release();
-      }
-    } else if (filter.key === "crossProductIdentity") {
-      if (isCrossProductIdentity(filter.value)) {
-        return ([
-          {
-            columnName: "gtin_format",
-            value: filter.value.gtinFormat
-          },
-          {
-            columnName: "cross_retailer_id",
-            value: filter.value.crossRetailerId
+    const sqlFilters: SqlFilter[] = [];
+
+    let i = 1;
+    for (const filter of filters) {
+      // Retailer
+      if (filter.key === "retailer") {
+        const client = await this.dbPool.connect();
+        try {
+          const retailerRes = await client.query("SELECT id FROM retailers WHERE name = $1", [filter.value]);
+          if (retailerRes.rowCount !== 1) {
+            throw new Error(`Couldn't find the retailer asked for from findBy: ${filter.value}`);
           }
-        ]);
-      } else {
-        throw `Provided key: crossProductIdentity but value: ${filter.value} not CrossProductIdentity to ProductRepository findBy`;
+          const retailer_id = retailerRes.rows[0].id;
+          sqlFilters.push({
+            whereClause: `retailer_id = \$${i}`,
+            value: retailer_id
+          });
+          i++;
+        } catch (error) {
+          throw error;
+        } finally {
+          client.release();
+        }
+      } 
+      // Cross Product Identity
+      else if (filter.key === "crossProductIdentity") {
+        if (isCrossProductIdentity(filter.value)) {
+          const similarSqlFilters = [
+            {
+              whereClause: `gtin_format = \$${i}`,
+              value: filter.value.gtinFormat
+            },
+            {
+              whereClause: `cross_retailer_id ILIKE \$${i + 1}`,
+              value: `%${filter.value.crossRetailerId}%`
+            }
+          ];
+          const notSimilarSqlFilters = [
+            {
+              whereClause: `gtin_format = \$${i}`,
+              value: filter.value.gtinFormat
+            },
+            {
+              whereClause: `cross_retailer_id = \$${i + 1}`,
+              value: filter.value.crossRetailerId
+            }
+          ];
+          if (similar) sqlFilters.push(...similarSqlFilters);
+          else sqlFilters.push(...notSimilarSqlFilters);
+          i += 2;
+        } else {
+          throw `Provided key: crossProductIdentity but value: ${filter.value} not CrossProductIdentity to ProductRepository findBy`;
+        }
       }
-    } else if (filter.key === "imageUrl") {
-      return ([{
-        columnName: "image_url",
-        value: filter.value
-      }]);
-    } else if (filter.key === "retailerProductId") {
-      return ([{
-        columnName: "retailer_product_id",
-        value: filter.value
-      }]);
-    } else {
-      if (filter.key !== "brand" && filter.key !== "name" && filter.key !== "path" && filter.key !== "description") {
-        throw `Provided key: ${filter.key} doesn't fit into searchable product key constraints`
+      // Image Url
+      else if (filter.key === "imageUrl") {
+        const similarSqlFilters = {
+          whereClause: `image_url ILIKE \$${i}`,
+          value: `%${filter.value}%`
+        };
+        const notSimilarSqlFilters = {
+          whereClause: `image_url = \$${i}`,
+          value: filter.value
+        };
+        if (similar) sqlFilters.push(similarSqlFilters);
+        else sqlFilters.push(notSimilarSqlFilters);
+        i++;
       }
-      return ([{
-        columnName: filter.key,
-        value: filter.value
-      }])
+      // Retailer Product Id
+      else if (filter.key === "retailerProductId") {
+        const similarSqlFilters = {
+          whereClause: `retailer_product_id ILIKE \$${i}`,
+          value: `%${filter.value}%`
+        };
+        const notSimilarSqlFilters = {
+          whereClause: `retailer_product_id = ${i}`,
+          value: filter.value
+        };
+        if (similar) sqlFilters.push(similarSqlFilters);
+        else sqlFilters.push(notSimilarSqlFilters);
+        i++;
+      } 
+      // Any other property
+      else {
+        if (filter.key !== "brand" && filter.key !== "name" && filter.key !== "path" && filter.key !== "description") {
+          throw `Provided key: ${filter.key} doesn't fit into searchable product key constraints`
+        }
+        const similarSqlFilters = {
+          whereClause: `${filter.key} ILIKE \$${i}`,
+          value: `%${filter.value}%`
+        };
+        const notSimilarSqlFilters = {
+          whereClause: `${filter.key} = \$${i}`,
+          value: filter.value
+        };
+        if (similar) sqlFilters.push(similarSqlFilters);
+        else sqlFilters.push(notSimilarSqlFilters);
+        i++;
+      }
     }
+    return sqlFilters;
   }
 
   async findBy<K extends SearchableKeyOfProduct>(filter: { key: K; value: Product[K]; }[] | { key: K; value: Product[K]; }, range?: Range): Promise<Product[]> {
@@ -304,8 +353,11 @@ export class PostgresProductRepository implements ProductRepository {
         SELECT *
         FROM products
         WHERE ${sqlConditions.map(sqlFilter => sqlFilter.whereClause).join(" AND ")}
+        LIMIT 10
       `;
         
+      console.log(query);
+      console.log(sqlConditions.map(sqlFilter => sqlFilter.value));
       productsRes = await client.query(query, sqlConditions.map(sqlFilter => sqlFilter.value));
 
       const productRows = productsRes.rows;
@@ -352,8 +404,11 @@ export class PostgresProductRepository implements ProductRepository {
         SELECT *
         FROM products
         WHERE ${sqlConditions.map(sqlFilter => sqlFilter.whereClause).join(" AND ")}
+        LIMIT 10
       `;
         
+      console.log(query);
+      console.log(sqlConditions.map(sqlFilter => sqlFilter.value));
       productsRes = await client.query(query, sqlConditions.map(sqlFilter => sqlFilter.value));
 
       const productRows = productsRes.rows;
@@ -370,6 +425,7 @@ export class PostgresProductRepository implements ProductRepository {
         return await this.productRowToProductEntity(productRow, valueRows[i]);
       }));
     } catch (error) {
+      console.error(error);
       throw new Error("Failed to find products", {cause: error});
     } finally {
       client.release();
