@@ -47,6 +47,25 @@ export interface ProductRepository {
     product: Product,
     history: ValueAtTime[]
   }>;
+
+  countBy<K extends SearchableKeyOfProduct>(
+    filter: {
+      key: K, 
+      value: Product[K]
+    }[] | {
+      key: K,
+      value: Product[K]
+    }
+  ): Promise<number>;
+  countSimilarBy<K extends SearchableKeyOfProduct>(
+    filter: {
+      key: K, 
+      value: Product[K]
+    }[] | {
+      key: K,
+      value: Product[K]
+    }
+  ): Promise<number>;
 };
 
 export interface CategoryRepository {

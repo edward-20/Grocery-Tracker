@@ -460,6 +460,68 @@ export class PostgresProductRepository implements ProductRepository {
       client.release();
     }
   }
+
+  async countBy<K extends SearchableKeyOfProduct>(filter: { key: K; value: Product[K]; }[] | { key: K; value: Product[K]; }): Promise<number> {
+   const client = await this.dbPool.connect();
+    try {
+      let arrayFilter;
+      if (!Array.isArray(filter)) {
+        arrayFilter = [filter];
+      } else {
+        arrayFilter = filter;
+      }
+
+      let sqlConditions: SqlFilter[] = await this.filtersToSqlConditions(arrayFilter, false);
+
+      let productsRes: QueryResult<any>;
+
+      const query = `
+        SELECT COUNT(*)
+        FROM products
+        ${sqlConditions.length === 0 ? "" : "WHERE"} ${sqlConditions.map(sqlFilter => sqlFilter.whereClause).join(" AND ")}`;
+        
+      productsRes = await client.query(query, sqlConditions.map(sqlFilter => sqlFilter.value));
+
+      return productsRes.rows[0].count;
+    } catch (error) {
+      throw new Error("Failed to find products", {cause: error});
+    } finally {
+      client.release();
+    }
+
+  }
+
+  async countSimilarBy<K extends SearchableKeyOfProduct>(filter: { key: K; value: Product[K]; }[] | { key: K; value: Product[K]; }): Promise<number> {
+    const client = await this.dbPool.connect();
+    try {
+      let arrayFilter;
+      if (!Array.isArray(filter)) {
+        arrayFilter = [filter];
+      } else {
+        arrayFilter = filter;
+      }
+
+      let sqlConditions: SqlFilter[] = await this.filtersToSqlConditions(arrayFilter, true);
+
+      let productsRes: QueryResult<any>;
+
+      const query = `
+        SELECT COUNT(*)
+        FROM products
+        ${sqlConditions.length === 0 ? "" : "WHERE"} ${sqlConditions.map(sqlFilter => sqlFilter.whereClause).join(" AND ")}`;
+        
+      console.log(query);
+      console.log(sqlConditions.map(sqlFilter => sqlFilter.value));
+      productsRes = await client.query(query, sqlConditions.map(sqlFilter => sqlFilter.value));
+
+      return productsRes.rows[0].count;
+    } catch (error) {
+      console.error(error);
+      throw new Error("Failed to find products", {cause: error});
+    } finally {
+      client.release();
+    }
+  }
 }
 
 export class PostgresCategoryRepository implements CategoryRepository {
