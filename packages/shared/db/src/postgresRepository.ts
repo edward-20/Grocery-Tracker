@@ -348,7 +348,7 @@ export class PostgresProductRepository implements ProductRepository {
         FROM products
         ${sqlConditions.length === 0 ? "" : "WHERE"} ${sqlConditions.map(sqlFilter => sqlFilter.whereClause).join(" AND ")}
         OFFSET ${range[0]}
-        LIMIT ${range[1]}
+        LIMIT ${range[1] - range[0] + 1}
       ` : `
         SELECT *
         FROM products
@@ -396,7 +396,7 @@ export class PostgresProductRepository implements ProductRepository {
         FROM products
         ${sqlConditions.length === 0 ? "" : "WHERE"} ${sqlConditions.map(sqlFilter => sqlFilter.whereClause).join(" AND ")}
         OFFSET ${range[0]}
-        LIMIT ${range[1]}
+        LIMIT ${range[1] - range[0] + 1}
       ` : `
         SELECT *
         FROM products

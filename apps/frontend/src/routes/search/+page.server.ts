@@ -37,9 +37,9 @@ export const load: PageServerLoad = async ({ url }): Promise<SearchPageLoadRespo
 				key: "retailerProductId",
 				value: idSearch ?? ""
 			}
-		], [(page - 1) * 20, page * 20]);
+		], [(page - 1) * 20, page * 20 - 1]);
 
-		const allProducts = await productRepository.findSimilarBy([
+		const totalProductCount = await productRepository.countSimilarBy([
 			{
 				key: "name",
 				value: nameSearch ?? ""
@@ -48,9 +48,12 @@ export const load: PageServerLoad = async ({ url }): Promise<SearchPageLoadRespo
 				key: "retailerProductId",
 				value: idSearch ?? ""
 			}
-		], [(page - 1) * 20, page * 20]);
+		]);
 
-		const totalPages = Math.ceil(allProducts.length / 20);
+		console.log(totalProductCount);
+		const totalPages = Math.ceil(totalProductCount / 20);
+		console.log(`total pages: ${totalPages}, total product count: ${totalProductCount}`);
+
 		return {
 			type: "success",
 			items: products,
