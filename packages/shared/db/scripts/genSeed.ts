@@ -18,7 +18,6 @@ try {
       '-U', process.env.DB_USER!,
       '-d', process.env.DB_DATABASE!,
       '--data-only',
-      '--inserts'
     ],
     {
       maxBuffer: 500 * 1024 * 1024
