@@ -428,16 +428,19 @@ export class PostgresProductRepository implements ProductRepository {
     }
   }
 
-  async findWithPriceHistory(productId: number, timeRange?: Range): Promise<{ product: Product; history: ValueAtTime[]; }> {
+  async findWithPriceHistory(retailer: Retailer["name"], retailerProductId: Product["retailerProductId"], timeRange?: Range): Promise<{ product: Product; history: ValueAtTime[]; }> {
     const client = await this.dbPool.connect();
     try {
       let productRes: QueryResult<any>;
         
-      productRes = await client.query(`SELECT * FROM product WHERE id = $1`, [productId]);
+      const retailerId = (await client.query("SELECT id FROM retailers WHERE name = $1;", [retailer])).rows[0].id;
+
+      productRes = await client.query(`SELECT * FROM product WHERE retailer_id = $1 AND retailer_product_id = $2`, [retailerId, retailerProductId]);
       if (productRes.rowCount !== 1) {
         throw new Error("Unexpectedly returned more than one product");
       }
       const productRow = productRes.rows[0];
+      const productId = productRow.id;
       // find all the value rows within the time range for the product
       const valueAtTimesRes = timeRange ? 
         await client.query(`SELECT * FROM value_at_times WHERE product_id = $1 WHERE TIME BETWEEN $2 AND $3 ORDER BY time DESC`, [productId, timeRange[0], timeRange[1]]) 

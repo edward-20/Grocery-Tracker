@@ -43,7 +43,7 @@ export interface ProductRepository {
     range?: Range
   ): Promise<Product[]>;
 
-  findWithPriceHistory(productId: number, timeRange?: Range): Promise<{
+  findWithPriceHistory(retailer: Retailer["name"], retailerProductId: Product["retailerProductId"], timeRange?: Range): Promise<{
     product: Product,
     history: ValueAtTime[]
   }>;
