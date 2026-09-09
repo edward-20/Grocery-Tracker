@@ -116,6 +116,7 @@ export class WoolworthsScraper extends RetailerScraper {
       let productPageResponse = this.getFulfilledResponse(page);
 
       await page.goto(`${this.retailerUrl}${category.path}`);
+      console.log(`${this.retailerUrl}${category.path}`);
 
       let response = await productPageResponse;
       let rawData = await response?.json();
@@ -139,6 +140,9 @@ export class WoolworthsScraper extends RetailerScraper {
         await sleep(3000);
         await nextLink.click();
         await sleep(5000);
+        await page.waitForLoadState('domcontentloaded');
+        console.log("New URL:", page.url());
+
 
         // This resolves when the click triggers the API request
         response = await productPageResponse;
