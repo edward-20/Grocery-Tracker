@@ -18,6 +18,8 @@ try {
       '-U', process.env.DB_USER!,
       '-d', process.env.DB_DATABASE!,
       '--data-only',
+      '--exclude-schema=_timescaledb_catalog',
+      '--exclude-schema=_timescaledb_internal'
     ],
     {
       maxBuffer: 500 * 1024 * 1024
