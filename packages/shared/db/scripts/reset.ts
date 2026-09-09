@@ -30,6 +30,10 @@ try {
   console.log("Running base schema...")
   await client.query(baseSchema);
   console.log("Base schema initialisation completed")
+  console.log("Seeding retailers...")
+  const retailerSeed = await readFile(new URL("../src/seedRetailers.sql", import.meta.url), "utf8");
+  await client.query(retailerSeed);
+  console.log("Seeded retailers")
 
   // run the migrations
   const migrationsUrl = new URL("../migrations/", import.meta.url);

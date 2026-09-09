@@ -4,14 +4,20 @@ import { readFile } from "node:fs/promises";
 export async function initDbSchema(databaseConfig: DatabaseConfig) {
   const pool = makeConnectionPool(databaseConfig);
 
-  // take the schema.sql to initialise
   const schema = await readFile(
     new URL("./schema.sql", import.meta.url),
     'utf-8'
   );
+
+  const retailerSeed = await readFile(
+    new URL("./seedRetailers.sql", import.meta.url),
+    'utf-8'
+  );
+
   const client = await pool.connect();
   try {
     await client.query(schema);
+    await client.query(retailerSeed);
   } catch(error) {
     console.error(error);
   } finally {

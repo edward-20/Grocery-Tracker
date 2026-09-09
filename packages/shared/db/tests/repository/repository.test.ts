@@ -28,12 +28,16 @@ beforeAll(async () => {
     password: container.getPassword(),
   });
 
-  // take the schema.sql to initialise
   const sql = await readFile(
     new URL("../../src/schema.sql", import.meta.url),
     'utf-8'
   );
+  const retailerSeed = await readFile(
+    new URL("../../src/seedRetailers.sql", import.meta.url),
+    'utf-8'
+  );
   await pool.query(sql);
+  await pool.query(retailerSeed);
 
   pool.on('error', (err) => {
     console.error('Unexpected error on idle client', err);
