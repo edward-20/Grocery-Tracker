@@ -6,6 +6,4 @@ import { loadEnv } from 'vite';
 
 const env = loadEnv('development', '../../', '');
 
-console.log(env);
-
 export default defineConfig({ plugins: [tailwindcss(), sveltekit()], envDir: '../../' });
