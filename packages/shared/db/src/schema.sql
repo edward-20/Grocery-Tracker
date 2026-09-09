@@ -14,7 +14,6 @@ CREATE TABLE IF NOT EXISTS retailers (
   name TEXT NOT NULL UNIQUE,
   url TEXT NOT NULL UNIQUE
 );
-INSERT INTO retailers (name, url) VALUES ('Woolworths', 'https://www.woolworths.com.au'), ('Coles', 'https://www.coles.com.au');
 
 CREATE TABLE IF NOT EXISTS categories (
   -- natural keys and surrogate id
