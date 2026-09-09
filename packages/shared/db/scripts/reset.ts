@@ -11,19 +11,19 @@ const pool = new Pool({
   password: process.env.DB_PASSWORD
 });
 
+if (process.env.DB_HOST === undefined || process.env.DB_PORT === undefined || process.env.DB_DATABASE === undefined || process.env.DB_USER === undefined || process.env.DB_PASSWORD === undefined) {
+  throw ".env file wasn't written"
+}
 const client = await pool.connect();
 try {
-  if (process.env.DB_HOST === undefined || process.env.DB_PORT === undefined || process.env.DB_DATABASE === undefined || process.env.DB_USER === undefined || process.env.DB_PASSWORD === undefined) {
-    throw ".env file wasn't written"
-  }
 
   // remove all current schemas and data
-  console.log("Dropping current schemas...");
-  await client.query("DROP SCHEMA public CASCADE;");
-  console.log("Dropped");
-  console.log("Creating new public schema...");
-  await client.query("CREATE SCHEMA public;");
-  console.log("Created public schema");
+  // console.log("Dropping current schemas...");
+  // await client.query("DROP SCHEMA public CASCADE;");
+  // console.log("Dropped");
+  // console.log("Creating new public schema...");
+  // await client.query("CREATE SCHEMA public;");
+  // console.log("Created public schema");
 
   // run the schema
   const baseSchema = await readFile(new URL("../src/schema.sql", import.meta.url), "utf8");
@@ -46,6 +46,7 @@ try {
 
 } catch (error) {
   console.error(error);
+  process.exitCode = 1;
 } finally {
   client.release();
   await pool.end();

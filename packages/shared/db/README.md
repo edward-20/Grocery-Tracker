@@ -20,15 +20,18 @@ the root of the monorepo with the following variables:
 ## Scripts and Lifecycle
 `pnpm dev` is for the first purpose, in that it provides a temporary build.
 
-`pnpm start`, `pnpm stop`, `pnpm reset`, `pnpm seed`, `pnpm snapshot` all
-pertain to the second purpose.
+`pnpm start`, `pnpm stop`, `pnpm destroy`, `pnpm reset`, `pnpm seed`, `pnpm
+gen:seed`, `pnpm gen:migration` all pertain to the second purpose.
 
-`start` starts a timescaledb enabled postgres container. it will be the same
-given you provide the same `.env` at the root.
+`start` starts a timescaledb enabled postgres container. It will be the same
+given you provide the same `.env` at the root. It will use the last saved
+volume.
 
-`reset` removes all existing schemas and data, and resets the schema to the last
-written migration (in our case the last written migration is pretty much the
-latest version of the database).
+`destroy` removes the volume and stops the container.
+
+`start` again.
+
+`reset` initialises the volume with the base schema.
 
 `seed` finds and uses sql files that populate the latest version database schema
 with data. They are sourced from `seed/<last-migration-number>/<date>.sql` with
@@ -36,9 +39,7 @@ the latest date being used by default.
 
 At this point you are free to make further data changes to the database, after
 which you can run `gen:seed` which will capture that data into a sql file
-and save it as a seed file. **You must manually remove the INSERT into retailers
-from this seed file or change it to be idempotent. This is a kludge and will be
-fixed in later versions of this package.**
+and save it as a seed file.
 
 `stop` will stop the postgres container. The volume will be the same and so
 if you didn't write a migration file that represents the latest change to the
