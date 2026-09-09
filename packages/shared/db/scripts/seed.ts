@@ -1,13 +1,9 @@
 import { readFile } from "node:fs/promises";
 import { readdir } from "fs/promises";
-import { execFile } from 'node:child_process';
-import { promisify } from 'node:util';
 import { spawn } from "node:child_process";
 
 
 // uses docker compose to run psql commands from seed file
-const execFileAsync = promisify(execFile);
-
 try {
   if (process.env.DB_HOST === undefined || process.env.DB_PORT === undefined || process.env.DB_DATABASE === undefined || process.env.DB_USER === undefined || process.env.DB_PASSWORD === undefined) {
     throw ".env file wasn't written"
@@ -53,6 +49,14 @@ try {
       },
     }
   );
+
+  child.stdout.on('data', data => {
+    process.stdout.write(data);
+  });
+
+  child.stderr.on('data', data => {
+    process.stderr.write(data);
+  });
 
   child.stdin.write(seed);
   child.stdin.end();
