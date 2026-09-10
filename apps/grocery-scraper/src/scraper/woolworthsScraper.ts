@@ -225,7 +225,7 @@ export class WoolworthsScraper extends RetailerScraper {
             let unitPriceUnitMatch = product.CupMeasure.match(/^([0-9]+)([\s]*)([A-Za-z]+)/);
 
             let unitPriceQuantity = unitPriceQuantityMatch === null ? 0 : Number(unitPriceQuantityMatch[0]);
-            let unitPriceUnit: Unit = this.parseRawUnit(unitPriceUnitMatch === null ? "" : unitPriceUnitMatch[3]) ;
+            let unitPriceUnit: UnitOfMeasurement = this.parseRawUnit(unitPriceUnitMatch === null ? "" : unitPriceUnitMatch[3]) ;
 
 
             result = new Product({
