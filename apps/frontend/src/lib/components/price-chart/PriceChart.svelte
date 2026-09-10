@@ -2,29 +2,35 @@
   Client-only line chart: Coles vs Woolworths price (¢) over time.
 -->
 <script lang="ts">
-	import { onMount, tick } from 'svelte';
+	import { onMount } from 'svelte';
 	import { browser } from '$app/environment';
-	import { influxTimeToUnixMs } from '$lib/influx-time';
-	import type { PricePoint } from '$lib/types/price-point';
+	import type { PriceHistoryPageLoadResponse } from '../../../routes/product/[id]/proxy+page.server';
 	import type { Chart as ChartType } from 'chart.js';
+	import type { ValueAtTime } from '@grocery-tracker/domain-model';
 
-	let { points }: { points: PricePoint[] } = $props();
+	let {points}: {
+		points: Extract<
+			PriceHistoryPageLoadResponse, 
+		{type: 'success' }
+		>["points"]
+	} = $props();
 
 	let canvas: HTMLCanvasElement | undefined = $state();
 
-	function toXY(rows: PricePoint[]) {
-		return rows
-			.map((p) => {
-				const t = influxTimeToUnixMs(p.time);
-				if (t == null) return null;
-				return { x: t, y: p.cents };
+	function toXY(valueAtTime: ValueAtTime[]): { x: number, y: number }[] {
+		return valueAtTime
+			.map((vat) => {
+				return { x: vat.time.getTime(), y: vat.price }; // this needs to
+				// change to unit price depending on whether unit price exists
 			})
-			.filter((v): v is { x: number; y: number } => v !== null)
 			.sort((a, b) => a.x - b.x);
 	}
 
 	onMount(() => {
 		if (!browser || !canvas) return;
+
+		// want to return a page that shows 500 internal error (returns nothing
+		// at the moment)
 
 		let chart: ChartType | null = null;
 
@@ -35,31 +41,18 @@
 			]);
 			Chart.register(...registerables);
 
-			const coles = toXY(points.filter((p) => p.store === 'Coles'));
-			const wool = toXY(points.filter((p) => p.store === 'Woolworths'));
-
 			chart?.destroy();
 			chart = new Chart(canvas!, {
 				type: 'line',
 				data: {
 					datasets: [
 						{
-							label: 'Coles (¢)',
-							data: coles,
-							borderColor: 'rgb(218, 41, 28)',
-							backgroundColor: 'rgba(218, 41, 28, 0.08)',
-							fill: false,
-							tension: 0.2,
-							spanGaps: true
-						},
-						{
-							label: 'Woolworths (¢)',
-							data: wool,
+							label: 'Price (¢)',
+							data: toXY(points),
 							borderColor: 'rgb(29, 120, 63)',
 							backgroundColor: 'rgba(29, 120, 63, 0.08)',
 							fill: false,
 							tension: 0.2,
-							spanGaps: true
 						}
 					]
 				},

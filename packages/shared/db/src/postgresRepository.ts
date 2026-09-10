@@ -435,7 +435,7 @@ export class PostgresProductRepository implements ProductRepository {
         
       const retailerId = (await client.query("SELECT id FROM retailers WHERE name = $1;", [retailer])).rows[0].id;
 
-      productRes = await client.query(`SELECT * FROM product WHERE retailer_id = $1 AND retailer_product_id = $2`, [retailerId, retailerProductId]);
+      productRes = await client.query(`SELECT * FROM products WHERE retailer_id = $1 AND retailer_product_id = $2`, [retailerId, retailerProductId]);
       if (productRes.rowCount !== 1) {
         throw new Error("Unexpectedly returned more than one product");
       }
@@ -458,6 +458,7 @@ export class PostgresProductRepository implements ProductRepository {
         history: valueAtTimesRes.rows.map(valueAtTimeRow => this.valueAtTimeRowToValueAtTimeEntity(valueAtTimeRow))
       }
     } catch (error) {
+      console.error(error);
       throw new Error("Failed to find products", {cause: error});
     } finally {
       client.release();
