@@ -39,6 +39,10 @@ To recreate this project with the same configuration:
 
 ## Developing
 
+The frontend requires a PostgreSQL connection. Create a root `.env` file with
+`DB_HOST`, `DB_PORT`, `DB_DATABASE`, `DB_USER`, and `DB_PASSWORD` before
+starting the app.
+
 Once you've created a project and installed dependencies with `npm install` (or `pnpm install` or `yarn`), start a development server:
 
 ```

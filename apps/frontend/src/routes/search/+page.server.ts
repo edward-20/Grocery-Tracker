@@ -1,8 +1,7 @@
-import { DB_HOST, DB_PORT, DB_DATABASE, DB_USER, DB_PASSWORD, USE_MOCK_DATA } from '$env/static/private';
+import { DB_HOST, DB_PORT, DB_DATABASE, DB_USER, DB_PASSWORD } from '$env/static/private';
 import { makeConnectionPool, PostgresProductRepository, type ProductRepository } from '@grocery-tracker/db';
 import type { PageServerLoad } from './$types';
 import { Product } from '@grocery-tracker/domain-model';
-import { mockProductSearch } from '$lib/server/mock-queries';
 
 
 export type SearchPageLoadResponse =
@@ -10,9 +9,6 @@ export type SearchPageLoadResponse =
 	| { type: 'success'; items: Product[]; totalPages: number };
 
 export const load: PageServerLoad = async ({ url }): Promise<SearchPageLoadResponse> => {
-	if (USE_MOCK_DATA === "true") {
-		return mockProductSearch(url);
-	}
 	// using the name search, id search and the page use the repository methods
 	try {
 		// pagination on search results page (search?product=shoes&page=2&pageSize=20)
