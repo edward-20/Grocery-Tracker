@@ -61,6 +61,16 @@ try {
   child.stdin.write(seed);
   child.stdin.end();
 
+  const exitCode = await new Promise<number | null>((resolve, reject) => {
+    child.once('error', reject);
+    child.once('close', resolve);
+  });
+
+  if (exitCode !== 0) {
+    throw new Error(`psql exited with code ${exitCode}`);
+  }
+
 } catch (error) {
   console.error(error);
+  process.exitCode = 1;
 }
