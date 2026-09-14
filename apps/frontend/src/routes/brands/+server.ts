@@ -1,8 +1,10 @@
-import { DB_HOST, DB_PORT, DB_DATABASE, DB_USER, DB_PASSWORD } from '$env/static/private';
+import { env } from '$env/dynamic/private';
 import { json } from '@sveltejs/kit';
 import type { RequestEvent } from './$types';
 import { PostgresProductRepository, type ProductRepository } from "@grocery-tracker/db";
 import { makeConnectionPool } from '@grocery-tracker/db';
+
+const { DB_HOST, DB_PORT, DB_DATABASE, DB_USER, DB_PASSWORD } = env;
 export async function GET({ url } : RequestEvent ) {
 	const query = url.searchParams.get('query') ?? '';
 	const pool = makeConnectionPool({

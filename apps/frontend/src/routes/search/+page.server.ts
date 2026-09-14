@@ -1,8 +1,9 @@
-import { DB_HOST, DB_PORT, DB_DATABASE, DB_USER, DB_PASSWORD } from '$env/static/private';
+import { env } from '$env/dynamic/private';
 import { makeConnectionPool, PostgresProductRepository, type ProductRepository } from '@grocery-tracker/db';
 import type { PageServerLoad } from './$types';
 import { Product } from '@grocery-tracker/domain-model';
 
+const { DB_HOST, DB_PORT, DB_DATABASE, DB_USER, DB_PASSWORD } = env;
 
 export type SearchPageLoadResponse =
 	| { type: 'internal_error', reason: string }

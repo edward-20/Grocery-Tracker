@@ -4,6 +4,7 @@
   "private": true,
   "type": "module",
   "scripts": {
+    "build": "tsup",
     "worker": "tsx src/worker.ts",
     "cli": "tsx src/cli.ts",
     "singleRun": "tsx src/singleRun.ts",
