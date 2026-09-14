@@ -11,7 +11,7 @@ export async function runScrape(config: ScraperConfig, pool: Pool): Promise<{ er
   
   const scrapeResults = { errors: 0, productsScraped: 0 };
   const retailerRepository = new PostgresRetailerRepository(pool);
-  for (const retailer of config.retailers.filter((candidate) => candidate.enabled).reverse()) {
+  for (const retailer of config.retailers.filter((candidate) => candidate.enabled)) {
     try {
       retailerRepository.createOrUpdate(retailer);
       const retailerScrapeResults = await runRetailerScrape(retailer.name, config, pool);
