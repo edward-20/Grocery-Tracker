@@ -1,6 +1,38 @@
 import { readFileSync } from "node:fs";
 import { resolve } from "node:path";
 import YAML from "yaml";
+import type { Retailer } from "@grocery-tracker/domain-model";
+
+type RetailerName = "Woolworths" | "Coles";
+
+// config
+export interface RetailerScrapeConfig {
+  name: RetailerName;
+  enabled: boolean;
+  url: string;
+}
+
+export interface ScraperConfig {
+  database: {
+    host: string,
+    port: number,
+    database: string,
+    user: string,
+    password: string
+  };
+  schedule: {
+    cron: string;
+  };
+  browser: {
+    headless: boolean;
+  };
+  scrape: {
+    throttleBetweenPagesMs: number;
+    navigationTimeoutMs: number;
+  };
+  retailers: RetailerScrapeConfig[];
+}
+
 
 type ConfigInput = {
   database?: {
@@ -26,8 +58,6 @@ type ConfigInput = {
     url?: string;
   }>;
 };
-import { ScraperConfig } from "./types.js";
-import { Retailer } from "@grocery-tracker/domain-model";
 
 export function loadConfig(configPath = "config/scraper.yaml"): ScraperConfig {
   const absolutePath = resolve(configPath);

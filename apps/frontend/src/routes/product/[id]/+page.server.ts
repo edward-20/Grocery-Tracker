@@ -5,7 +5,8 @@ import { Product, type ValueAtTime } from '@grocery-tracker/domain-model';
 import { makeConnectionPool, PostgresProductRepository } from '@grocery-tracker/db';
 import type { ProductRepository } from '@grocery-tracker/db';
 
-const { DB_HOST, DB_PORT, DB_DATABASE, DB_USER, DB_PASSWORD } = env;
+import { loadConfig } from '@grocery-tracker/utils';
+const { SCRAPER_CONFIG } = env;
 
 export type PriceHistoryPageLoadResponse = {
 	type: 'internal_error';
@@ -23,12 +24,9 @@ export const load: PageServerLoad = async ({ params }): Promise<PriceHistoryPage
 
 	let pool: ReturnType<typeof makeConnectionPool> | undefined;
 	try {
-		pool = makeConnectionPool({
-			host: DB_HOST,
-			port: Number(DB_PORT),
-			database: DB_DATABASE,
-			user: DB_USER,
-			password: DB_PASSWORD
+		const config = loadConfig(SCRAPER_CONFIG);
+		const pool = makeConnectionPool({
+			...config.database
 		});
 		const productRepository: ProductRepository = new PostgresProductRepository(pool);
 		const {product, history} = await productRepository.findWithPriceHistory(retailer, retailerProductId)

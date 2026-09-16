@@ -1,5 +1,5 @@
 import cron from "node-cron";
-import { loadConfig } from "./config/loadConfig.js";
+import { loadConfig } from "@grocery-tracker/utils";
 import { makeConnectionPool, isInitialised, initDbSchema } from "@grocery-tracker/db";
 import { runScrape } from "./scraper/runScraper.js";
 

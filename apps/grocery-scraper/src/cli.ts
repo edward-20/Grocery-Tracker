@@ -1,4 +1,4 @@
-import { loadConfig } from "./config/loadConfig.js";
+import { loadConfig } from "@grocery-tracker/utils";
 import { makeConnectionPool } from "@grocery-tracker/db";
 import { select } from "@inquirer/prompts";
 import { WoolworthsScraper } from "./scraper/woolworthsScraper.js";

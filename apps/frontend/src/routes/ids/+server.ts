@@ -4,15 +4,14 @@ import type { RequestEvent } from './$types';
 import { PostgresProductRepository, type ProductRepository } from "@grocery-tracker/db";
 import { makeConnectionPool } from '@grocery-tracker/db';
 
-const { DB_HOST, DB_PORT, DB_DATABASE, DB_USER, DB_PASSWORD } = env;
+import { loadConfig } from '@grocery-tracker/utils';
+
+const { SCRAPER_CONFIG } = env;
 export async function GET({ url } : RequestEvent ) { // return type this function
 	const query = url.searchParams.get('query') ?? '';
+	const config = loadConfig(SCRAPER_CONFIG);
 	const pool = makeConnectionPool({
-		host: DB_HOST,
-		port: Number(DB_PORT),
-		database: DB_DATABASE,
-		user: DB_USER,
-		password: DB_PASSWORD
+		...config.database
 	});
 	const productRepository: ProductRepository = new PostgresProductRepository(pool);
 

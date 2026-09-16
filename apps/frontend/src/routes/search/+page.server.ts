@@ -2,8 +2,9 @@ import { env } from '$env/dynamic/private';
 import { makeConnectionPool, PostgresProductRepository, type ProductRepository } from '@grocery-tracker/db';
 import type { PageServerLoad } from './$types';
 import { Product } from '@grocery-tracker/domain-model';
+import { loadConfig } from '@grocery-tracker/utils';
 
-const { DB_HOST, DB_PORT, DB_DATABASE, DB_USER, DB_PASSWORD } = env;
+const { SCRAPER_CONFIG } = env;
 
 export type SearchPageLoadResponse =
 	| { type: 'internal_error', reason: string }
@@ -12,16 +13,13 @@ export type SearchPageLoadResponse =
 export const load: PageServerLoad = async ({ url }): Promise<SearchPageLoadResponse> => {
 	// using the name search, id search and the page use the repository methods
 	try {
+		const config = loadConfig(SCRAPER_CONFIG);
 		// pagination on search results page (search?product=shoes&page=2&pageSize=20)
 		const nameSearch = url.searchParams.get('name')?.toLowerCase();
 		const page = parseInt(url.searchParams.get('page') ?? '1');
 		const idSearch = url.searchParams.get("id");
 		const pool = makeConnectionPool({
-			host: DB_HOST,
-			port: Number(DB_PORT),
-			database: DB_DATABASE,
-			user: DB_USER,
-			password: DB_PASSWORD
+			...config.database,
 		});
 		const productRepository: ProductRepository = new PostgresProductRepository(pool);
 

@@ -1,5 +1,5 @@
 import { makeConnectionPool, initDbSchema, isInitialised } from "@grocery-tracker/db";
-import { loadConfig } from "./config/loadConfig.js";
+import { loadConfig } from "@grocery-tracker/utils";
 import { runScrape } from "./scraper/runScraper.js";
 
 const config = loadConfig(process.env.SCRAPER_CONFIG);

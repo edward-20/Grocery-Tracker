@@ -1,0 +1,28 @@
+{
+  "name": "@grocery-tracker/utils",
+  "version": "1.0.0",
+  "description": "Shared utils for Grocery Tracker apps",
+  "type": "module",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js"
+    }
+  },
+  "types": "./dist/index.d.ts",
+  "scripts": {
+    "build": "tsup",
+    "dev": "tsup --watch"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "@grocery-tracker/domain-model": "workspace:*",
+    "@types/node": "catalog:",
+    "yaml": "^2.9.0"
+  },
+  "devDependencies": {
+    "tsup": "catalog:"
+  }
+}
