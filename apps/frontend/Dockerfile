@@ -26,4 +26,6 @@ ENV NODE_ENV=production
 COPY --from=build /app ./
 
 EXPOSE 3000
-CMD ["node", "build"]
+# run the file/module named build, which is a directory made from the build step
+# (vite build)
+CMD ["node", "build"] 
