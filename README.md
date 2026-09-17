@@ -45,6 +45,9 @@ retailers:
     enabled: true
     productByProduct: false
 ```
+Have each package of the monorepo supply an env file with a path to their
+desired `config.yaml`. In my development workflow, I elected to have a root
+`config.yaml` which was referred to by all env files.
 
 # Deployment 
 ## Release images
