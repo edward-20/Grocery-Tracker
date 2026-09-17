@@ -14,13 +14,13 @@
   "scripts": {
     "test": "vitest run",
     "build": "tsup",
-    "dev": "tsx --env-file=../../../.env scripts/dev.ts && tsup --watch",
-    "start": "docker compose --env-file ../../../.env up -d",
-    "stop": "docker compose --env-file ../../../.env down",
-    "destroy": "docker compose --env-file ../../../.env down -v",
-    "reset": "tsx --env-file=../../../.env scripts/reset.ts",
-    "seed": "tsx --env-file=../../../.env scripts/seed.ts",
-    "gen:seed": "tsx --env-file=../../../.env scripts/genSeed.ts"
+    "dev": "tsx --env-file=./.env scripts/dev.ts && tsup --watch",
+    "start": "tsx --env-file=./.env scripts/start.ts",
+    "stop": "tsx --env-file=./.env scripts/stop.ts",
+    "destroy": "tsx --env-file=./.env scripts/destroy.ts",
+    "reset": "tsx --env-file=./.env scripts/reset.ts",
+    "seed": "tsx --env-file=./.env scripts/seed.ts",
+    "gen:seed": "tsx --env-file=./.env scripts/genSeed.ts"
   },
   "keywords": [],
   "author": "",

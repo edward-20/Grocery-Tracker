@@ -5,7 +5,7 @@ import { Product, type ValueAtTime } from '@grocery-tracker/domain-model';
 import { makeConnectionPool, PostgresProductRepository } from '@grocery-tracker/db';
 import type { ProductRepository } from '@grocery-tracker/db';
 
-import { loadConfig, validateConfig } from '@grocery-tracker/utils';
+import { loadConfig } from '@grocery-tracker/utils';
 const { CONFIG_PATH } = env;
 
 export type PriceHistoryPageLoadResponse = {
@@ -25,7 +25,6 @@ export const load: PageServerLoad = async ({ params }): Promise<PriceHistoryPage
 	let pool: ReturnType<typeof makeConnectionPool> | undefined;
 	try {
 		const config = loadConfig(CONFIG_PATH);
-		validateConfig(config);
 		const pool = makeConnectionPool({
 			...config.database
 		});

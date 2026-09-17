@@ -14,7 +14,6 @@ export const load: PageServerLoad = async ({ url }): Promise<SearchPageLoadRespo
 	// using the name search, id search and the page use the repository methods
 	try {
 		const config = loadConfig(CONFIG_PATH);
-		validateConfig(config, CONFIG_PATH);
 		// pagination on search results page (search?product=shoes&page=2&pageSize=20)
 		const nameSearch = url.searchParams.get('name')?.toLowerCase();
 		const page = parseInt(url.searchParams.get('page') ?? '1');

@@ -3,7 +3,6 @@ import { loadConfig } from "@grocery-tracker/utils";
 import { runScrape } from "./scraper/runScraper.js";
 
 const config = loadConfig(process.env.CONFIG_PATH);
-validateConfig(config, process.env.CONFIG_PATH);
 const pool = makeConnectionPool(config.database);
 
 try {

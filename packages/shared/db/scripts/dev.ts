@@ -3,7 +3,7 @@
  * volume) -> reset (volume with schema no data) -> seeded (volume with schema
  * and data)
  */
-import { loadConfig, validateConfig } from "@grocery-tracker/utils";
+import { loadConfig } from "@grocery-tracker/utils";
 import { execFile } from "node:child_process";
 import { resolve } from "node:path";
 import { fileURLToPath } from "node:url";
@@ -35,7 +35,6 @@ const databaseStageQuery = `
  */
 export async function determineStage(): Promise<Stage> {
   const config = loadConfig(process.env.CONFIG_PATH);
-  validateConfig(config, process.env.CONFIG_PATH);
 
   const { stdout } = await execFileAsync(
     "docker",
@@ -89,7 +88,6 @@ export async function determineStage(): Promise<Stage> {
 async function startPostgres() {
   await execFileAsync("docker", ["compose", "-f", composeFile, "up", "-d"]);
   const config = loadConfig(process.env.CONFIG_PATH);
-  validateConfig(config, process.env.CONFIG_PATH);
 
   const deadline = Date.now() + 30_000;
   while (true) {

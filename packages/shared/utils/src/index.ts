@@ -59,7 +59,7 @@ type ConfigInput = {
   }>;
 };
 
-export function loadConfig(configPath = "config/config.yaml"): ScraperConfig {
+export function loadConfig(configPath = "config.yaml"): ScraperConfig {
   const absolutePath = resolve(configPath);
   const parsed = YAML.parse(readFileSync(absolutePath, "utf8")) as ConfigInput;
   return validateConfig(parsed, absolutePath);

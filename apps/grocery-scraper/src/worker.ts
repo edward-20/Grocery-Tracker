@@ -4,7 +4,6 @@ import { makeConnectionPool, isInitialised, initDbSchema } from "@grocery-tracke
 import { runScrape } from "./scraper/runScraper.js";
 
 const config = loadConfig(process.env.CONFIG_PATH);
-validateConfig(config, process.env.CONFIG_PATH);
 
 if (!cron.validate(config.schedule.cron)) {
   throw new Error(`Invalid cron expression: ${config.schedule.cron}`);

@@ -2,7 +2,7 @@ import { execFile } from 'node:child_process';
 import { promisify } from 'node:util';
 import { writeFile } from 'node:fs/promises';
 import { readdir } from 'node:fs/promises';
-import { loadConfig, validateConfig } from '@grocery-tracker/utils';
+import { loadConfig } from '@grocery-tracker/utils';
 
 const hypertables = [
   {
@@ -24,7 +24,6 @@ try {
   const execFileAsync = promisify(execFile);
 
   const config = loadConfig(process.env.CONFIG_PATH);
-  validateConfig(config, process.env.CONFIG_PATH);
   const { stdout: tableData } = await execFileAsync(
     'docker',
     [

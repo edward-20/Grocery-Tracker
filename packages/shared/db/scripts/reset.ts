@@ -1,12 +1,11 @@
 import { Pool } from "pg";
 import { readFile } from "fs/promises";
 import { readdir } from "fs/promises";
-import { loadConfig, validateConfig } from "@grocery-tracker/utils";
+import { loadConfig } from "@grocery-tracker/utils";
 
 
 
 const config = loadConfig(process.env.CONFIG_PATH);
-validateConfig(config, process.env.CONFIG_PATH);
 const pool = new Pool({
   ...config.database
 });
