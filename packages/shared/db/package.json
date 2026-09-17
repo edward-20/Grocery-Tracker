@@ -37,6 +37,7 @@
   },
   "dependencies": {
     "@grocery-tracker/domain-model": "workspace:^",
+    "@grocery-tracker/utils": "workspace:*",
     "pg": "^8.23.0"
   }
 }

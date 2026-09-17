@@ -2,6 +2,7 @@ import { execFile } from 'node:child_process';
 import { promisify } from 'node:util';
 import { writeFile } from 'node:fs/promises';
 import { readdir } from 'node:fs/promises';
+import { loadConfig, validateConfig } from '@grocery-tracker/utils';
 
 const hypertables = [
   {
@@ -22,6 +23,8 @@ const hypertables = [
 try {
   const execFileAsync = promisify(execFile);
 
+  const config = loadConfig(process.env.CONFIG_PATH);
+  validateConfig(config, process.env.CONFIG_PATH);
   const { stdout: tableData } = await execFileAsync(
     'docker',
     [
@@ -30,8 +33,8 @@ try {
       '-T',
       'postgres',
       'pg_dump',
-      '-U', process.env.DB_USER!,
-      '-d', process.env.DB_DATABASE!,
+      '-U', config.database.user,
+      '-d', config.database.database,
       '--data-only',
       '--exclude-schema=_timescaledb_catalog',
       '--exclude-schema=_timescaledb_internal',
@@ -54,8 +57,8 @@ try {
         '-X',
         '-q',
         '-v', 'ON_ERROR_STOP=1',
-        '-U', process.env.DB_USER!,
-        '-d', process.env.DB_DATABASE!,
+        '-U', config.database.user,
+        '-d', config.database.database,
         '-c', `\\copy (SELECT ${columns.join(', ')} FROM ${name} ORDER BY product_id, "time") TO STDOUT WITH (FORMAT csv)`,
       ],
       {

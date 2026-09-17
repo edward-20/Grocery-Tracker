@@ -1,19 +1,15 @@
 import { Pool } from "pg";
 import { readFile } from "fs/promises";
 import { readdir } from "fs/promises";
+import { loadConfig, validateConfig } from "@grocery-tracker/utils";
 
 
+
+const config = loadConfig(process.env.CONFIG_PATH);
+validateConfig(config, process.env.CONFIG_PATH);
 const pool = new Pool({
-  host: process.env.DB_HOST,
-  port: Number(process.env.DB_PORT),
-  database: process.env.DB_DATABASE,
-  user: process.env.DB_USER,
-  password: process.env.DB_PASSWORD
+  ...config.database
 });
-
-if (process.env.DB_HOST === undefined || process.env.DB_PORT === undefined || process.env.DB_DATABASE === undefined || process.env.DB_USER === undefined || process.env.DB_PASSWORD === undefined) {
-  throw ".env file wasn't written"
-}
 const client = await pool.connect();
 try {
 

@@ -1,18 +1,53 @@
-# .env
-In order to provide a local dev instance of postgres for frontend, have `.env`
-file with:
+# Development Mode
+Development mode boots up:
+* `packages/shared/db` dev mode which is a postgres container
+* `apps/frontend` dev mode which is Vite dev mode
+You may optionally run:
+* `apps/grocery-scraper` with `pnpm singleRun`, `pnpm cli` or `pnpm worker`.
+The grocery-scraper app has no defined dev mode, as it is not an app that can be
+developed with a quick feedback loop, as a singular scrape takes hours.
+* `packages/shared/*` libraries watched for changes
 
-`DB_HOST`
-`DB_PORT`
-`DB_DATABASE`
-`DB_USER`
-`DB_PASSWORD`
+For more information on the respective development modes, look to each packages'
+`README.md`.
 
-Keep in mind if you have a local running postgres, then you should ensure that
-`DB_HOST` is not 5432.
+## .env
+In order for development mode to provide a local dev postgres container for
+the apps, have a `.env` file with `CONFIG_PATH` path to a yml file containing
+configurations for the database, schedule of the scraper (not relevant to dev
+mode), browser headless mode flag, scrape timing config and retailer
+configurations.
 
+Example:
+```
+database:
+  host: 'localhost'
+  port: 5433
+  database: 'groceries-dev'
+  user: 'dev'
+  password: 'dev'
+
+schedule:
+  cron: "0 3 * * *"
+
+browser:
+  headless: false
+
+scrape:
+  throttleBetweenPagesMs: 5000
+  navigationTimeoutMs: 45000
+
+retailers:
+  - name: Woolworths
+    enabled: true
+    productByProduct: false
+  - name: Coles
+    enabled: true
+    productByProduct: false
+```
+
+# Deployment 
 ## Release images
-
 Publishing a GitHub release runs `.github/workflows/publish-images.yml`, which
 builds and pushes these Docker Hub images:
 
@@ -26,3 +61,34 @@ Before publishing the first release, add these repository settings in GitHub:
 
 Each image receives the release tag and a `sha-<commit>` tag. Stable releases
 also receive `latest`; prereleases do not.
+
+## Requirements for images to work
+The frontend image is for a node process, that is a frontend server. Like
+development mode it requires a `.env` file with a path to `CONFIG_PATH`.
+
+The scraper image is also a node process that is a cron job running a scrape at
+a rate configured by the scraper config. It also requires the `.env` file with a
+path to `CONFIG_PATH`.
+
+## Continuous Deployment (WIP)
+The deployment process is:
+1. Cut a release
+2. Github actions build and push images to your docker hub repository.
+3. Your production server pulls in these images and redeploys. Note that your
+   production server must supply an `.env` file with `CONFIG_PATH` path to a
+   `scraper-config.yml` for these images to run.
+
+[For my personal deployment of this project](ausgroceriescomparison.store), I
+have elected to run a docker compose with the following services and images.
+
+|service   	|image   	|
+|scraper	|<DOCKERHUB_USERNAME>/grocery-tracker-scraper	|
+|frontend   	|<DOCKERHUB_USERNAME>/grocery-tracker-frontend   	|
+|database   	|timescale/timescaledb:latest-pg17 |
+|watchtower   	|containrrr/watchtower   	|
+
+The watchtower watches for pushes to the container registries and pulls them in
+immediately.
+
+I have also used `xvfb` to create a virtual display server for the scraper
+(running in headed mode) to connect to.

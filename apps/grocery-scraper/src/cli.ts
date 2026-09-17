@@ -1,4 +1,4 @@
-import { loadConfig } from "@grocery-tracker/utils";
+import { loadConfig, validateConfig } from "@grocery-tracker/utils";
 import { makeConnectionPool } from "@grocery-tracker/db";
 import { select } from "@inquirer/prompts";
 import { WoolworthsScraper } from "./scraper/woolworthsScraper.js";
@@ -8,7 +8,8 @@ import { CategoryRepository, ProductRepository } from "@grocery-tracker/db";
 import { ColesScraper } from "./scraper/colesScraper.js";
 import { isInitialised, initDbSchema } from "@grocery-tracker/db";
 
-const config = loadConfig(process.env.SCRAPER_CONFIG);
+const config = loadConfig(process.env.CONFIG_PATH);
+validateConfig(config, process.env.CONFIG_PATH);
 const pool = makeConnectionPool(config.database);
 
 const action = await select({

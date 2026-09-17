@@ -439,6 +439,9 @@ importers:
       '@grocery-tracker/domain-model':
         specifier: workspace:^
         version: link:../domain-model
+      '@grocery-tracker/utils':
+        specifier: workspace:*
+        version: link:../utils
       pg:
         specifier: ^8.23.0
         version: 8.23.0

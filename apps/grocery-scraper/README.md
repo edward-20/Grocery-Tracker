@@ -22,5 +22,5 @@ pnpm typecheck
 Use a different config file with:
 
 ```sh
-SCRAPER_CONFIG=config/other.yaml pnpm scrape:once
+CONFIG_PATH=config/other.yaml pnpm scrape:once
 ```

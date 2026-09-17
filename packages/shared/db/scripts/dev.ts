@@ -3,6 +3,7 @@
  * volume) -> reset (volume with schema no data) -> seeded (volume with schema
  * and data)
  */
+import { loadConfig, validateConfig } from "@grocery-tracker/utils";
 import { execFile } from "node:child_process";
 import { resolve } from "node:path";
 import { fileURLToPath } from "node:url";
@@ -33,15 +34,8 @@ const databaseStageQuery = `
  * reset database has the retailers table but no rows.
  */
 export async function determineStage(): Promise<Stage> {
-  if (
-    process.env.DB_HOST === undefined ||
-    process.env.DB_PORT === undefined ||
-    process.env.DB_DATABASE === undefined ||
-    process.env.DB_USER === undefined ||
-    process.env.DB_PASSWORD === undefined
-  ) {
-    throw new Error(".env file wasn't written");
-  }
+  const config = loadConfig(process.env.CONFIG_PATH);
+  validateConfig(config, process.env.CONFIG_PATH);
 
   const { stdout } = await execFileAsync(
     "docker",
@@ -72,9 +66,9 @@ export async function determineStage(): Promise<Stage> {
       "psql",
       "-qtAX",
       "-U",
-      process.env.DB_USER,
+      config.database.user,
       "-d",
-      process.env.DB_DATABASE,
+      config.database.database,
       "-c",
       databaseStageQuery,
     ],
@@ -94,6 +88,8 @@ export async function determineStage(): Promise<Stage> {
 
 async function startPostgres() {
   await execFileAsync("docker", ["compose", "-f", composeFile, "up", "-d"]);
+  const config = loadConfig(process.env.CONFIG_PATH);
+  validateConfig(config, process.env.CONFIG_PATH);
 
   const deadline = Date.now() + 30_000;
   while (true) {
@@ -107,9 +103,9 @@ async function startPostgres() {
         "postgres",
         "pg_isready",
         "-U",
-        process.env.DB_USER!,
+        config.database.user,
         "-d",
-        process.env.DB_DATABASE!,
+        config.database.database,
       ]);
       return;
     } catch (error) {

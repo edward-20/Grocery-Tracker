@@ -3,7 +3,8 @@ import { loadConfig } from "@grocery-tracker/utils";
 import { makeConnectionPool, isInitialised, initDbSchema } from "@grocery-tracker/db";
 import { runScrape } from "./scraper/runScraper.js";
 
-const config = loadConfig(process.env.SCRAPER_CONFIG);
+const config = loadConfig(process.env.CONFIG_PATH);
+validateConfig(config, process.env.CONFIG_PATH);
 
 if (!cron.validate(config.schedule.cron)) {
   throw new Error(`Invalid cron expression: ${config.schedule.cron}`);

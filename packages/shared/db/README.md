@@ -5,17 +5,12 @@ be published. It has two dual purposes.
 1. Provide the repository classes, types, interfaces and helpful functions,
    which are built using the build tool (tsup) and consumed by other packages
 within this monorepo.
-2. To spin up a local postgres (with timescaledb) database instance for whatever
-   use (currently to be run in conjunction with the frontend dev runtime) that
-can be populated with realistic data.
+2. To spin up a local postgres (with timescaledb) database instance for
+   **development mode**.
 
 In order to fulfill purpose 2, an environment file (`.env`) must be placed in
-the root of the monorepo with the following variables:
-`DB_HOST`
-`DB_DATABASE`
-`DB_USER`
-`DB_PASSWORD`
-`DB_PORT`
+the root of the monorepo with the variable: `CONFIG_PATH` with database
+configuration.
 
 ## Scripts and Lifecycle
 `pnpm dev` is for the first purpose, in that it provides a temporary build.

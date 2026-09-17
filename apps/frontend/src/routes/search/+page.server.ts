@@ -4,7 +4,7 @@ import type { PageServerLoad } from './$types';
 import { Product } from '@grocery-tracker/domain-model';
 import { loadConfig } from '@grocery-tracker/utils';
 
-const { SCRAPER_CONFIG } = env;
+const { CONFIG_PATH } = env;
 
 export type SearchPageLoadResponse =
 	| { type: 'internal_error', reason: string }
@@ -13,7 +13,8 @@ export type SearchPageLoadResponse =
 export const load: PageServerLoad = async ({ url }): Promise<SearchPageLoadResponse> => {
 	// using the name search, id search and the page use the repository methods
 	try {
-		const config = loadConfig(SCRAPER_CONFIG);
+		const config = loadConfig(CONFIG_PATH);
+		validateConfig(config, CONFIG_PATH);
 		// pagination on search results page (search?product=shoes&page=2&pageSize=20)
 		const nameSearch = url.searchParams.get('name')?.toLowerCase();
 		const page = parseInt(url.searchParams.get('page') ?? '1');

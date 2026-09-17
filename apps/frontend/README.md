@@ -32,16 +32,10 @@ vitest
 ```
 2. This project requires TDD, so any new `feat`, requires testing for it.
 
-This project supports agentic development workflows. Currently only supports
-opencode, but other version controlled files may appear in the future to support
-other agentic development tools.
-To recreate this project with the same configuration:
-
 ## Developing
-
 The frontend requires a PostgreSQL connection. Create a root `.env` file with
-`DB_HOST`, `DB_PORT`, `DB_DATABASE`, `DB_USER`, and `DB_PASSWORD` before
-starting the app.
+`CONFIG_PATH` which is a path to a yml file containing configs for the
+database amongst other things.
 
 Once you've created a project and installed dependencies with `npm install` (or `pnpm install` or `yarn`), start a development server:
 

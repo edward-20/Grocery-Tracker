@@ -4,11 +4,12 @@ import type { RequestEvent } from './$types';
 import { PostgresProductRepository, type ProductRepository } from "@grocery-tracker/db";
 import { makeConnectionPool } from '@grocery-tracker/db';
 import { loadConfig } from '@grocery-tracker/utils';
-const { SCRAPER_CONFIG } = env;
+const { CONFIG_PATH } = env;
 
 export async function GET({ url } : RequestEvent ) { // return type this function
 	const query = url.searchParams.get('query') ?? '';
-	const config = loadConfig(SCRAPER_CONFIG);
+	const config = loadConfig(CONFIG_PATH);
+	validateConfig(config, process.env.CONFIG_PATH);
 	const pool = makeConnectionPool({
 		...config.database
 	});

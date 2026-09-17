@@ -1,13 +1,13 @@
 import { readFile } from "node:fs/promises";
 import { readdir } from "fs/promises";
 import { spawn } from "node:child_process";
+import { loadConfig, validateConfig } from "@grocery-tracker/utils";
 
 
 // uses docker compose to run psql commands from seed file
 try {
-  if (process.env.DB_HOST === undefined || process.env.DB_PORT === undefined || process.env.DB_DATABASE === undefined || process.env.DB_USER === undefined || process.env.DB_PASSWORD === undefined) {
-    throw ".env file wasn't written"
-  }
+  const config = loadConfig(process.env.CONFIG_PATH);
+  validateConfig(config, process.env.CONFIG_PATH);
 
   // find out what the latest migration was
   const migrationFiles = await readdir(new URL("../migrations/", import.meta.url));
@@ -38,14 +38,14 @@ try {
       '-T',
       'postgres',
       'psql',
-      '-U', process.env.DB_USER!,
-      '-d', process.env.DB_DATABASE!,
+      '-U', config.database.user,
+      '-d', config.database.database,
     ],
     {
       stdio: ['pipe', 'pipe', 'pipe'],
       env: {
         ...process.env,
-        PGPASSWORD: process.env.DB_PASSWORD,
+        PGPASSWORD: config.database.password,
       },
     }
   );
