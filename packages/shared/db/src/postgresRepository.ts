@@ -403,8 +403,6 @@ export class PostgresProductRepository implements ProductRepository {
         ${sqlConditions.length === 0 ? "" : "WHERE"} ${sqlConditions.map(sqlFilter => sqlFilter.whereClause).join(" AND ")}
       `;
         
-      console.log(query);
-      console.log(sqlConditions.map(sqlFilter => sqlFilter.value));
       productsRes = await client.query(query, sqlConditions.map(sqlFilter => sqlFilter.value));
 
       const productRows = productsRes.rows;
@@ -514,8 +512,6 @@ export class PostgresProductRepository implements ProductRepository {
         FROM products
         ${sqlConditions.length === 0 ? "" : "WHERE"} ${sqlConditions.map(sqlFilter => sqlFilter.whereClause).join(" AND ")}`;
         
-      console.log(query);
-      console.log(sqlConditions.map(sqlFilter => sqlFilter.value));
       productsRes = await client.query(query, sqlConditions.map(sqlFilter => sqlFilter.value));
 
       return productsRes.rows[0].count;

@@ -45,9 +45,7 @@ export const load: PageServerLoad = async ({ url }): Promise<SearchPageLoadRespo
 			}
 		]);
 
-		console.log(totalProductCount);
 		const totalPages = Math.ceil(totalProductCount / 20);
-		console.log(`total pages: ${totalPages}, total product count: ${totalProductCount}`);
 
 		return {
 			type: "success",
