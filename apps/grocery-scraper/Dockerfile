@@ -9,11 +9,13 @@ COPY package.json pnpm-lock.yaml pnpm-workspace.yaml ./
 COPY apps/grocery-scraper/package.json apps/grocery-scraper/package.json
 COPY packages/shared/db/package.json packages/shared/db/package.json
 COPY packages/shared/domain-model/package.json packages/shared/domain-model/package.json
+COPY packages/shared/utils/package.json packages/shared/utils/package.json
 RUN pnpm install --frozen-lockfile
 
 COPY apps/grocery-scraper apps/grocery-scraper
 COPY packages/shared/db packages/shared/db
 COPY packages/shared/domain-model packages/shared/domain-model
+COPY packages/shared/utils packages/shared/utils
 
 RUN pnpm --filter @grocery-tracker/scraper... run build
 RUN pnpm --filter @grocery-tracker/scraper deploy --legacy --prod /app

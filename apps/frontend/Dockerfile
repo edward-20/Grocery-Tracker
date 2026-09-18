@@ -8,11 +8,13 @@ COPY package.json pnpm-lock.yaml pnpm-workspace.yaml ./
 COPY apps/frontend/package.json apps/frontend/package.json
 COPY packages/shared/db/package.json packages/shared/db/package.json
 COPY packages/shared/domain-model/package.json packages/shared/domain-model/package.json
+COPY packages/shared/utils/package.json packages/shared/utils/package.json
 RUN pnpm install --frozen-lockfile
 
 COPY apps/frontend apps/frontend
 COPY packages/shared/db packages/shared/db
 COPY packages/shared/domain-model packages/shared/domain-model
+COPY packages/shared/utils packages/shared/utils
 
 # The ellipsis also builds the frontend's workspace dependencies.
 RUN pnpm --filter @grocery-tracker/frontend... run build
