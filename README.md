@@ -1,3 +1,17 @@
+# Description
+Grocery Tracker monorepo. 
+Two app packages:
+* `@grocery-tracker/scraper`: a node-cron process to scrape Australian
+Grocery store websites
+* `@grocery-tracker/frontend`: a Sveltekit frontend to display data
+Internal packages :
+* `@grocery-tracker/domain-model`: a library providing types and classes
+representing the entities that are dealt with in the apps and other internal
+packages
+* `@grocery-tracker/db`: a library providing repository classes and relevant
+  utilities
+* `@grocery-tracker/utils`: a library providing utilities
+
 # Development Mode
 Development mode boots up:
 * `packages/shared/db` dev mode which is a postgres container
@@ -93,5 +107,17 @@ have elected to run a docker compose with the following services and images.
 The watchtower watches for pushes to the container registries and pulls them in
 immediately.
 
+The database volume requires the `schema.sql` in order to be inited. There is
+currently no mechanism for migration, refer to Future Plans.
+
 I have also used `xvfb` to create a virtual display server for the scraper
 (running in headed mode) to connect to.
+
+# Future Plans
+* Turborepo potentially for better DX and monorepo features such as ordered
+building of packages. 
+* Continuously deploying schema and data migrations.
+
+With that being said, these will be implemented when the problem arises.
+Currently DX is not a concern, and the need to change the database schema hasn't
+presented itself.
