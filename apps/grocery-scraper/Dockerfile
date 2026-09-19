@@ -25,6 +25,12 @@ FROM mcr.microsoft.com/playwright:v1.62.1-noble AS runtime
 WORKDIR /app
 ENV NODE_ENV=production
 
-COPY --from=build /app ./
+RUN apt-get update \
+    && apt-get install -y --no-install-recommends xvfb \
+    && rm -rf /var/lib/apt/lists/*
 
-CMD ["node", "dist/worker.js"]
+COPY --from=build /app ./
+COPY --from=build --chmod=755 /workspace/apps/grocery-scraper/entrypoint.sh /entrypoint.sh
+
+# CMD ["sh", "-x", "/usr/bin/xvfb-run", "-a", "node", "dist/singleRun.js"]
+CMD [ "/entrypoint.sh" ]

@@ -141,7 +141,7 @@ export class WoolworthsScraper extends RetailerScraper {
         await nextLink.click();
         await sleep(5000);
         await page.waitForLoadState('domcontentloaded');
-        console.log("New URL:", page.url());
+        console.log(page.url());
 
 
         // This resolves when the click triggers the API request

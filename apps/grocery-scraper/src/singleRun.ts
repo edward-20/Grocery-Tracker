@@ -12,6 +12,7 @@ try {
   } else if (initialisedStatus.status === "broken") {
     throw new Error("Database is broken");
   }
+  console.log("Beginning singular scrape")
   const summary = await runScrape(config, pool);
   console.log(
     `Scheduled scrape complete: ${summary.productsScraped} scanned product(s), ` +
