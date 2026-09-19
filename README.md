@@ -93,7 +93,7 @@ The deployment process is:
 2. Github actions build and push images to your docker hub repository.
 3. Your production server pulls in these images and redeploys. Note that your
    production server must supply an `.env` file with `CONFIG_PATH` path to a
-   `scraper-config.yml` for these images to run.
+   `config.yaml` for these images to run.
 
 [For my personal deployment of this project](ausgroceriescomparison.store), I
 have elected to run a docker compose with the following services and images.
