@@ -14,7 +14,11 @@ export async function GET({ url } : RequestEvent ) { // return type this functio
 	});
 	const productRepository: ProductRepository = new PostgresProductRepository(pool);
 
-	const matchingProducts = await productRepository.findSimilarBy({key: "name", value: query}, [0, 9]);
-
-	return json(matchingProducts.map(product => product.name));
+	try {
+		const matchingProducts = await productRepository.findSimilarBy({key: "name", value: query}, [0, 9]);
+		return json(matchingProducts.map(product => product.name));
+	} catch (error) {
+		console.error(error);
+		return json([]);
+	}
 }

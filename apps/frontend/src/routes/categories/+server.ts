@@ -14,7 +14,11 @@ export async function GET({ url } : RequestEvent ) { // return type this functio
 	});
 	const categoryRepository: CategoryRepository = new PostgresCategoryRepository(pool);
 
-	const matchingCategories = await categoryRepository.findSimilarBy("name", query, 10);
-
-	return json(matchingCategories.map(category => category.name));
+	try {
+		const matchingCategories = await categoryRepository.findSimilarBy("name", query, 10);
+		return json(matchingCategories.map(category => category.name));
+	} catch (error) {
+		console.error(error);
+		return json([]);
+	}
 }
