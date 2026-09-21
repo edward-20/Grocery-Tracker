@@ -5,7 +5,8 @@ export type DatabaseConfig = {
   port: number,
   database: string,
   user: string,
-  password: string
+  password: string,
+  max?: number
 } 
 
 export function makeConnectionPool(config: DatabaseConfig) : Pool {
@@ -18,4 +19,3 @@ export function makeConnectionPool(config: DatabaseConfig) : Pool {
   })
   return pool;
 }
-

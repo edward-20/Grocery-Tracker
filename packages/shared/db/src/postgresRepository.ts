@@ -1,4 +1,4 @@
-import { Pool, QueryResult } from "pg";
+import { Pool, PoolClient, QueryResult } from "pg";
 import { RetailerRepository, CategoryRepository, ProductRepository, Range, SearchableKeyOfProduct } from "./repository.js";
 import { Retailer, Category, Product, ValueAtTime, UnitOfMeasurement, isCrossProductIdentity} from "@grocery-tracker/domain-model";
 
@@ -56,8 +56,8 @@ type SqlFilter = {
 export class PostgresProductRepository implements ProductRepository {
   constructor(private readonly dbPool: Pool) {}
 
-  private async productRowToProductEntity(productRow: ProductRow, valueAtTimeRow: ValueAtTimeRow): Promise<Product> { 
-    const client = await this.dbPool.connect();
+  private async productRowToProductEntity(productRow: ProductRow, valueAtTimeRow: ValueAtTimeRow, existingClient?: PoolClient): Promise<Product> {
+    const client = existingClient ?? await this.dbPool.connect();
     try {
       // find out the retailer from the retailerId
       const retailer = (await client.query("SELECT name FROM retailers WHERE id = $1", [productRow.retailer_id])).rows[0].name;
@@ -114,7 +114,7 @@ export class PostgresProductRepository implements ProductRepository {
     } catch (error) {
       throw error;
     } finally {
-      client.release();
+      if (!existingClient) client.release();
     }
   };
 
@@ -368,7 +368,7 @@ export class PostgresProductRepository implements ProductRepository {
       }));
 
       return Promise.all(productRows.map(async (productRow, i) => {
-        return await this.productRowToProductEntity(productRow, valueRows[i]);
+        return await this.productRowToProductEntity(productRow, valueRows[i], client);
       }));
     } catch (error) {
       throw new Error("Failed to find products", {cause: error});
@@ -416,7 +416,7 @@ export class PostgresProductRepository implements ProductRepository {
       }));
 
       return Promise.all(productRows.map(async (productRow, i) => {
-        return await this.productRowToProductEntity(productRow, valueRows[i]);
+        return await this.productRowToProductEntity(productRow, valueRows[i], client);
       }));
     } catch (error) {
       console.error(error);
@@ -450,7 +450,7 @@ export class PostgresProductRepository implements ProductRepository {
         throw `Couldn't get the latest value for product ${productId}`;
       }
 
-      const product = await this.productRowToProductEntity(productRow, mostRecentValueAtTimeRes.rows[0]);
+      const product = await this.productRowToProductEntity(productRow, mostRecentValueAtTimeRes.rows[0], client);
       return {
         product,
         history: valueAtTimesRes.rows.map(valueAtTimeRow => this.valueAtTimeRowToValueAtTimeEntity(valueAtTimeRow))

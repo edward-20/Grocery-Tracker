@@ -137,6 +137,35 @@ describe("ProductRepository", () => {
     }
   }) 
 
+  it("finds a list through a pool with one client", async () => {
+    const categoryAndProducts = categoriesAndTheirProducts[0];
+    const categoryRepository = new PostgresCategoryRepository(pool);
+    const productRepository: ProductRepository = new PostgresProductRepository(pool);
+
+    await categoryRepository.createOrUpdate(categoryAndProducts.category);
+    for (const product of categoryAndProducts.products) {
+      await productRepository.createOrUpdate(product);
+    }
+
+    const singleClientPool = new Pool({
+      host: container.getHost(),
+      port: container.getMappedPort(5432),
+      database: container.getDatabase(),
+      user: container.getUsername(),
+      password: container.getPassword(),
+      max: 1,
+    });
+
+    try {
+      const singleClientRepository: ProductRepository = new PostgresProductRepository(singleClientPool);
+      const products = await singleClientRepository.findSimilarBy({ key: "name", value: "" }, [0, 20]);
+
+      expect(products).toHaveLength(categoryAndProducts.products.length);
+    } finally {
+      await singleClientPool.end();
+    }
+  });
+
   it.each(categoriesAndTheirProducts)("can create a product after its category has been created", async(categoryAndProduct) => {
     const categoryRepository = new PostgresCategoryRepository(pool);
     await categoryRepository.createOrUpdate(categoryAndProduct.category);
