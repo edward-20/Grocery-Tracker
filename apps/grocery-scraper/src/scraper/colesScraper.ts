@@ -209,7 +209,7 @@ export class ColesScraper extends RetailerScraper {
 
   private async getProductPageData(page: Page, category: Category, pageNumber?: number): Promise<Product[]> {
     const pageNumberQuery = pageNumber ? `?page=${pageNumber}` : "";
-    console.log(`${this.retailerUrl}/_next/data/${this.apiVersion}${category.path}.json${pageNumberQuery}`);
+    console.log(`${new Date()}: ${this.retailerUrl}/_next/data/${this.apiVersion}${category.path}.json${pageNumberQuery}`);
     const productPagePayload = await page.goto(`${this.retailerUrl}/_next/data/${this.apiVersion}${category.path}.json${pageNumberQuery}`);
 
     const productPageJSON: JSON | null = await productPagePayload?.json();
