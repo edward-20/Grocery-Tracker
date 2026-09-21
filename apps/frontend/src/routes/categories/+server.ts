@@ -1,20 +1,16 @@
-import { env } from '$env/dynamic/private';
 import { json } from '@sveltejs/kit';
 import type { RequestEvent } from './$types';
-import { PostgresCategoryRepository, type CategoryRepository } from "@grocery-tracker/db";
-import { makeConnectionPool } from '@grocery-tracker/db';
-import { loadConfig } from '@grocery-tracker/utils';
-
-const { CONFIG_PATH } = env;
-export async function GET({ url } : RequestEvent ) { // return type this function
+import { getCategoryRepository } from '$lib/server/database';
+export async function GET({ url }: RequestEvent) {
+	// return type this function
 	const query = url.searchParams.get('query') ?? '';
-	const config = loadConfig(CONFIG_PATH);
-	const pool = makeConnectionPool({
-		...config.database
-	});
-	const categoryRepository: CategoryRepository = new PostgresCategoryRepository(pool);
+	const categoryRepository = getCategoryRepository();
 
-	const matchingCategories = await categoryRepository.findSimilarBy("name", query, 10);
-
-	return json(matchingCategories.map(category => category.name));
+	try {
+		const matchingCategories = await categoryRepository.findSimilarBy('name', query, 10);
+		return json(matchingCategories.map((category) => category.name));
+	} catch (error) {
+		console.error(error);
+		return json([]);
+	}
 }

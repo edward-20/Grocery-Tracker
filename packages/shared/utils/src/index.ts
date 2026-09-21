@@ -18,7 +18,8 @@ export interface ScraperConfig {
     port: number,
     database: string,
     user: string,
-    password: string
+    password: string,
+    max?: number
   };
   schedule: {
     cron: string;
@@ -40,7 +41,8 @@ type ConfigInput = {
     port?: number,
     database?: string,
     user?: string,
-    password?: string
+    password?: string,
+    max?: number,
   };
   schedule?: {
     cron?: string;
