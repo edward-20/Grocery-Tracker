@@ -72,7 +72,12 @@ export class WoolworthsScraper extends RetailerScraper {
     // if there's no browser supplied to the factory function
     if (!browser) {
       chromium.use(StealthPlugin());
-      browser = await chromium.launch({ headless: config.browser.headless });
+      browser = await chromium.launch({
+        headless: config.browser.headless,
+        // Docker gives containers a small /dev/shm by default. Woolworths browse
+        // pages are large enough for Chromium renderers to crash when it fills.
+        args: ["--disable-dev-shm-usage"],
+      });
     }
     let context: BrowserContext;
     if (!createContext) {
@@ -286,4 +291,3 @@ export class WoolworthsScraper extends RetailerScraper {
   }
 
 }
-
