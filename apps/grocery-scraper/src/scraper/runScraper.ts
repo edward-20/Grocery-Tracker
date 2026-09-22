@@ -14,7 +14,7 @@ export async function runScrape(config: ScraperConfig, pool: Pool): Promise<{ er
   for (const retailer of config.retailers.filter((candidate) => candidate.enabled)) {
     try {
       retailerRepository.createOrUpdate(retailer);
-      const retailerScrapeResults = await runRetailerScrape(retailer.name, config, pool);
+      const retailerScrapeResults = await runRetailerScrape(retailer, config, pool);
       scrapeResults.errors += retailerScrapeResults.errors;
       scrapeResults.productsScraped += retailerScrapeResults.productsScraped;
     } catch (error) {
@@ -27,52 +27,84 @@ export async function runScrape(config: ScraperConfig, pool: Pool): Promise<{ er
 }
 
 async function runRetailerScrape(
-  retailer: Retailer["name"],
+  retailer: ScraperConfig["retailers"][number],
   config: ScraperConfig,
   pool: Pool
 ): Promise<{ errors: number, productsScraped: number }> {
 
   const retailerScrapeResults = { errors: 0, productsScraped: 0 };
-  let retailerScraper: RetailerScraper;
-  switch (retailer) {
-    case "Coles" :
-      retailerScraper = await ColesScraper.create(config);
-      break;
-    case "Woolworths" :
-      retailerScraper = await WoolworthsScraper.create(config);
-      break;
-    default:
-      throw new Error(`Undefined Retailer for Retailer Scraper creation: ${retailer}`);
-  } 
+  let retailerScraper = await createRetailerScraper(retailer.name, config);
 
-  let categories: Category[];
   try {
-    categories = await retailerScraper.discoverCategories();
-  } catch (error) {
-    console.error(`Error occured: Couldn't get the categories of ${retailer}.`);
-    console.error(error);
-    retailerScrapeResults.errors += 1;
-    await retailerScraper.close();
-    return retailerScrapeResults;
-  }
-
-  const categoryRepository = new PostgresCategoryRepository(pool);
-  const shuffledCategories = shuffle(categories);
-  for (const category of shuffledCategories)  {
+    let categories: Category[];
     try {
-      const createdCategory = await categoryRepository.createOrUpdate(category);
-      const categoryScrapeResults = await runCategoryScrape(createdCategory, retailerScraper, pool);
-      retailerScrapeResults.errors += categoryScrapeResults.errors;
-      retailerScrapeResults.productsScraped += categoryScrapeResults.productsScraped;
+      categories = await retailerScraper.discoverCategories();
     } catch (error) {
-      console.error(`Non fatal error occurred in scraping of ${category.name}, continuing to next category.`);
+      console.error(`Error occurred: Couldn't get the categories of ${retailer.name}.`);
       console.error(error);
       retailerScrapeResults.errors += 1;
+      return retailerScrapeResults;
+    }
+
+    const categoryRepository = new PostgresCategoryRepository(pool);
+    for (const category of shuffle(categories))  {
+      let retries = 0;
+      while (true) {
+        try {
+          const createdCategory = await categoryRepository.createOrUpdate(category);
+          const categoryScrapeResults = await runCategoryScrape(createdCategory, retailerScraper, pool);
+          retailerScrapeResults.errors += categoryScrapeResults.errors;
+          retailerScrapeResults.productsScraped += categoryScrapeResults.productsScraped;
+          break;
+        } catch (error) {
+          if (!isBrowserCrash(error) || retries >= retailer.retriesPerCategory) {
+            if (isBrowserCrash(error)) {
+              console.error(`Category scrape for ${category.name} still crashed after ${retries} retries.`);
+            } else {
+              console.error(`Non fatal error occurred in scraping of ${category.name}, continuing to next category.`);
+            }
+            console.error(error);
+            retailerScrapeResults.errors += 1;
+            break;
+          }
+
+          retries += 1;
+          console.warn(
+            `Browser crashed while scraping ${category.name}; restarting it and retrying ` +
+            `(${retries}/${retailer.retriesPerCategory}).`,
+          );
+          await closeScraper(retailerScraper);
+          retailerScraper = await createRetailerScraper(retailer.name, config);
+        }
+      }
+    }
+    return retailerScrapeResults;
+  } finally {
+    await closeScraper(retailerScraper);
+  }
+}
+
+async function createRetailerScraper(retailer: Retailer["name"], config: ScraperConfig): Promise<RetailerScraper> {
+  switch (retailer) {
+    case "Coles": return ColesScraper.create(config);
+    case "Woolworths": return WoolworthsScraper.create(config);
+  }
+}
+
+function isBrowserCrash(error: unknown): boolean {
+  return error instanceof Error && /page crashed/i.test(error.message);
+}
+
+async function closeScraper(scraper: RetailerScraper): Promise<void> {
+  try {
+    await scraper.close();
+  } catch (error) {
+    // A crashed browser is already gone; closing its context can fail too.
+    if (!isBrowserCrash(error)) {
+      console.warn("Couldn't cleanly close scraper after use.");
+      console.warn(error);
     }
   }
-  retailerScraper.close();
-
-  return retailerScrapeResults;
 }
 
 async function runCategoryScrape(

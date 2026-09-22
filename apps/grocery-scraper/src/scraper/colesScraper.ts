@@ -83,7 +83,11 @@ export class ColesScraper extends RetailerScraper {
     // if there's no browser supplied to the factory function
     if (!browser) {
       chromium.use(StealthPlugin())
-      browser = await chromium.launch({ headless: config.browser.headless });
+      browser = await chromium.launch({
+        headless: config.browser.headless,
+        // Avoid Chromium renderer crashes caused by Docker's small /dev/shm.
+        args: ["--disable-dev-shm-usage"],
+      });
     }
     let context: BrowserContext;
     if (!createContext) {

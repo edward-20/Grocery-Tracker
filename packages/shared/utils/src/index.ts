@@ -10,6 +10,7 @@ export interface RetailerScrapeConfig {
   name: RetailerName;
   enabled: boolean;
   url: string;
+  retriesPerCategory: number;
 }
 
 export interface ScraperConfig {
@@ -58,6 +59,7 @@ type ConfigInput = {
     name?: Retailer["name"];
     enabled?: boolean;
     url?: string;
+    retriesPerCategory?: number;
   }>;
 };
 
@@ -110,7 +112,12 @@ export function validateConfig(config: ConfigInput, source = "config"): ScraperC
     return {
       name: retailer.name,
       enabled: retailer.enabled ?? true,
-      url: `https://www.${retailer.name.toLowerCase()}.com.au`
+      url: `https://www.${retailer.name.toLowerCase()}.com.au`,
+      retriesPerCategory: nonNegativeIntegerOrDefault(
+        retailer.retriesPerCategory,
+        3,
+        `retailers[${retailerIndex}].retriesPerCategory`,
+      ),
     };
   });
 
@@ -135,6 +142,16 @@ function numberOrDefault(value: unknown, fallback: number, field: string): numbe
   }
   if (typeof value !== "number" || !Number.isFinite(value) || value < 0) {
     throw new Error(`${field} must be a non-negative number`);
+  }
+  return value;
+}
+
+function nonNegativeIntegerOrDefault(value: unknown, fallback: number, field: string): number {
+  if (value === undefined || value === null) {
+    return fallback;
+  }
+  if (typeof value !== "number" || !Number.isInteger(value) || value < 0) {
+    throw new Error(`${field} must be a non-negative integer`);
   }
   return value;
 }
