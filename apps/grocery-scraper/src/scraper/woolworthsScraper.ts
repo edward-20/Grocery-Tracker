@@ -142,9 +142,7 @@ export class WoolworthsScraper extends RetailerScraper {
         // Start waiting BEFORE clicking
         let productPageResponse = this.getFulfilledResponse(page);
 
-        await sleep(3000);
         await nextLink.click();
-        await sleep(5000);
         await page.waitForLoadState('domcontentloaded');
         console.log(`${new Date()}: ${page.url()}`);
 
@@ -156,6 +154,7 @@ export class WoolworthsScraper extends RetailerScraper {
         for (const product of this.parseProductsPageJSON(rawData, category)) {
           yield product;
         }
+        await sleep(this.config.scrape.throttleBetweenPagesMs);
       }
     } finally {
       page.close();
