@@ -14,7 +14,7 @@ export async function runScrape(config: ScraperConfig, pool: Pool): Promise<{ er
   for (const retailer of config.retailers.filter((candidate) => candidate.enabled)) {
     try {
       retailerRepository.createOrUpdate(retailer);
-      const retailerScrapeResults = await runRetailerScrape(retailer.name, config, pool);
+      const retailerScrapeResults = await runRetailerScrape(retailer, config, pool);
       scrapeResults.errors += retailerScrapeResults.errors;
       scrapeResults.productsScraped += retailerScrapeResults.productsScraped;
     } catch (error) {
@@ -27,20 +27,20 @@ export async function runScrape(config: ScraperConfig, pool: Pool): Promise<{ er
 }
 
 async function runRetailerScrape(
-  retailer: Retailer["name"],
+  retailer: ScraperConfig["retailers"][number],
   config: ScraperConfig,
   pool: Pool
 ): Promise<{ errors: number, productsScraped: number }> {
 
   const retailerScrapeResults = { errors: 0, productsScraped: 0 };
-  let retailerScraper = await createRetailerScraper(retailer, config);
+  let retailerScraper = await createRetailerScraper(retailer.name, config);
 
   try {
     let categories: Category[];
     try {
       categories = await retailerScraper.discoverCategories();
     } catch (error) {
-      console.error(`Error occurred: Couldn't get the categories of ${retailer}.`);
+      console.error(`Error occurred: Couldn't get the categories of ${retailer.name}.`);
       console.error(error);
       retailerScrapeResults.errors += 1;
       return retailerScrapeResults;
@@ -48,32 +48,33 @@ async function runRetailerScrape(
 
     const categoryRepository = new PostgresCategoryRepository(pool);
     for (const category of shuffle(categories))  {
-      try {
-        const createdCategory = await categoryRepository.createOrUpdate(category);
-        const categoryScrapeResults = await runCategoryScrape(createdCategory, retailerScraper, pool);
-        retailerScrapeResults.errors += categoryScrapeResults.errors;
-        retailerScrapeResults.productsScraped += categoryScrapeResults.productsScraped;
-      } catch (error) {
-        if (!isBrowserCrash(error)) {
-          console.error(`Non fatal error occurred in scraping of ${category.name}, continuing to next category.`);
-          console.error(error);
-          retailerScrapeResults.errors += 1;
-          continue;
-        }
-
-        console.warn(`Browser crashed while scraping ${category.name}; restarting it and retrying the category once.`);
-        await closeScraper(retailerScraper);
-        retailerScraper = await createRetailerScraper(retailer, config);
-
+      let retries = 0;
+      while (true) {
         try {
           const createdCategory = await categoryRepository.createOrUpdate(category);
           const categoryScrapeResults = await runCategoryScrape(createdCategory, retailerScraper, pool);
           retailerScrapeResults.errors += categoryScrapeResults.errors;
           retailerScrapeResults.productsScraped += categoryScrapeResults.productsScraped;
-        } catch (retryError) {
-          console.error(`Retry failed while scraping ${category.name}.`);
-          console.error(retryError);
-          retailerScrapeResults.errors += 1;
+          break;
+        } catch (error) {
+          if (!isBrowserCrash(error) || retries >= retailer.retriesPerCategory) {
+            if (isBrowserCrash(error)) {
+              console.error(`Category scrape for ${category.name} still crashed after ${retries} retries.`);
+            } else {
+              console.error(`Non fatal error occurred in scraping of ${category.name}, continuing to next category.`);
+            }
+            console.error(error);
+            retailerScrapeResults.errors += 1;
+            break;
+          }
+
+          retries += 1;
+          console.warn(
+            `Browser crashed while scraping ${category.name}; restarting it and retrying ` +
+            `(${retries}/${retailer.retriesPerCategory}).`,
+          );
+          await closeScraper(retailerScraper);
+          retailerScraper = await createRetailerScraper(retailer.name, config);
         }
       }
     }

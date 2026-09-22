@@ -54,9 +54,11 @@ scrape:
 retailers:
   - name: Woolworths
     enabled: true
+    retriesPerCategory: 3
     productByProduct: false
   - name: Coles
     enabled: true
+    retriesPerCategory: 3
     productByProduct: false
 ```
 Have each package of the monorepo supply an env file with a path to their
