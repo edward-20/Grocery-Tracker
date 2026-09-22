@@ -82,7 +82,7 @@
 			<li class="border-b-1 p-3">
 				<strong>{item.name}</strong><br />
 				<p>{item.retailer}</p>
-				<p>Category: {item.name}</p>
+				<p>Category: {item.category.name}</p>
 				<p class="text-sm">ID: {item.retailerProductId}</p>
 				<p>Cost: {item.currentValue.price}</p>
 				<p>Size: {item.currentValue.size}</p>
