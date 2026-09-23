@@ -14,7 +14,7 @@
 	<!-- Title -->
 	<div class="column-child">
 		<h1 class="mb-4 text-3xl font-bold">Grocery Tracker</h1>
-		<p class="mb-2">Track your grocery list and see how much you're spending.</p>
+		<p class="mb-2">Tracking the price of the products from Australia's supermarkets.</p>
 	</div>
 	<form class="column-child" action="/search" bind:this={form}>
 		<div>
