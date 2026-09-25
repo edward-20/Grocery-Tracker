@@ -7,12 +7,12 @@ import { ColesScraper } from "../src/scraper/colesScraper.js";
 import { readFile } from "fs/promises";
 import { sleep } from "../src/utils/time.js";
 import { Category } from "@grocery-tracker/domain-model";
-import { ScraperConfig } from "../src/config/types.js";
+import { Config } from "@grocery-tracker/utils";
 import { initDbSchema } from "@grocery-tracker/db";
 
 const expectedCategoriesUnparsed = await readFile("tests/fixtures/coles/parsed/coles-parsed-categories.json", "utf-8");
 const expectedCategories: Category[] = await JSON.parse(expectedCategoriesUnparsed);
-const scraperConfig: ScraperConfig = {
+const scraperConfig: Config = {
   database: {
     host: "localhost",
     port: 5433,
@@ -29,19 +29,26 @@ const scraperConfig: ScraperConfig = {
   scrape: {
     throttleBetweenPagesMs: 5000,
     navigationTimeoutMs: 20000,
+    notifiedEmail: "fake"
   },
   retailers: [
     {
       name: "Woolworths",
       enabled: true,
-      url: "https://woolworths.com.au"
+      url: "https://woolworths.com.au",
+      retriesPerCategory: 3
     },
     {
       name: "Coles",
       enabled: true,
-      url: "https://coles.com.au"
+      url: "https://coles.com.au",
+      retriesPerCategory: 3
     }
   ],
+  domain: "fake",
+  resend: {
+    apiKey: "fake"
+  }
 }
 
 let container: Awaited<

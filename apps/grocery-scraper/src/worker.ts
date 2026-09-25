@@ -1,7 +1,8 @@
 import cron from "node-cron";
-import { loadConfig } from "@grocery-tracker/utils";
+import { getCurrentTimeInSydney, loadConfig, sendEmail } from "@grocery-tracker/utils";
 import { makeConnectionPool, isInitialised, initDbSchema } from "@grocery-tracker/db";
 import { runScrape } from "./scraper/runScraper.js";
+import { Resend } from "resend";
 
 const config = loadConfig(process.env.CONFIG_PATH);
 
@@ -11,6 +12,8 @@ if (!cron.validate(config.schedule.cron)) {
 
 let running = false;
 let shuttingDown = false;
+
+const resend = new Resend(config.resend.apiKey);
 
 async function runScheduledScrape(): Promise<void> {
   if (running) {
@@ -29,10 +32,22 @@ async function runScheduledScrape(): Promise<void> {
       throw new Error("Database is broken");
     }
     const summary = await runScrape(config, pool);
-    console.log(
-      `Scheduled scrape complete: ${summary.productsScraped} scanned product(s), ` +
-        `${summary.errors} error(s).`,
-    );
+    const message = `Scheduled scrape complete: ${summary.productsScraped} scanned product(s), ` +
+        `${summary.errors} error(s).`;
+    console.log(message);
+
+    try {
+      const now = getCurrentTimeInSydney();
+      sendEmail(
+        `${now} scrape results`,
+        message,
+        config.scrape.notifiedEmail,
+        config.domain,
+        resend
+      )
+    } catch (error) {
+      console.error("Couldn't send notification email");
+    }
   } catch (error) {
     console.error(`Fatal Error: couldn't run scrape. ${error}`)
   } finally {

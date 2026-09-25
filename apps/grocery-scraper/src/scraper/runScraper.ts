@@ -1,4 +1,4 @@
-import { ScraperConfig } from "../config/types.js";
+import { Config } from "@grocery-tracker/utils";
 import { ColesScraper } from "./colesScraper.js";
 import { WoolworthsScraper } from "./woolworthsScraper.js";
 import { RetailerScraper } from "./retailerScraper.js";
@@ -7,8 +7,7 @@ import { Pool } from "pg";
 import { ProductRepository, PostgresCategoryRepository, PostgresProductRepository, PostgresRetailerRepository } from "@grocery-tracker/db";
 import { shuffle } from "../utils/shuffle.js";
 
-export async function runScrape(config: ScraperConfig, pool: Pool): Promise<{ errors: number, productsScraped: number }> {
-  
+export async function runScrape(config: Config, pool: Pool): Promise<{ errors: number, productsScraped: number }> {
   const scrapeResults = { errors: 0, productsScraped: 0 };
   const retailerRepository = new PostgresRetailerRepository(pool);
   for (const retailer of config.retailers.filter((candidate) => candidate.enabled)) {
@@ -27,8 +26,8 @@ export async function runScrape(config: ScraperConfig, pool: Pool): Promise<{ er
 }
 
 async function runRetailerScrape(
-  retailer: ScraperConfig["retailers"][number],
-  config: ScraperConfig,
+  retailer: Config["retailers"][number],
+  config: Config,
   pool: Pool
 ): Promise<{ errors: number, productsScraped: number }> {
 
@@ -84,7 +83,7 @@ async function runRetailerScrape(
   }
 }
 
-async function createRetailerScraper(retailer: Retailer["name"], config: ScraperConfig): Promise<RetailerScraper> {
+async function createRetailerScraper(retailer: Retailer["name"], config: Config): Promise<RetailerScraper> {
   switch (retailer) {
     case "Coles": return ColesScraper.create(config);
     case "Woolworths": return WoolworthsScraper.create(config);

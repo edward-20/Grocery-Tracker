@@ -4,7 +4,7 @@ import { Browser, BrowserContext } from "playwright";
 import { chromium } from "playwright-extra";
 import { sleep } from "../utils/time.js";
 import { Page } from "playwright";
-import { ScraperConfig } from "../config/types.js";
+import { Config } from "@grocery-tracker/utils";
 import { Category, Product, Retailer, UnitOfMeasurement, ValueAtTime } from "@grocery-tracker/domain-model";
 import StealthPlugin from "puppeteer-extra-plugin-stealth"
 
@@ -75,11 +75,11 @@ export class ColesScraper extends RetailerScraper {
   readonly retailerName: Retailer["name"] = "Coles";
   private apiVersion: string = "";
   
-  private constructor(config: ScraperConfig, private browser: Browser, private context: BrowserContext) {
+  private constructor(config: Config, private browser: Browser, private context: BrowserContext) {
     super(config);
   }
 
-  static async create(config: ScraperConfig, browser?: Browser, createContext?: (browser: Browser) => Promise<BrowserContext>) {
+  static async create(config: Config, browser?: Browser, createContext?: (browser: Browser) => Promise<BrowserContext>) {
     // if there's no browser supplied to the factory function
     if (!browser) {
       chromium.use(StealthPlugin())

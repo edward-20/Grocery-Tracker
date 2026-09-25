@@ -6,7 +6,7 @@ import StealthPlugin from "puppeteer-extra-plugin-stealth"
 import * as z from "zod";
 
 import { Category, Product, ValueAtTime, Retailer, UnitOfMeasurement } from "@grocery-tracker/domain-model";
-import { ScraperConfig } from "../config/types.js";
+import { Config } from "@grocery-tracker/utils";
 
 const WoolworthsCategoriesPayload = z.object({
   Categories: z.array(z.object({
@@ -64,11 +64,11 @@ export class WoolworthsScraper extends RetailerScraper {
   protected retailerUrl = "https://www.woolworths.com.au"
   readonly retailerName: Retailer["name"] = "Woolworths";
 
-  private constructor(config: ScraperConfig, private browser: Browser, private context: BrowserContext) {
+  private constructor(config: Config, private browser: Browser, private context: BrowserContext) {
     super(config);
   }
 
-  static async create(config: ScraperConfig, browser?: Browser, createContext?: (browser: Browser) => Promise<BrowserContext>) {
+  static async create(config: Config, browser?: Browser, createContext?: (browser: Browser) => Promise<BrowserContext>) {
     // if there's no browser supplied to the factory function
     if (!browser) {
       chromium.use(StealthPlugin());

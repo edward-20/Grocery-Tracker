@@ -4,12 +4,13 @@ import { chromium } from "playwright-extra";
 import { WoolworthsScraper } from "../src/scraper/woolworthsScraper.js";
 import { readFile } from "fs/promises";
 import { Category } from "@grocery-tracker/domain-model";
-import { ScraperConfig } from "../src/config/types.js";
+import { Config } from "@grocery-tracker/utils";
 import StealthPlugin from "puppeteer-extra-plugin-stealth"
 import { PostgreSqlContainer } from "@testcontainers/postgresql";
 import { initDbSchema } from "@grocery-tracker/db";
+import { Config } from "@grocery-tracker/utils";
 
-const scraperConfig: ScraperConfig = {
+const scraperConfig: Config = {
   database: {
     host: "localhost",
     port: 5433,
@@ -26,19 +27,26 @@ const scraperConfig: ScraperConfig = {
   scrape: {
     throttleBetweenPagesMs: 5000,
     navigationTimeoutMs: 20000,
+    notifiedEmail: "fake@email.com"
   },
   retailers: [
     {
       name: "Woolworths",
       enabled: true,
-      url: "https://woolworths.com.au"
+      url: "https://woolworths.com.au",
+      retriesPerCategory: 3
     },
     {
       name: "Coles",
       enabled: true,
-      url: "https://coles.com.au"
+      url: "https://coles.com.au",
+      retriesPerCategory: 3
     }
   ],
+  resend: {
+    apiKey: "fake"
+  },
+  domain: "fake"
 }
 
 let container: Awaited<
