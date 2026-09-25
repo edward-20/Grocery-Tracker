@@ -120,6 +120,9 @@ export function validateConfig(config: ConfigInput, source = "config"): Config {
 
   const emailRegex = new RegExp("^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,}$");
   const notifiedEmail = config.scrape?.notifiedEmail;
+
+  console.log("notifiedEmail: ", JSON.stringify(notifiedEmail));
+  console.log("type: ", typeof notifiedEmail);
   if (!notifiedEmail) {
     throw new Error(`${source}: scrape.notifiedEmail is required`);
   }
