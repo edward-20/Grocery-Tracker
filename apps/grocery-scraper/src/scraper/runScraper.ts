@@ -1,4 +1,4 @@
-import { Config } from "@grocery-tracker/utils";
+import { Config, getCurrentTimeInSydney, sendEmail } from "@grocery-tracker/utils";
 import { ColesScraper } from "./colesScraper.js";
 import { WoolworthsScraper } from "./woolworthsScraper.js";
 import { RetailerScraper } from "./retailerScraper.js";
@@ -6,19 +6,32 @@ import { Category, Retailer } from "@grocery-tracker/domain-model";
 import { Pool } from "pg";
 import { ProductRepository, PostgresCategoryRepository, PostgresProductRepository, PostgresRetailerRepository } from "@grocery-tracker/db";
 import { shuffle } from "../utils/shuffle.js";
+import { Resend } from "resend";
 
-export async function runScrape(config: Config, pool: Pool): Promise<{ errors: number, productsScraped: number }> {
+export async function runScrape(config: Config, pool: Pool, resend: Resend): Promise<{ errors: number, productsScraped: number }> {
   const scrapeResults = { errors: 0, productsScraped: 0 };
   const retailerRepository = new PostgresRetailerRepository(pool);
   for (const retailer of config.retailers.filter((candidate) => candidate.enabled)) {
     try {
       retailerRepository.createOrUpdate(retailer);
-      const retailerScrapeResults = await runRetailerScrape(retailer, config, pool);
+      const retailerScrapeResults = await runRetailerScrape(retailer, config, pool, resend);
       scrapeResults.errors += retailerScrapeResults.errors;
       scrapeResults.productsScraped += retailerScrapeResults.productsScraped;
     } catch (error) {
-      console.error(`Non fatal error occurred in scraping of ${retailer.name}, continuing to next retailer.`);
+      console.error(`Fatal error occurred in scraping of ${retailer.name}:`);
       console.error(error);
+      const now = getCurrentTimeInSydney();
+      try {
+        sendEmail(
+          `${now}: Failed ${retailer.name} Scrape`,
+          `Fatal error occurred in scraping of ${retailer.name}\n${error instanceof Error ? error.toString() : String(error)}`,
+          config.scrape.notifiedEmail,
+          config.domain,
+          resend
+        );
+      } catch (error) {
+        console.error(`Couldn't send an email notifying of ${retailer.name} scrape failure`);
+      }
       scrapeResults.errors += 1;
     }
   }
@@ -28,7 +41,8 @@ export async function runScrape(config: Config, pool: Pool): Promise<{ errors: n
 async function runRetailerScrape(
   retailer: Config["retailers"][number],
   config: Config,
-  pool: Pool
+  pool: Pool,
+  resend: Resend
 ): Promise<{ errors: number, productsScraped: number }> {
 
   const retailerScrapeResults = { errors: 0, productsScraped: 0 };
@@ -39,10 +53,8 @@ async function runRetailerScrape(
     try {
       categories = await retailerScraper.discoverCategories();
     } catch (error) {
-      console.error(`Error occurred: Couldn't get the categories of ${retailer.name}.`);
-      console.error(error);
       retailerScrapeResults.errors += 1;
-      return retailerScrapeResults;
+      throw new Error(`Couldn't get the categories of ${retailer.name}`, { cause: error });
     }
 
     const categoryRepository = new PostgresCategoryRepository(pool);
@@ -56,24 +68,37 @@ async function runRetailerScrape(
           retailerScrapeResults.productsScraped += categoryScrapeResults.productsScraped;
           break;
         } catch (error) {
-          if (!isBrowserCrash(error) || retries >= retailer.retriesPerCategory) {
-            if (isBrowserCrash(error)) {
-              console.error(`Category scrape for ${category.name} still crashed after ${retries} retries.`);
+          if (retries >= retailer.retriesPerCategory || !isBrowserCrash(error)) {
+            let errorMessage = "";
+            if (retries >= retailer.retriesPerCategory) {
+              errorMessage = `Fatal error occurred in scraping of ${category.retailer}:${category.name}, crashed after ${retries} retries.`;
             } else {
-              console.error(`Non fatal error occurred in scraping of ${category.name}, continuing to next category.`);
+              errorMessage = `Fatal error occurred in scraping of ${category.retailer}:${category.name}`;
             }
+            console.error(errorMessage);
             console.error(error);
-            retailerScrapeResults.errors += 1;
-            break;
+            try {
+              const now = getCurrentTimeInSydney();
+              sendEmail(
+                `${now}: Failed ${retailer.name}:${category.name} Scrape`,
+                `${errorMessage}\n${error instanceof Error ? error.toString() : String(error)}`,
+                config.scrape.notifiedEmail,
+                config.domain,
+                resend
+              );
+            } catch (error) {
+              console.error(`Couldn't send an email notifying of ${retailer.name} scrape failure`);
+            }
+          } else {
+            retries += 1;
+            console.warn(
+              `Browser crashed while scraping ${category.name}; restarting it and retrying ` +
+              `(${retries}/${retailer.retriesPerCategory}).`,
+            );
+            await closeScraper(retailerScraper);
+            retailerScraper = await createRetailerScraper(retailer.name, config);
+            continue;
           }
-
-          retries += 1;
-          console.warn(
-            `Browser crashed while scraping ${category.name}; restarting it and retrying ` +
-            `(${retries}/${retailer.retriesPerCategory}).`,
-          );
-          await closeScraper(retailerScraper);
-          retailerScraper = await createRetailerScraper(retailer.name, config);
         }
       }
     }
