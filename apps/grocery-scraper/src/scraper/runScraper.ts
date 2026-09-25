@@ -13,7 +13,7 @@ export async function runScrape(config: Config, pool: Pool, resend: Resend): Pro
   const retailerRepository = new PostgresRetailerRepository(pool);
   for (const retailer of config.retailers.filter((candidate) => candidate.enabled)) {
     try {
-      retailerRepository.createOrUpdate(retailer);
+      await retailerRepository.createOrUpdate(retailer);
       const retailerScrapeResults = await runRetailerScrape(retailer, config, pool, resend);
       scrapeResults.errors += retailerScrapeResults.errors;
       scrapeResults.productsScraped += retailerScrapeResults.productsScraped;
