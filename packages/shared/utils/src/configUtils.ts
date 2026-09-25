@@ -31,11 +31,13 @@ export interface Config {
   scrape: {
     throttleBetweenPagesMs: number;
     navigationTimeoutMs: number;
+    notifiedEmail: string;
   };
   retailers: RetailerScrapeConfig[];
   resend: {
     apiKey: string
   }
+  domain: string,
 }
 
 
@@ -57,6 +59,7 @@ type ConfigInput = {
   scrape?: {
     throttleBetweenPagesMs?: number;
     navigationTimeoutMs?: number;
+    notifiedEmail?: string;
   };
   retailers?: Array<{
     name?: Retailer["name"];
@@ -66,7 +69,8 @@ type ConfigInput = {
   }>;
   resend?: {
     apiKey?: string
-  }
+  };
+  domain?: string;
 };
 
 export function loadConfig(configPath = "config.yaml"): Config {
@@ -102,6 +106,10 @@ export function validateConfig(config: ConfigInput, source = "config"): Config {
     throw new Error(`${source}: resend.apiKey is required`);
   }
 
+  if (!config.domain) {
+    throw new Error(`${source}: domain is required`);
+  }
+
   const headless = config.browser?.headless ?? true;
   const throttleBetweenPagesMs = numberOrDefault(config.scrape?.throttleBetweenPagesMs, 1500, "scrape.throttleBetweenPagesMs");
   const navigationTimeoutMs = numberOrDefault(
@@ -109,6 +117,15 @@ export function validateConfig(config: ConfigInput, source = "config"): Config {
     45000,
     "scrape.navigationTimeoutMs",
   );
+
+  const emailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,}$/;
+  const notifiedEmail = config.scrape?.notifiedEmail;
+  if (!notifiedEmail) {
+    throw new Error(`${source}: scrape.notifiedEmail is required`);
+  }
+  if (!emailRegex.test(notifiedEmail)) {
+    throw new Error(`${source}: scrape.notifiedEmail needs to be a valid email address`);
+  }
 
   if (!Array.isArray(config.retailers) || config.retailers.length === 0) {
     throw new Error(`${source}: at least one retailer is required`);
@@ -141,9 +158,10 @@ export function validateConfig(config: ConfigInput, source = "config"): Config {
     },
     schedule: { cron: config.schedule.cron },
     browser: { headless },
-    scrape: { throttleBetweenPagesMs, navigationTimeoutMs },
+    scrape: { throttleBetweenPagesMs, navigationTimeoutMs, notifiedEmail },
     retailers,
-    resend: { apiKey: config.resend.apiKey }
+    resend: { apiKey: config.resend.apiKey },
+    domain: config.domain
   };
 }
 
