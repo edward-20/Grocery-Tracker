@@ -4,7 +4,6 @@ import { chromium } from "playwright-extra";
 import { WoolworthsScraper } from "../src/scraper/woolworthsScraper.js";
 import { readFile } from "fs/promises";
 import { Category } from "@grocery-tracker/domain-model";
-import { Config } from "@grocery-tracker/utils";
 import StealthPlugin from "puppeteer-extra-plugin-stealth"
 import { PostgreSqlContainer } from "@testcontainers/postgresql";
 import { initDbSchema } from "@grocery-tracker/db";
