@@ -22,7 +22,7 @@ export async function runScrape(config: Config, pool: Pool, resend: Resend): Pro
       console.error(error);
       const now = getCurrentTimeInSydney();
       try {
-        sendEmail(
+        await sendEmail(
           `${now}: Failed ${retailer.name} Scrape`,
           `Fatal error occurred in scraping of ${retailer.name}\n${error instanceof Error ? error.toString() : String(error)}`,
           config.scrape.notifiedEmail,
@@ -79,7 +79,7 @@ async function runRetailerScrape(
             console.error(error);
             try {
               const now = getCurrentTimeInSydney();
-              sendEmail(
+              await sendEmail(
                 `${now}: Failed ${retailer.name}:${category.name} Scrape`,
                 `${errorMessage}\n${error instanceof Error ? error.toString() : String(error)}`,
                 config.scrape.notifiedEmail,
@@ -89,6 +89,8 @@ async function runRetailerScrape(
             } catch (error) {
               console.error(`Couldn't send an email notifying of ${retailer.name} scrape failure`);
             }
+            retailerScrapeResults.errors += 1;
+            break;
           } else {
             retries += 1;
             console.warn(

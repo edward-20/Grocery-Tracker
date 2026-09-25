@@ -31,14 +31,14 @@ async function runScheduledScrape(): Promise<void> {
     } else if (initialisedStatus.status === "broken") {
       throw new Error("Database is broken");
     }
-    const summary = await runScrape(config, pool);
+    const summary = await runScrape(config, pool, resend);
     const message = `Scheduled scrape complete: ${summary.productsScraped} scanned product(s), ` +
         `${summary.errors} error(s).`;
     console.log(message);
 
     try {
       const now = getCurrentTimeInSydney();
-      sendEmail(
+      await sendEmail(
         `${now} scrape results`,
         message,
         config.scrape.notifiedEmail,
