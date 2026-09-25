@@ -118,7 +118,7 @@ export function validateConfig(config: ConfigInput, source = "config"): Config {
     "scrape.navigationTimeoutMs",
   );
 
-  const emailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,}$/;
+  const emailRegex = new RegExp("^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,}$");
   const notifiedEmail = config.scrape?.notifiedEmail;
   if (!notifiedEmail) {
     throw new Error(`${source}: scrape.notifiedEmail is required`);
