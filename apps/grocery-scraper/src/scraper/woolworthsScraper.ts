@@ -156,8 +156,20 @@ export class WoolworthsScraper extends RetailerScraper {
         }
         await sleep(this.config.scrape.throttleBetweenPagesMs);
       }
+    } catch (error) {
+      throw new Error(
+        `Woolworths scrape failed for ${category.name} at ${page.url()}`,
+        { cause: error },
+      );
     } finally {
-      page.close();
+      try {
+        await page.close();
+      } catch (closeError) {
+        // A crashed renderer may already have disposed of its page. Do not mask
+        // the scrape error that triggered recovery with a cleanup failure.
+        console.warn(`Couldn't close Woolworths page for ${category.name}.`);
+        console.warn(closeError);
+      }
     }
   }
 

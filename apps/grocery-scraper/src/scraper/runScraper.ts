@@ -94,9 +94,11 @@ async function runRetailerScrape(
           } else {
             retries += 1;
             console.warn(
-              `Browser crashed while scraping ${category.name}; restarting it and retrying ` +
+              `Browser target crashed while scraping ${category.retailer}:${category.name}; ` +
+              `discarding the browser and retrying the category ` +
               `(${retries}/${retailer.retriesPerCategory}).`,
             );
+            console.warn(error);
             await closeScraper(retailerScraper);
             retailerScraper = await createRetailerScraper(retailer.name, config);
             continue;
@@ -117,8 +119,19 @@ async function createRetailerScraper(retailer: Retailer["name"], config: Config)
   }
 }
 
-function isBrowserCrash(error: unknown): boolean {
-  return error instanceof Error && /page crashed/i.test(error.message);
+export function isBrowserCrash(error: unknown): boolean {
+  const seen = new Set<unknown>();
+  let current = error;
+
+  while (current instanceof Error && !seen.has(current)) {
+    seen.add(current);
+    if (/\b(?:page|target) crashed\b/i.test(current.message)) {
+      return true;
+    }
+    current = current.cause;
+  }
+
+  return false;
 }
 
 async function closeScraper(scraper: RetailerScraper): Promise<void> {
