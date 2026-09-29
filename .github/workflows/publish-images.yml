@@ -8,8 +8,59 @@ permissions:
   contents: read
 
 jobs:
+  changes:
+    name: Detect image changes
+    runs-on: ubuntu-latest
+    outputs:
+      frontend: ${{ steps.filter.outputs.frontend }}
+      scraper: ${{ steps.filter.outputs.scraper }}
+    steps:
+      - name: Check out the release commit and its history
+        uses: actions/checkout@v6
+        with:
+          ref: ${{ github.event.release.tag_name }}
+          fetch-depth: 0
+
+      - name: Find the previous release tag
+        id: previous-release
+        env:
+          RELEASE_TAG: ${{ github.event.release.tag_name }}
+        run: |
+          previous_tag="$(git describe --tags --abbrev=0 "${RELEASE_TAG}^" 2>/dev/null || true)"
+          if [ -n "$previous_tag" ]; then
+            echo "base=$previous_tag" >> "$GITHUB_OUTPUT"
+          else
+            # Compare the first release against an empty tree so every image is built.
+            echo "base=$(git hash-object -t tree /dev/null)" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: Detect changes to Docker build inputs
+        id: filter
+        uses: dorny/paths-filter@v4
+        with:
+          base: ${{ steps.previous-release.outputs.base }}
+          ref: ${{ github.event.release.tag_name }}
+          filters: |
+            frontend:
+              - 'apps/frontend/**'
+              - 'packages/shared/db/**'
+              - 'packages/shared/domain-model/**'
+              - 'packages/shared/utils/**'
+              - 'package.json'
+              - 'pnpm-lock.yaml'
+              - 'pnpm-workspace.yaml'
+            scraper:
+              - 'apps/grocery-scraper/**'
+              - 'packages/shared/db/**'
+              - 'packages/shared/domain-model/**'
+              - 'packages/shared/utils/**'
+              - 'package.json'
+              - 'pnpm-lock.yaml'
+              - 'pnpm-workspace.yaml'
+
   publish:
     name: Publish ${{ matrix.image }}
+    needs: changes
     runs-on: ubuntu-latest
     strategy:
       fail-fast: false
@@ -17,8 +68,10 @@ jobs:
         include:
           - image: grocery-tracker-frontend
             dockerfile: apps/frontend/Dockerfile
+            changed: ${{ needs.changes.outputs.frontend }}
           - image: grocery-tracker-scraper
             dockerfile: apps/grocery-scraper/Dockerfile
+            changed: ${{ needs.changes.outputs.scraper }}
     steps:
       - name: Check out the release commit
         uses: actions/checkout@v6
@@ -26,15 +79,18 @@ jobs:
           ref: ${{ github.event.release.tag_name }}
 
       - name: Set up Docker Buildx
+        if: matrix.changed == 'true'
         uses: docker/setup-buildx-action@v4
 
       - name: Log in to Docker Hub
+        if: matrix.changed == 'true'
         uses: docker/login-action@v4
         with:
           username: ${{ vars.DOCKERHUB_USERNAME }}
           password: ${{ secrets.DOCKERHUB_TOKEN }}
 
       - name: Generate image metadata
+        if: matrix.changed == 'true'
         id: metadata
         uses: docker/metadata-action@v6
         with:
@@ -49,6 +105,7 @@ jobs:
             org.opencontainers.image.version=${{ github.event.release.tag_name }}
 
       - name: Build and push image
+        if: matrix.changed == 'true'
         uses: docker/build-push-action@v7
         with:
           context: .
