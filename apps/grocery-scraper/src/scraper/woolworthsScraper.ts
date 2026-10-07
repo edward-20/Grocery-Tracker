@@ -118,12 +118,12 @@ export class WoolworthsScraper extends RetailerScraper {
     const page = await this.context.newPage();
 
     try {
-      let productPageResponse = this.getFulfilledResponse(page);
-
-      await page.goto(`${this.retailerUrl}${category.path}`);
+      let [response] = await Promise.all([
+        this.getFulfilledResponse(page),
+        page.goto(`${this.retailerUrl}${category.path}`),
+      ]);
       console.log(`${new Date()}: ${this.retailerUrl}${category.path}`);
 
-      let response = await productPageResponse;
       let rawData = await response?.json();
       for (const product of this.parseProductsPageJSON(rawData, category)) {
         yield product;
@@ -140,15 +140,13 @@ export class WoolworthsScraper extends RetailerScraper {
         await nextLink.scrollIntoViewIfNeeded();
 
         // Start waiting BEFORE clicking
-        let productPageResponse = this.getFulfilledResponse(page);
-
-        await nextLink.click();
+        [response] = await Promise.all([
+          this.getFulfilledResponse(page),
+          nextLink.click(),
+        ]);
         await page.waitForLoadState('domcontentloaded');
         console.log(`${new Date()}: ${page.url()}`);
 
-
-        // This resolves when the click triggers the API request
-        response = await productPageResponse;
         rawData = await response?.json();
 
         for (const product of this.parseProductsPageJSON(rawData, category)) {

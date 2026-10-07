@@ -57,7 +57,9 @@ async function runScheduledScrape(): Promise<void> {
 }
 
 const task = cron.schedule(config.schedule.cron, () => {
-  void runScheduledScrape();
+  void runScheduledScrape().catch((error) => {
+    console.error("Unhandled scheduled-scrape failure:", error);
+  });
 });
 
 console.log(`Grocery scraper worker scheduled with cron: ${config.schedule.cron}`);
