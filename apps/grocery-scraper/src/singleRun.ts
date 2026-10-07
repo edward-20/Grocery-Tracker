@@ -1,5 +1,5 @@
 import { makeConnectionPool, initDbSchema, isInitialised } from "@grocery-tracker/db";
-import { loadConfig } from "@grocery-tracker/utils";
+import { getCurrentTimeInSydney, loadConfig, sendEmail } from "@grocery-tracker/utils";
 import { runScrape } from "./scraper/runScraper.js";
 import { Resend } from "resend";
 
@@ -14,12 +14,23 @@ try {
   } else if (initialisedStatus.status === "broken") {
     throw new Error("Database is broken");
   }
-  console.log("Beginning singular scrape")
   const summary = await runScrape(config, pool, resend);
-  console.log(
-    `Scheduled scrape complete: ${summary.productsScraped} scanned product(s), ` +
-      `${summary.errors} error(s).`,
-  );
+  const message = `Scheduled scrape complete: ${summary.productsScraped} scanned product(s), ` +
+      `${summary.errors} error(s).`;
+  console.log(message);
+
+  try {
+    const now = getCurrentTimeInSydney();
+    await sendEmail(
+      `${now} scrape results`,
+      message,
+      config.scrape.notifiedEmail,
+      config.domain,
+      resend
+    )
+  } catch (error) {
+    console.error("Couldn't send notification email");
+  }
 } catch (error) {
   console.error(`Fatal Error: couldn't run scrape. ${error}`)
 } finally {
