@@ -123,3 +123,11 @@ building of packages.
 With that being said, these will be implemented when the problem arises.
 Currently DX is not a concern, and the need to change the database schema hasn't
 presented itself.
+
+## Version 2
+* Github workflow pushing images with a tag identifying that the image is
+  preproduction
+* preproduction server as closely configured to the same settings as the
+production server as possible, where manual checks to the frontend can be conducted and
+  a single run of the scraper is conducted to see what issues arise
+* frontend has a page displaying the scrape statistics of the latest scrape run 
