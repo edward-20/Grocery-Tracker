@@ -14,7 +14,8 @@ packages
 
 # Development Mode
 Development mode boots up:
-* `packages/shared/db` dev mode which is a postgres container
+* `packages/shared/db` dev mode which is a postgres container as well as watches
+  the library source files
 * `apps/frontend` dev mode which is Vite dev mode
 You may optionally run:
 * `apps/grocery-scraper` with `pnpm singleRun`, `pnpm cli` or `pnpm worker`.
@@ -32,7 +33,11 @@ configurations for the database, schedule of the scraper (not relevant to dev
 mode), browser headless mode flag, scrape timing config and retailer
 configurations.
 
-Example:
+Have each package of the monorepo supply an env file with a path to their
+desired `config.yaml`. In my development workflow, I elected to have a root
+`config.yaml` which was referred to by all env files.
+
+## Config Schema
 ```
 database:
   host: 'localhost'
@@ -40,6 +45,7 @@ database:
   database: 'groceries-dev'
   user: 'dev'
   password: 'dev'
+  max: 5
 
 schedule:
   cron: "0 3 * * *"
@@ -50,20 +56,44 @@ browser:
 scrape:
   throttleBetweenPagesMs: 5000
   navigationTimeoutMs: 45000
+  notifiedEmail: "fakemail@email.com"
 
 retailers:
   - name: Woolworths
     enabled: true
     retriesPerCategory: 3
-    productByProduct: false
   - name: Coles
     enabled: true
     retriesPerCategory: 3
-    productByProduct: false
+
+resend:
+  apiKey: resendApiKey
+
+domain: somedomain.com
 ```
-Have each package of the monorepo supply an env file with a path to their
-desired `config.yaml`. In my development workflow, I elected to have a root
-`config.yaml` which was referred to by all env files.
+`database` tells of the database configuration, refer to `PoolConfig` on [this type documentation](https://github.com/DefinitelyTyped/DefinitelyTyped/blob/master/types/pg/index.d.ts)
+
+`schedule.cron` uses cron syntax
+
+`browser.headless` dictates whether you wish to run playwright in headless mode
+or not (advised to not run in headless for more successful scrapes)
+
+`scrape`:
+* `throttleBetweenPagesMs` is the time in ms between scraping pages
+* `throttleBetweenPagesMs` is the time in ms before playwright gives up on a
+redirect
+* `notifiedEmail` tells of which email is sent to detailing the results of a
+scrape
+
+`retailers`: gives the config of the retailers (leave mostly as is except
+`retriesPerCategory` which tells of how many times an attempt should be made on
+a category of a retailer before giving up)
+
+`resend.apiKey` is the api key for the transactional email service resend, used
+to email results of scrapes
+
+`domain` is the domain owned by you for the transactional email service and for
+the frontend in production
 
 # Deployment 
 ## Release images

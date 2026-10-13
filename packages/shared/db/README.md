@@ -9,7 +9,7 @@ within this monorepo.
    **development mode**.
 
 In order to fulfill purpose 2, an environment file (`.env`) must be placed in
-the root of the monorepo with the variable: `CONFIG_PATH` with database
+the root of this package with at least the variable: `CONFIG_PATH` with database
 configuration.
 
 ## Scripts and Lifecycle

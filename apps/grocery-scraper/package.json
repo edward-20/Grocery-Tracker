@@ -5,9 +5,9 @@
   "type": "module",
   "scripts": {
     "build": "tsup",
-    "worker": "tsx src/worker.ts",
-    "cli": "tsx src/cli.ts",
-    "singleRun": "tsx src/singleRun.ts",
+    "worker": "tsx --env-file=.env src/worker.ts",
+    "cli": "tsx --env-file=.env src/cli.ts",
+    "singleRun": "tsx --env-file=.env src/singleRun.ts",
     "test": "vitest run",
     "typecheck": "tsc --noEmit",
     "graph": "tsx scripts/call-graph.ts",
