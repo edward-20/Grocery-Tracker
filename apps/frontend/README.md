@@ -1,63 +1,20 @@
 # About
-This is the frontend of an Australian grocery price tracker. Currently it
-reports the prices of Woolworths and Coles products with the possibility of more
-in the future.
+Sveltekit frontend (server side rendered) interfacing with a postgres backend to
+provide prices of Australian groceries from Coles and Woolworths.
 
-## Technologies and Libraries in Use
-```
-SvelteKit and Svelte (SSR)
-vitest
+* search feature (ARIA combobox) based on product names or ids using suggestions
+* advanced search feature based on price range, time range, store filter,
+category filter
+* search results page
+* individual product page showing time vs price graph
+* AAA colour contrast
 
-```
-
-# How to work on this project
-1. Create a branch following the naming convention `<type>/<name>` where `type`
-   where type is any of:
-```
-[
-  'fix',
-  'feat',
-  'build',
-  'chore',
-  'ci',
-  'docs',
-  'feat',
-  'fix',
-  'perf',
-  'refactor',
-  'revert',
-  'style',
-  'test'
-];
-```
-2. This project requires TDD, so any new `feat`, requires testing for it.
+Currently very crude, but functional. Hoping to improve.
 
 ## Developing
-The frontend requires a PostgreSQL connection. Create a root `.env` file with
-`CONFIG_PATH` which is a path to a yml file containing configs for the
-database amongst other things.
-
-Once you've created a project and installed dependencies with `npm install` (or `pnpm install` or `yarn`), start a development server:
-
-```
-npm run dev
-pnpm dev
-```
-
-## Building
-
-To create a production version of your app:
-
-```sh
-npm run build
-```
-
-You can preview the production build with `npm run preview`.
-
-> To deploy your app, you may need to install an [adapter](https://svelte.dev/docs/kit/adapters) for your target environment.
-
-# branch naming conventions follow 
-lowercase, kebab case.
+The frontend requires a PostgreSQL connection. Create a `.env` file in this
+package with `CONFIG_PATH` which is a path to a yml file containing configs for
+the database amongst other things. Refer to the monorepo's root `README.md`.
 
 ## Pages
 `/search`
@@ -67,8 +24,9 @@ possible query parameters are:
 `id` which represents the string query for the retailer id of the product
 `page` which represents the page number wanted for the search result page
 
-More complex queries arise from the advanced search. Make the advanced search an
-upcoming feature and deal with these queries later on
-`store` is either "Woolworths" or "Coles"
-`minPrice` and `maxPrice` defines the range for the price
-`categories` represents the string query for the category name
+# Future Plans
+* advanced search handling query parameters `store`, `minPrice`, `maxPrice`,
+`categories`. This requires development from `@grocery-scraper/frontend` and
+`@grocery-scraper/db`
+* search page results list display with stylised cards with grocery item's image
+* being able to order results of the pages based on popularity or other
