@@ -1,5 +1,5 @@
 import { readFileSync } from "node:fs";
-import { resolve } from "node:path";
+import { isAbsolute } from "node:path";
 import YAML from "yaml";
 import type { Retailer } from "@grocery-tracker/domain-model";
 
@@ -73,10 +73,23 @@ type ConfigInput = {
   domain?: string;
 };
 
-export function loadConfig(configPath = "config.yaml"): Config {
-  const absolutePath = resolve(configPath);
-  const parsed = YAML.parse(readFileSync(absolutePath, "utf8")) as ConfigInput;
-  return validateConfig(parsed, absolutePath);
+/**
+ * Loads the application configuration from an absolute path.
+ *
+ * Requiring an absolute path keeps the selected configuration independent of
+ * the process working directory, which differs between local commands and
+ * deployed containers.
+ */
+export function loadConfig(configPath?: string): Config {
+  if (!configPath) {
+    throw new Error("CONFIG_PATH is required");
+  }
+  if (!isAbsolute(configPath)) {
+    throw new Error(`CONFIG_PATH must be an absolute path; received: ${configPath}`);
+  }
+
+  const parsed = YAML.parse(readFileSync(configPath, "utf8")) as ConfigInput;
+  return validateConfig(parsed, configPath);
 }
 
 const retailerNames = new Set<Retailer["name"]>(["Woolworths", "Coles"]);
