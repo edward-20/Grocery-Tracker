@@ -18,3 +18,7 @@ build
 
 # svelte generated
 .svelte-kit
+
+# config
+config.yaml
+config.yml
