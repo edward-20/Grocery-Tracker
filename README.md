@@ -127,7 +127,7 @@ The deployment process is:
    production server must supply an `.env` file with `CONFIG_PATH` path to a
    `config.yaml` for these images to run.
 
-[For my personal deployment of this project](ausgroceriescomparison.store), I
+[For my personal deployment of this project](https://ausgroceriescomparison.store), I
 have elected to run a docker compose with the following services and images.
 
 | Service    | Image                                         |
