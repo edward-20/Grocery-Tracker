@@ -130,11 +130,12 @@ The deployment process is:
 [For my personal deployment of this project](ausgroceriescomparison.store), I
 have elected to run a docker compose with the following services and images.
 
-|service   	|image   	|
-|scraper	|<DOCKERHUB_USERNAME>/grocery-tracker-scraper	|
-|frontend   	|<DOCKERHUB_USERNAME>/grocery-tracker-frontend   	|
-|database   	|timescale/timescaledb:latest-pg17 |
-|watchtower   	|containrrr/watchtower   	|
+| Service    | Image                                         |
+|------------|-----------------------------------------------|
+| Scraper    | `<DOCKERHUB_USERNAME>/grocery-tracker-scraper` |
+| Frontend   | `<DOCKERHUB_USERNAME>/grocery-tracker-frontend` |
+| Database   | `timescale/timescaledb:latest-pg17`            |
+| Watchtower | `containrrr/watchtower`                       |
 
 The watchtower watches for pushes to the container registries and pulls them in
 immediately.
