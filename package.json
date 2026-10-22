@@ -7,7 +7,7 @@
     "test": "echo \"Error: no test specified\" && exit 1",
     "dev": "pnpm -r dev",
     "build": "pnpm -r build",
-    "lint": "pnpm -r lint",
+    "lint": "eslint . && pnpm --dir apps/frontend exec eslint .",
     "format": "pnpm -r format",
     "prepare": "simple-git-hooks"
   },
@@ -24,9 +24,16 @@
   },
   "type": "module",
   "devDependencies": {
+    "@eslint/compat": "^2.0.5",
+    "@eslint/js": "^9.39.4",
+    "eslint": "catalog:code-formatting",
+    "eslint-config-prettier": "catalog:code-formatting",
+    "eslint-plugin-svelte": "^3.17.1",
+    "globals": "^17.6.0",
     "lint-staged": "^16.4.0",
     "prettier": "catalog:code-formatting",
-    "simple-git-hooks": "^2.14.0"
+    "simple-git-hooks": "^2.14.0",
+    "typescript-eslint": "catalog:"
   },
   "simple-git-hooks": {
     "pre-commit": "pnpm lint-staged"

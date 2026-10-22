@@ -19,15 +19,23 @@ const formatFiles = (files) => {
   ].filter(Boolean);
 };
 
-const lintFrontendFiles = (files) => {
+const lintFiles = (files) => {
   const filesToLint = sourceFiles(files);
+  const frontendFiles = filesToLint.filter((file) =>
+    file.includes("/apps/frontend/"),
+  );
+  const otherFiles = filesToLint.filter(
+    (file) => !file.includes("/apps/frontend/"),
+  );
 
-  return filesToLint.length > 0
-    ? `pnpm --dir apps/frontend exec eslint ${quoteFiles(filesToLint)}`
-    : [];
+  return [
+    otherFiles.length > 0 && `eslint ${quoteFiles(otherFiles)}`,
+    frontendFiles.length > 0 &&
+      `pnpm --dir apps/frontend exec eslint ${quoteFiles(frontendFiles)}`,
+  ].filter(Boolean);
 };
 
 export default {
   "*.{js,cjs,mjs,ts,tsx,svelte,css,html,json,yaml,yml,md}": formatFiles,
-  "apps/frontend/**/*.{js,cjs,mjs,ts,tsx,svelte}": lintFrontendFiles,
+  "**/*.{js,cjs,mjs,ts,tsx,svelte}": lintFiles,
 };

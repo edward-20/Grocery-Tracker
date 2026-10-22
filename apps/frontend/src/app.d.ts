@@ -10,7 +10,4 @@ declare global {
 	}
 }
 
-declare module 'chartjs-adapter-date-fns';
 export {};
-
-const THIS_SHOULD_BE_AN_ERROR: string = 123;
