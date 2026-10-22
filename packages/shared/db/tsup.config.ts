@@ -9,9 +9,11 @@ export default defineConfig({
   dts: true,
   clean: true,
   loader: {
-    ".sql": "text"
+    ".sql": "text",
   },
   onSuccess: async () => {
-    await Promise.all(sqlFiles.map(file => copyFile(`src/${file}`, `dist/${file}`)));
+    await Promise.all(
+      sqlFiles.map((file) => copyFile(`src/${file}`, `dist/${file}`)),
+    );
   },
 });

@@ -3,13 +3,14 @@ import { readdir } from "fs/promises";
 import { spawn } from "node:child_process";
 import { loadConfig } from "@grocery-tracker/utils";
 
-
 // uses docker compose to run psql commands from seed file
 try {
   const config = loadConfig(process.env.CONFIG_PATH);
 
   // find out what the latest migration was
-  const migrationFiles = await readdir(new URL("../migrations/", import.meta.url));
+  const migrationFiles = await readdir(
+    new URL("../migrations/", import.meta.url),
+  );
   const lastMigrationFile = migrationFiles.sort().at(-1);
 
   const match = lastMigrationFile?.match(/^(\d+)\.migration\.sql$/);
@@ -17,43 +18,53 @@ try {
 
   let seedFiles: string[];
   if (lastMigrationNumber) {
-    seedFiles = (await readdir(new URL(`../seed/${lastMigrationNumber}/`, import.meta.url))).sort();
+    seedFiles = (
+      await readdir(new URL(`../seed/${lastMigrationNumber}/`, import.meta.url))
+    ).sort();
   } else {
-    seedFiles = (await readdir(new URL(`../seed/baseSchema/`, import.meta.url))).sort();
+    seedFiles = (
+      await readdir(new URL(`../seed/baseSchema/`, import.meta.url))
+    ).sort();
   }
   const seedFileName = seedFiles.at(-1);
 
   const seed = await readFile(
-    new URL(`../seed/${lastMigrationNumber ?? "baseSchema"}/${seedFileName}`, import.meta.url),
-    'utf8'
+    new URL(
+      `../seed/${lastMigrationNumber ?? "baseSchema"}/${seedFileName}`,
+      import.meta.url,
+    ),
+    "utf8",
   );
 
   const child = spawn(
-    'docker',
+    "docker",
     [
-      'compose',
-      '-f', './compose.yaml',
-      'exec',
-      '-T',
-      'postgres',
-      'psql',
-      '-U', config.database.user,
-      '-d', config.database.database,
+      "compose",
+      "-f",
+      "./compose.yaml",
+      "exec",
+      "-T",
+      "postgres",
+      "psql",
+      "-U",
+      config.database.user,
+      "-d",
+      config.database.database,
     ],
     {
-      stdio: ['pipe', 'pipe', 'pipe'],
+      stdio: ["pipe", "pipe", "pipe"],
       env: {
         ...process.env,
         PGPASSWORD: config.database.password,
       },
-    }
+    },
   );
 
-  child.stdout.on('data', data => {
+  child.stdout.on("data", (data) => {
     process.stdout.write(data);
   });
 
-  child.stderr.on('data', data => {
+  child.stderr.on("data", (data) => {
     process.stderr.write(data);
   });
 
@@ -61,14 +72,13 @@ try {
   child.stdin.end();
 
   const exitCode = await new Promise<number | null>((resolve, reject) => {
-    child.once('error', reject);
-    child.once('close', resolve);
+    child.once("error", reject);
+    child.once("close", resolve);
   });
 
   if (exitCode !== 0) {
     throw new Error(`psql exited with code ${exitCode}`);
   }
-
 } catch (error) {
   console.error(error);
   process.exitCode = 1;

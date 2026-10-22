@@ -100,7 +100,9 @@
 		aria-expanded={expanded}
 		aria-autocomplete="list"
 		aria-activedescendant={`suggestion-${selectedSuggestionIndex}`}
-		onfocusout={() => {expanded = false}}
+		onfocusout={() => {
+			expanded = false;
+		}}
 	/>
 	{#if expanded}
 		<ul
@@ -135,6 +137,7 @@
 		</ul>
 	{/if}
 </div>
+
 <style>
 	.inactive-suggestion {
 		background-color: var(--color-base-200);

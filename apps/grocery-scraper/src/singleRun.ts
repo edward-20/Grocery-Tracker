@@ -1,5 +1,13 @@
-import { makeConnectionPool, initDbSchema, isInitialised } from "@grocery-tracker/db";
-import { getCurrentTimeInSydney, loadConfig, sendEmail } from "@grocery-tracker/utils";
+import {
+  makeConnectionPool,
+  initDbSchema,
+  isInitialised,
+} from "@grocery-tracker/db";
+import {
+  getCurrentTimeInSydney,
+  loadConfig,
+  sendEmail,
+} from "@grocery-tracker/utils";
 import { runScrape } from "./scraper/runScraper.js";
 import { Resend } from "resend";
 
@@ -15,8 +23,9 @@ try {
     throw new Error("Database is broken");
   }
   const summary = await runScrape(config, pool, resend);
-  const message = `Scheduled scrape complete: ${summary.productsScraped} scanned product(s), ` +
-      `${summary.errors} error(s).`;
+  const message =
+    `Scheduled scrape complete: ${summary.productsScraped} scanned product(s), ` +
+    `${summary.errors} error(s).`;
   console.log(message);
 
   try {
@@ -26,13 +35,13 @@ try {
       message,
       config.scrape.notifiedEmail,
       config.domain,
-      resend
-    )
+      resend,
+    );
   } catch (error) {
     console.error("Couldn't send notification email");
   }
 } catch (error) {
-  console.error(`Fatal Error: couldn't run scrape. ${error}`)
+  console.error(`Fatal Error: couldn't run scrape. ${error}`);
 } finally {
   await pool.end();
 }

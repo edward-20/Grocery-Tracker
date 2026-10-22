@@ -1,6 +1,14 @@
 import cron from "node-cron";
-import { getCurrentTimeInSydney, loadConfig, sendEmail } from "@grocery-tracker/utils";
-import { makeConnectionPool, isInitialised, initDbSchema } from "@grocery-tracker/db";
+import {
+  getCurrentTimeInSydney,
+  loadConfig,
+  sendEmail,
+} from "@grocery-tracker/utils";
+import {
+  makeConnectionPool,
+  isInitialised,
+  initDbSchema,
+} from "@grocery-tracker/db";
 import { runScrape } from "./scraper/runScraper.js";
 import { Resend } from "resend";
 
@@ -32,8 +40,9 @@ async function runScheduledScrape(): Promise<void> {
       throw new Error("Database is broken");
     }
     const summary = await runScrape(config, pool, resend);
-    const message = `Scheduled scrape complete: ${summary.productsScraped} scanned product(s), ` +
-        `${summary.errors} error(s).`;
+    const message =
+      `Scheduled scrape complete: ${summary.productsScraped} scanned product(s), ` +
+      `${summary.errors} error(s).`;
     console.log(message);
 
     try {
@@ -43,13 +52,13 @@ async function runScheduledScrape(): Promise<void> {
         message,
         config.scrape.notifiedEmail,
         config.domain,
-        resend
-      )
+        resend,
+      );
     } catch (error) {
       console.error("Couldn't send notification email");
     }
   } catch (error) {
-    console.error(`Fatal Error: couldn't run scrape. ${error}`)
+    console.error(`Fatal Error: couldn't run scrape. ${error}`);
   } finally {
     await pool.end();
     running = false;
@@ -62,7 +71,9 @@ const task = cron.schedule(config.schedule.cron, () => {
   });
 });
 
-console.log(`Grocery scraper worker scheduled with cron: ${config.schedule.cron}`);
+console.log(
+  `Grocery scraper worker scheduled with cron: ${config.schedule.cron}`,
+);
 
 for (const signal of ["SIGINT", "SIGTERM"] as const) {
   process.on(signal, () => {

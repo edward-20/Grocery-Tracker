@@ -1,21 +1,21 @@
 import { Pool } from "pg";
 
 export type DatabaseConfig = {
-  host: string,
-  port: number,
-  database: string,
-  user: string,
-  password: string,
-  max?: number
-} 
+  host: string;
+  port: number;
+  database: string;
+  user: string;
+  password: string;
+  max?: number;
+};
 
-export function makeConnectionPool(config: DatabaseConfig) : Pool {
+export function makeConnectionPool(config: DatabaseConfig): Pool {
   const pool = new Pool({
-    ...config
+    ...config,
   });
-  pool.on('error', (err, _) => {
-    console.error('Unexpected error on idle client', err);
+  pool.on("error", (err, _) => {
+    console.error("Unexpected error on idle client", err);
     process.exit(-1);
-  })
+  });
   return pool;
 }

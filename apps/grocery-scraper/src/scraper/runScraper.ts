@@ -1,20 +1,40 @@
-import { Config, getCurrentTimeInSydney, sendEmail } from "@grocery-tracker/utils";
+import {
+  Config,
+  getCurrentTimeInSydney,
+  sendEmail,
+} from "@grocery-tracker/utils";
 import { ColesScraper } from "./colesScraper.js";
 import { WoolworthsScraper } from "./woolworthsScraper.js";
 import { RetailerScraper } from "./retailerScraper.js";
 import { Category, Retailer } from "@grocery-tracker/domain-model";
 import { Pool } from "pg";
-import { ProductRepository, PostgresCategoryRepository, PostgresProductRepository, PostgresRetailerRepository } from "@grocery-tracker/db";
+import {
+  ProductRepository,
+  PostgresCategoryRepository,
+  PostgresProductRepository,
+  PostgresRetailerRepository,
+} from "@grocery-tracker/db";
 import { shuffle } from "../utils/shuffle.js";
 import { Resend } from "resend";
 
-export async function runScrape(config: Config, pool: Pool, resend: Resend): Promise<{ errors: number, productsScraped: number }> {
+export async function runScrape(
+  config: Config,
+  pool: Pool,
+  resend: Resend,
+): Promise<{ errors: number; productsScraped: number }> {
   const scrapeResults = { errors: 0, productsScraped: 0 };
   const retailerRepository = new PostgresRetailerRepository(pool);
-  for (const retailer of config.retailers.filter((candidate) => candidate.enabled)) {
+  for (const retailer of config.retailers.filter(
+    (candidate) => candidate.enabled,
+  )) {
     try {
       await retailerRepository.createOrUpdate(retailer);
-      const retailerScrapeResults = await runRetailerScrape(retailer, config, pool, resend);
+      const retailerScrapeResults = await runRetailerScrape(
+        retailer,
+        config,
+        pool,
+        resend,
+      );
       scrapeResults.errors += retailerScrapeResults.errors;
       scrapeResults.productsScraped += retailerScrapeResults.productsScraped;
     } catch (error) {
@@ -27,10 +47,12 @@ export async function runScrape(config: Config, pool: Pool, resend: Resend): Pro
           `Fatal error occurred in scraping of ${retailer.name}\n${error instanceof Error ? error.toString() : String(error)}`,
           config.scrape.notifiedEmail,
           config.domain,
-          resend
+          resend,
         );
       } catch (error) {
-        console.error(`Couldn't send an email notifying of ${retailer.name} scrape failure`);
+        console.error(
+          `Couldn't send an email notifying of ${retailer.name} scrape failure`,
+        );
       }
       scrapeResults.errors += 1;
     }
@@ -42,9 +64,8 @@ async function runRetailerScrape(
   retailer: Config["retailers"][number],
   config: Config,
   pool: Pool,
-  resend: Resend
-): Promise<{ errors: number, productsScraped: number }> {
-
+  resend: Resend,
+): Promise<{ errors: number; productsScraped: number }> {
   const retailerScrapeResults = { errors: 0, productsScraped: 0 };
   let retailerScraper = await createRetailerScraper(retailer.name, config);
 
@@ -54,21 +75,32 @@ async function runRetailerScrape(
       categories = await retailerScraper.discoverCategories();
     } catch (error) {
       retailerScrapeResults.errors += 1;
-      throw new Error(`Couldn't get the categories of ${retailer.name}`, { cause: error });
+      throw new Error(`Couldn't get the categories of ${retailer.name}`, {
+        cause: error,
+      });
     }
 
     const categoryRepository = new PostgresCategoryRepository(pool);
-    for (const category of shuffle(categories))  {
+    for (const category of shuffle(categories)) {
       let retries = 0;
       while (true) {
         try {
-          const createdCategory = await categoryRepository.createOrUpdate(category);
-          const categoryScrapeResults = await runCategoryScrape(createdCategory, retailerScraper, pool);
+          const createdCategory =
+            await categoryRepository.createOrUpdate(category);
+          const categoryScrapeResults = await runCategoryScrape(
+            createdCategory,
+            retailerScraper,
+            pool,
+          );
           retailerScrapeResults.errors += categoryScrapeResults.errors;
-          retailerScrapeResults.productsScraped += categoryScrapeResults.productsScraped;
+          retailerScrapeResults.productsScraped +=
+            categoryScrapeResults.productsScraped;
           break;
         } catch (error) {
-          if (retries >= retailer.retriesPerCategory || !isBrowserCrash(error)) {
+          if (
+            retries >= retailer.retriesPerCategory ||
+            !isBrowserCrash(error)
+          ) {
             let errorMessage = "";
             if (retries >= retailer.retriesPerCategory) {
               errorMessage = `Fatal error occurred in scraping of ${category.retailer}:${category.name}, crashed after ${retries} retries.`;
@@ -84,10 +116,12 @@ async function runRetailerScrape(
                 `${errorMessage}\n${error instanceof Error ? error.toString() : String(error)}`,
                 config.scrape.notifiedEmail,
                 config.domain,
-                resend
+                resend,
               );
             } catch (error) {
-              console.error(`Couldn't send an email notifying of ${retailer.name} scrape failure`);
+              console.error(
+                `Couldn't send an email notifying of ${retailer.name} scrape failure`,
+              );
             }
             retailerScrapeResults.errors += 1;
             break;
@@ -95,12 +129,15 @@ async function runRetailerScrape(
             retries += 1;
             console.warn(
               `Browser target crashed while scraping ${category.retailer}:${category.name}; ` +
-              `discarding the browser and retrying the category ` +
-              `(${retries}/${retailer.retriesPerCategory}).`,
+                `discarding the browser and retrying the category ` +
+                `(${retries}/${retailer.retriesPerCategory}).`,
             );
             console.warn(error);
             await closeScraper(retailerScraper);
-            retailerScraper = await createRetailerScraper(retailer.name, config);
+            retailerScraper = await createRetailerScraper(
+              retailer.name,
+              config,
+            );
             continue;
           }
         }
@@ -112,10 +149,15 @@ async function runRetailerScrape(
   }
 }
 
-async function createRetailerScraper(retailer: Retailer["name"], config: Config): Promise<RetailerScraper> {
+async function createRetailerScraper(
+  retailer: Retailer["name"],
+  config: Config,
+): Promise<RetailerScraper> {
   switch (retailer) {
-    case "Coles": return ColesScraper.create(config);
-    case "Woolworths": return WoolworthsScraper.create(config);
+    case "Coles":
+      return ColesScraper.create(config);
+    case "Woolworths":
+      return WoolworthsScraper.create(config);
   }
 }
 
@@ -149,22 +191,27 @@ async function closeScraper(scraper: RetailerScraper): Promise<void> {
 async function runCategoryScrape(
   category: Category,
   retailerScraper: RetailerScraper,
-  pool: Pool
-): Promise<{errors: number, productsScraped: number}> {
-
+  pool: Pool,
+): Promise<{ errors: number; productsScraped: number }> {
   const categoryScrapeResults = { errors: 0, productsScraped: 0 };
 
-  const productRepository: ProductRepository = new PostgresProductRepository(pool);
-  for await (const product of retailerScraper.scrapeProductsOfCategory(category)) {
+  const productRepository: ProductRepository = new PostgresProductRepository(
+    pool,
+  );
+  for await (const product of retailerScraper.scrapeProductsOfCategory(
+    category,
+  )) {
     try {
       await productRepository.createOrUpdate(product);
       categoryScrapeResults.productsScraped += 1;
     } catch (error) {
-      console.error(`Non fatal error occurred in writing product ${product.name}. Continuing onto next product`);
+      console.error(
+        `Non fatal error occurred in writing product ${product.name}. Continuing onto next product`,
+      );
       console.error(error);
       categoryScrapeResults.errors += 1;
     }
-  };
+  }
 
   return categoryScrapeResults;
 }

@@ -8,16 +8,15 @@
 	import type { Chart as ChartType } from 'chart.js';
 	import type { ValueAtTime } from '@grocery-tracker/domain-model';
 
-	let {points}: {
-		points: Extract<
-			PriceHistoryPageLoadResponse, 
-		{type: 'success' }
-		>["points"]
+	let {
+		points
+	}: {
+		points: Extract<PriceHistoryPageLoadResponse, { type: 'success' }>['points'];
 	} = $props();
 
 	let canvas: HTMLCanvasElement | undefined = $state();
 
-	function toXY(valueAtTime: ValueAtTime[]): { x: number, y: number }[] {
+	function toXY(valueAtTime: ValueAtTime[]): { x: number; y: number }[] {
 		return valueAtTime
 			.map((vat) => {
 				return { x: vat.time.getTime(), y: vat.price }; // this needs to
@@ -35,7 +34,7 @@
 		let chart: ChartType | null = null;
 
 		const run = async () => {
-			const [{ Chart, registerables }, _adapter] = await Promise.all([
+			const [{ Chart, registerables }] = await Promise.all([
 				import('chart.js'),
 				import('chartjs-adapter-date-fns')
 			]);
@@ -52,7 +51,7 @@
 							borderColor: 'rgb(29, 120, 63)',
 							backgroundColor: 'rgba(29, 120, 63, 0.08)',
 							fill: false,
-							tension: 0.2,
+							tension: 0.2
 						}
 					]
 				},

@@ -36,42 +36,36 @@ const databaseStageQuery = `
 export async function determineStage(): Promise<Stage> {
   const config = loadConfig(process.env.CONFIG_PATH);
 
-  const { stdout } = await execFileAsync(
-    "docker",
-    [
-      "compose",
-      "-f",
-      composeFile,
-      "ps",
-      "--services",
-      "--filter",
-      "status=running",
-    ],
-  );
+  const { stdout } = await execFileAsync("docker", [
+    "compose",
+    "-f",
+    composeFile,
+    "ps",
+    "--services",
+    "--filter",
+    "status=running",
+  ]);
 
   if (!stdout.split(/\r?\n/).some((service) => service.trim() === "postgres")) {
     return Stage.Stopped;
   }
 
-  const { stdout: stage } = await execFileAsync(
-    "docker",
-    [
-      "compose",
-      "-f",
-      composeFile,
-      "exec",
-      "-T",
-      "postgres",
-      "psql",
-      "-qtAX",
-      "-U",
-      config.database.user,
-      "-d",
-      config.database.database,
-      "-c",
-      databaseStageQuery,
-    ],
-  );
+  const { stdout: stage } = await execFileAsync("docker", [
+    "compose",
+    "-f",
+    composeFile,
+    "exec",
+    "-T",
+    "postgres",
+    "psql",
+    "-qtAX",
+    "-U",
+    config.database.user,
+    "-d",
+    config.database.database,
+    "-c",
+    databaseStageQuery,
+  ]);
 
   switch (stage.trim()) {
     case "started-bare":
@@ -81,7 +75,9 @@ export async function determineStage(): Promise<Stage> {
     case "seeded":
       return Stage.Seeded;
     default:
-      throw new Error(`Unexpected database stage returned by Postgres: ${stage.trim() || "(empty)"}`);
+      throw new Error(
+        `Unexpected database stage returned by Postgres: ${stage.trim() || "(empty)"}`,
+      );
   }
 }
 
@@ -108,7 +104,9 @@ async function startPostgres() {
       return;
     } catch (error) {
       if (Date.now() >= deadline) {
-        throw new Error("Postgres did not become ready within 30 seconds", { cause: error });
+        throw new Error("Postgres did not become ready within 30 seconds", {
+          cause: error,
+        });
       }
       await new Promise((resolve) => setTimeout(resolve, 500));
     }
@@ -152,7 +150,10 @@ async function main() {
   console.log("Database is seeded and ready.");
 }
 
-if (process.argv[1] && resolve(process.argv[1]) === fileURLToPath(import.meta.url)) {
+if (
+  process.argv[1] &&
+  resolve(process.argv[1]) === fileURLToPath(import.meta.url)
+) {
   main().catch((error: unknown) => {
     console.error(error);
     process.exitCode = 1;

@@ -1,9 +1,11 @@
 # grocery-scraper
+
 TypeScript scraper application for Woolworths and Coles product pages. It uses
 Playwright to discover categories from configured retailers and goes through the
 categories scraping the products of each page.
 
 ## Developing
+
 As said in the root `README.md`, there is no defined development lifecycle as
 its hard to attain a good feedback loop based on a scrape which can take several
 hours. That being said, you can run it locally for development (without the typical
@@ -26,7 +28,8 @@ pnpm typecheck
 ```
 
 # Future Plans
-* implement a github action for the monorepo that pushes an image of this app
-which will run on a preproduction server (refer to root `README.md`)
-* IGA scraper
-* Foodworks scraper
+
+- implement a github action for the monorepo that pushes an image of this app
+  which will run on a preproduction server (refer to root `README.md`)
+- IGA scraper
+- Foodworks scraper

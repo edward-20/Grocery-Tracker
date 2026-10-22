@@ -11,15 +11,18 @@
 </svelte:head>
 
 <p class="mb-4">
-	<a class="link link-primary" style="color: var(--color-secondary);" href={resolve('/search')}>← Back to search results</a>
+	<a class="link link-primary" style="color: var(--color-secondary);" href={resolve('/search')}
+		>← Back to search results</a
+	>
 </p>
 
 {#if data.type === 'success'}
 	<h1 class="mb-2 text-2xl font-semibold">{data.product.name}</h1>
-	<p class="mb-4 text-sm opacity-70">ID: <code class="text-xs">{data.product.retailerProductId}</code></p>
+	<p class="mb-4 text-sm opacity-70">
+		ID: <code class="text-xs">{data.product.retailerProductId}</code>
+	</p>
 
-
-	<div class="mb-6 rounded-lg border p-4 price-chart-container">
+	<div class="price-chart-container mb-6 rounded-lg border p-4">
 		{#if data.points.length === 0}
 			<p class="py-12 text-center text-base-content/60">
 				No price points to plot for this id in the last year.
@@ -68,5 +71,5 @@
 	.price-chart-container {
 		border: 1px solid var(--color-base-300);
 		background-color: var(--color-base-100);
-	}	
+	}
 </style>
