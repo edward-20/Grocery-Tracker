@@ -1,10 +1,10 @@
 export type CrossProductIdentity = {
   crossRetailerId: string;
   gtinFormat: number;
-}
+};
 
 export function isCrossProductIdentity(
-  value: unknown
+  value: unknown,
 ): value is CrossProductIdentity {
   if (typeof value !== "object" || value === null) {
     return false;
@@ -19,17 +19,17 @@ export function isCrossProductIdentity(
 }
 
 export type ProductConstructorProps = {
-  retailer: Retailer["name"],
-  retailerProductId: string,
-  category: Category,
+  retailer: Retailer["name"];
+  retailerProductId: string;
+  category: Category;
 
-  currentValue: ValueAtTime,
-  name: string,
-  path: string,
-  description: string,
-  brand?: string,
-  imageUrl?: string,
-  crossProductIdentity?: CrossProductIdentity
+  currentValue: ValueAtTime;
+  name: string;
+  path: string;
+  description: string;
+  brand?: string;
+  imageUrl?: string;
+  crossProductIdentity?: CrossProductIdentity;
 };
 
 export class Product {
@@ -73,7 +73,8 @@ export interface Retailer {
   url: string;
 }
 
-export type UnitOfMeasurement = "Each" | "Kg" | "g" | "L" | "mL" | "SS" | "sheets" | "m" | "kgM"
+export type UnitOfMeasurement =
+  "Each" | "Kg" | "g" | "L" | "mL" | "SS" | "sheets" | "m" | "kgM";
 
 export class ValueAtTime {
   constructor(
@@ -81,9 +82,9 @@ export class ValueAtTime {
     readonly price: number,
     readonly time: Date,
     readonly unitPricing?: {
-      unitPrice: number,
-      unitPriceQuantity: number,
-      unitPriceUnitofMeasurement: UnitOfMeasurement
-    }
-  ) { }
+      unitPrice: number;
+      unitPriceQuantity: number;
+      unitPriceUnitofMeasurement: UnitOfMeasurement;
+    },
+  ) {}
 }

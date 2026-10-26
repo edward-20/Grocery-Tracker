@@ -24,7 +24,7 @@ html {
 input {
 	background-color: var(--color-base-100);
 	color: var(--color-base-content);
-	border-color: var(--color-base-300)
+	border-color: var(--color-base-300);
 }
 input:focus {
 	border-color: var(--color-primary);
@@ -69,17 +69,16 @@ input[type='number'] {
 	default: true;
 
 	--color-base-100: oklch(0.9883 0.0161 172.66);
-	--color-base-200: oklch(0.955  0.018  172.66);
-		/* cards, sections, subtle elevation */
-	--color-base-300: oklch(0.91   0.02   172.66);
-		/* borders, dividers, inputs */
+	--color-base-200: oklch(0.955 0.018 172.66);
+	/* cards, sections, subtle elevation */
+	--color-base-300: oklch(0.91 0.02 172.66);
+	/* borders, dividers, inputs */
 	--color-base-content: oklch(0.28 0.04 172.66);
 
-	--color-primary: oklch(0.6505 0.1372 234.66);	
-	--color-primary-content: oklch(0.20 0.03 234.66);
+	--color-primary: oklch(0.6505 0.1372 234.66);
+	--color-primary-content: oklch(0.2 0.03 234.66);
 
-	--color-secondary: oklch(0.4431 0.0376 282.8)
-	--color-secondary-content: oklch(0.95 0.01 282.8);
+	--color-secondary: oklch(0.4431 0.0376 282.8) --color-secondary-content: oklch(0.95 0.01 282.8);
 
 	/* Accent - orange for deals, 6.5:1 on base-100 (border use) */
 	--color-accent: oklch(50% 0.25 80);
@@ -163,21 +162,20 @@ input[type='number'] {
 	/* structure and layout */
 	/* page background, cards, sections, modals, inputs, tables */
 	--color-base-100: oklch(0.9883 0.0161 172.66);
-	--color-base-200: oklch(0.955  0.018  172.66);
+	--color-base-200: oklch(0.955 0.018 172.66);
 	/* cards, sections, subtle elevation */
-	--color-base-300: oklch(0.91   0.02   172.66);
+	--color-base-300: oklch(0.91 0.02 172.66);
 	/* borders, dividers, inputs */
 	--color-base-content: oklch(0.28 0.04 172.66);
 
 	/* primary actions */
 	/* primary buttons, focus states, active elements, key links */
-	--color-primary: oklch(0.6505 0.1372 234.66);	
-	--color-primary-content: oklch(0.20 0.03 234.66);
+	--color-primary: oklch(0.6505 0.1372 234.66);
+	--color-primary-content: oklch(0.2 0.03 234.66);
 
 	/* secondary actions, actions that matter but aren't main */
 	/* secondary buttons, filters/options, alternative actions, navigation elements */
-	--color-secondary: oklch(0.4431 0.0376 282.8)
-	--color-secondary-content: oklch(0.95 0.01 282.8);
+	--color-secondary: oklch(0.4431 0.0376 282.8) --color-secondary-content: oklch(0.95 0.01 282.8);
 
 	/* Accent - orange for deals, 6.5:1 on base-100 (border use) */
 	--color-accent: oklch(50% 0.25 80);

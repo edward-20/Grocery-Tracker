@@ -1,4 +1,4 @@
-import { Product } from "@grocery-tracker/domain-model";
+import { Product } from '@grocery-tracker/domain-model';
 import type { Transport } from '@sveltejs/kit';
 
 export const transport: Transport = {
@@ -8,26 +8,28 @@ export const transport: Transport = {
 				return {
 					retailer: value.retailer,
 					retailerProductId: value.retailerProductId,
-				  	category: {
+					category: {
 						...value.category
 					},
-				  	uid: value.uid,
+					uid: value.uid,
 
-				  	currentValue: {
+					currentValue: {
 						size: value.currentValue.size,
 						price: value.currentValue.price,
 						time: value.currentValue.time,
 						unitPricing: value.currentValue.unitPricing
 					},
-				  	name: value.name,
-				  	path: value.path,
-				  	description: value.description,
-				  	brand: value.brand,
-				  	imageUrl: value.imageUrl,
-				  	crossProductIdentity: value.crossProductIdentity ? {
-						crossRetailerId: value.crossProductIdentity.crossRetailerId,
-						gtinFormat: value.crossProductIdentity.gtinFormat
-					} : undefined
+					name: value.name,
+					path: value.path,
+					description: value.description,
+					brand: value.brand,
+					imageUrl: value.imageUrl,
+					crossProductIdentity: value.crossProductIdentity
+						? {
+								crossRetailerId: value.crossProductIdentity.crossRetailerId,
+								gtinFormat: value.crossProductIdentity.gtinFormat
+							}
+						: undefined
 				};
 			}
 			return false;

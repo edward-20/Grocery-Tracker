@@ -15,12 +15,12 @@ export interface RetailerScrapeConfig {
 
 export interface Config {
   database: {
-    host: string,
-    port: number,
-    database: string,
-    user: string,
-    password: string,
-    max?: number
+    host: string;
+    port: number;
+    database: string;
+    user: string;
+    password: string;
+    max?: number;
   };
   schedule: {
     cron: string;
@@ -35,20 +35,19 @@ export interface Config {
   };
   retailers: RetailerScrapeConfig[];
   resend: {
-    apiKey: string
-  }
-  domain: string,
+    apiKey: string;
+  };
+  domain: string;
 }
-
 
 type ConfigInput = {
   database?: {
-    host?: string,
-    port?: number,
-    database?: string,
-    user?: string,
-    password?: string,
-    max?: number,
+    host?: string;
+    port?: number;
+    database?: string;
+    user?: string;
+    password?: string;
+    max?: number;
   };
   schedule?: {
     cron?: string;
@@ -68,7 +67,7 @@ type ConfigInput = {
     retriesPerCategory?: number;
   }>;
   resend?: {
-    apiKey?: string
+    apiKey?: string;
   };
   domain?: string;
 };
@@ -85,7 +84,9 @@ export function loadConfig(configPath?: string): Config {
     throw new Error("CONFIG_PATH is required");
   }
   if (!isAbsolute(configPath)) {
-    throw new Error(`CONFIG_PATH must be an absolute path; received: ${configPath}`);
+    throw new Error(
+      `CONFIG_PATH must be an absolute path; received: ${configPath}`,
+    );
   }
 
   const parsed = YAML.parse(readFileSync(configPath, "utf8")) as ConfigInput;
@@ -124,21 +125,29 @@ export function validateConfig(config: ConfigInput, source = "config"): Config {
   }
 
   const headless = config.browser?.headless ?? true;
-  const throttleBetweenPagesMs = numberOrDefault(config.scrape?.throttleBetweenPagesMs, 1500, "scrape.throttleBetweenPagesMs");
+  const throttleBetweenPagesMs = numberOrDefault(
+    config.scrape?.throttleBetweenPagesMs,
+    1500,
+    "scrape.throttleBetweenPagesMs",
+  );
   const navigationTimeoutMs = numberOrDefault(
     config.scrape?.navigationTimeoutMs,
     45000,
     "scrape.navigationTimeoutMs",
   );
 
-  const emailRegex = new RegExp("^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,}$");
+  const emailRegex = new RegExp(
+    "^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,}$",
+  );
   const notifiedEmail = config.scrape?.notifiedEmail;
 
   if (!notifiedEmail) {
     throw new Error(`${source}: scrape.notifiedEmail is required`);
   }
   if (!emailRegex.test(notifiedEmail)) {
-    throw new Error(`${source}: scrape.notifiedEmail needs to be a valid email address`);
+    throw new Error(
+      `${source}: scrape.notifiedEmail needs to be a valid email address`,
+    );
   }
 
   if (!Array.isArray(config.retailers) || config.retailers.length === 0) {
@@ -147,7 +156,9 @@ export function validateConfig(config: ConfigInput, source = "config"): Config {
 
   const retailers = config.retailers.map((retailer, retailerIndex) => {
     if (!retailer.name || !retailerNames.has(retailer.name)) {
-      throw new Error(`${source}: retailers[${retailerIndex}].name must be Woolworths or Coles`);
+      throw new Error(
+        `${source}: retailers[${retailerIndex}].name must be Woolworths or Coles`,
+      );
     }
 
     return {
@@ -163,7 +174,7 @@ export function validateConfig(config: ConfigInput, source = "config"): Config {
   });
 
   return {
-    database: { 
+    database: {
       host: config.database.host,
       port: config.database.port,
       database: config.database.database,
@@ -175,11 +186,15 @@ export function validateConfig(config: ConfigInput, source = "config"): Config {
     scrape: { throttleBetweenPagesMs, navigationTimeoutMs, notifiedEmail },
     retailers,
     resend: { apiKey: config.resend.apiKey },
-    domain: config.domain
+    domain: config.domain,
   };
 }
 
-function numberOrDefault(value: unknown, fallback: number, field: string): number {
+function numberOrDefault(
+  value: unknown,
+  fallback: number,
+  field: string,
+): number {
   if (value === undefined || value === null) {
     return fallback;
   }
@@ -189,7 +204,11 @@ function numberOrDefault(value: unknown, fallback: number, field: string): numbe
   return value;
 }
 
-function nonNegativeIntegerOrDefault(value: unknown, fallback: number, field: string): number {
+function nonNegativeIntegerOrDefault(
+  value: unknown,
+  fallback: number,
+  field: string,
+): number {
   if (value === undefined || value === null) {
     return fallback;
   }

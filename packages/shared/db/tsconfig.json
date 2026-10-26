@@ -12,5 +12,11 @@
     "rootDir": ".",
     "types": ["node"]
   },
-  "include": ["src/**/*.ts", "src/**/*.sql", "tests/**/*.ts", "scripts/**/*.ts", "tsup.config.ts"]
+  "include": [
+    "src/**/*.ts",
+    "src/**/*.sql",
+    "tests/**/*.ts",
+    "scripts/**/*.ts",
+    "tsup.config.ts"
+  ]
 }

@@ -5,7 +5,7 @@ export async function sendEmail(
   message: string,
   recipientEmail: string,
   domain: string,
-  resend: Resend
+  resend: Resend,
 ): Promise<void> {
   const { data, error } = await resend.emails.send({
     from: `Grocery Tracker <scraper@${domain}>`,

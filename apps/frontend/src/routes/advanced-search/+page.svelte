@@ -150,6 +150,8 @@ none"
 	></SearchBar>
 	<div class="mt-4 flex flex-row items-center gap-2">
 		<button type="submit" class="btn rounded-full">Search</button>
-		<a class="link" style="color: var(--color-secondary);" href={resolve('/')}>Return to basic search</a>
+		<a class="link" style="color: var(--color-secondary);" href={resolve('/')}
+			>Return to basic search</a
+		>
 	</div>
 </form>

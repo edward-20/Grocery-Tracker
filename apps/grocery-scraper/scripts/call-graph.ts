@@ -1,10 +1,16 @@
-import { Project, CallExpression, FunctionDeclaration, SyntaxKind, FunctionExpression, ArrowFunction, MethodDeclaration, Node } from "ts-morph";
+import {
+  Project,
+  CallExpression,
+  FunctionDeclaration,
+  SyntaxKind,
+  FunctionExpression,
+  ArrowFunction,
+  MethodDeclaration,
+  Node,
+} from "ts-morph";
 
 type Callable =
-  | FunctionDeclaration
-  | FunctionExpression
-  | ArrowFunction
-  | MethodDeclaration;
+  FunctionDeclaration | FunctionExpression | ArrowFunction | MethodDeclaration;
 
 // will also add source files
 const project = new Project({
@@ -12,17 +18,17 @@ const project = new Project({
 });
 
 function isUserDefined(call: CallExpression): boolean {
-	// get the source file of the definition
-	const symbol = call.getExpression().getSymbol();
+  // get the source file of the definition
+  const symbol = call.getExpression().getSymbol();
 
-	if (!symbol) return false;
-	const declarations = symbol.getDeclarations();
+  if (!symbol) return false;
+  const declarations = symbol.getDeclarations();
 
-	for (const decl of declarations) {
-		const sourceFile = decl.getSourceFile();
-		if (sourceFile.getFilePath().includes("node_modules")) return false;
-	}
-	return true;
+  for (const decl of declarations) {
+    const sourceFile = decl.getSourceFile();
+    if (sourceFile.getFilePath().includes("node_modules")) return false;
+  }
+  return true;
 }
 
 export function getCallableId(fn: Callable): string {
@@ -31,11 +37,12 @@ export function getCallableId(fn: Callable): string {
     const classDecl = fn.getFirstAncestorByKind(
       fn.getKindName() === "MethodDeclaration"
         ? fn.getParent()?.getKind() // just for safety
-        : undefined as any
+        : (undefined as any),
     );
 
     const className =
-      fn.getFirstAncestorByKindOrThrow?.(SyntaxKind.ClassDeclaration)
+      fn
+        .getFirstAncestorByKindOrThrow?.(SyntaxKind.ClassDeclaration)
         ?.getName?.() ?? "<anonymousClass>";
 
     return `${className}.${fn.getName()}`;
@@ -66,29 +73,24 @@ export function getCallableId(fn: Callable): string {
   return `${sourceFile}:<anonymous>`;
 }
 
-function getCalledFunction(
-  call: CallExpression
-): Callable | undefined {
-	const symbol = call.getExpression().getSymbol()
+function getCalledFunction(call: CallExpression): Callable | undefined {
+  const symbol = call.getExpression().getSymbol();
 
-	const realSymbol = symbol?.getAliasedSymbol() ?? symbol;
+  const realSymbol = symbol?.getAliasedSymbol() ?? symbol;
 
-	if (!realSymbol) return undefined;
+  if (!realSymbol) return undefined;
 
-	return realSymbol
-	.getDeclarations()
-	.find(d =>
-	  d.getKind() ===
-		SyntaxKind.FunctionDeclaration ||
-	  d.getKind() ===
-		SyntaxKind.ArrowFunction ||
-	  d.getKind() ===
-		SyntaxKind.FunctionExpression ||
-	  d.getKind() ===
-		SyntaxKind.MethodDeclaration
-	) as Callable | undefined;
+  return realSymbol
+    .getDeclarations()
+    .find(
+      (d) =>
+        d.getKind() === SyntaxKind.FunctionDeclaration ||
+        d.getKind() === SyntaxKind.ArrowFunction ||
+        d.getKind() === SyntaxKind.FunctionExpression ||
+        d.getKind() === SyntaxKind.MethodDeclaration,
+    ) as Callable | undefined;
 
-		/*
+  /*
 	if (symbol?.getDeclarations().every(node => node.getKind() === SyntaxKind.ImportSpecifier)) {
 		symbol = symbol.getAliasedSymbol();
 	}
@@ -105,33 +107,29 @@ function getCalledFunction(
 		*/
 }
 
-function logChildren(
-  fn: Callable,
-  level: number,
-  visited = new Set<string>()
-) {
-	const name = getCallableId(fn);
+function logChildren(fn: Callable, level: number, visited = new Set<string>()) {
+  const name = getCallableId(fn);
 
-	console.log(`${"  ".repeat(level)}|-${getCallableId(fn)}`);
+  console.log(`${"  ".repeat(level)}|-${getCallableId(fn)}`);
 
-	// prevent circular recursion
-	if (visited.has(name)) return;
-	visited.add(name);
+  // prevent circular recursion
+  if (visited.has(name)) return;
+  visited.add(name);
 
-	const calls = fn.getDescendantsOfKind(SyntaxKind.CallExpression).filter(isUserDefined);
+  const calls = fn
+    .getDescendantsOfKind(SyntaxKind.CallExpression)
+    .filter(isUserDefined);
 
-	for (const call of calls) {
-		const calledFn = getCalledFunction(call);
+  for (const call of calls) {
+    const calledFn = getCalledFunction(call);
 
-		if (calledFn !== undefined)
-		logChildren(calledFn, level + 1, visited);
-	}
+    if (calledFn !== undefined) logChildren(calledFn, level + 1, visited);
+  }
 }
 
 // generate the tree (hopefully no circular dependencies)
-const entryPointFile = project.getSourceFile("src/worker.ts")
-if (entryPointFile !== undefined) 
-for (const func of entryPointFile.getFunctions()) {
-	logChildren(func, 0)
-}
-
+const entryPointFile = project.getSourceFile("src/worker.ts");
+if (entryPointFile !== undefined)
+  for (const func of entryPointFile.getFunctions()) {
+    logChildren(func, 0);
+  }

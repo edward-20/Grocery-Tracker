@@ -1,5 +1,5 @@
 <script lang="ts">
-	import SearchBar from "$lib/components/search-bar/search-bar.svelte";
+	import SearchBar from '$lib/components/search-bar/search-bar.svelte';
 
 	let isNameSearch = $state(true);
 

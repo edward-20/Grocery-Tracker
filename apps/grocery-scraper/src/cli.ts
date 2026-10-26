@@ -3,7 +3,10 @@ import { makeConnectionPool } from "@grocery-tracker/db";
 import { select } from "@inquirer/prompts";
 import { WoolworthsScraper } from "./scraper/woolworthsScraper.js";
 import { RetailerScraper } from "./scraper/retailerScraper.js";
-import { PostgresCategoryRepository, PostgresProductRepository } from "@grocery-tracker/db";
+import {
+  PostgresCategoryRepository,
+  PostgresProductRepository,
+} from "@grocery-tracker/db";
 import { CategoryRepository, ProductRepository } from "@grocery-tracker/db";
 import { ColesScraper } from "./scraper/colesScraper.js";
 import { isInitialised, initDbSchema } from "@grocery-tracker/db";
@@ -21,7 +24,7 @@ const action = await select({
     {
       name: "Coles",
       value: "Coles",
-    }
+    },
   ],
 });
 
@@ -41,9 +44,9 @@ const selectedCategory = await select({
   choices: categories.map((category) => {
     return {
       name: category.name,
-      value: category.name
-    }
-  })
+      value: category.name,
+    };
+  }),
 });
 
 console.log(`Scraping ${action}: ${selectedCategory}`);
@@ -55,7 +58,9 @@ try {
   } else if (initialisedStatus.status === "broken") {
     throw new Error("Database is broken");
   }
-  const categoryRepository: CategoryRepository = new PostgresCategoryRepository(pool);
+  const categoryRepository: CategoryRepository = new PostgresCategoryRepository(
+    pool,
+  );
 
   const category = categories.find((c) => c.name === selectedCategory);
   if (!category) {
@@ -64,9 +69,13 @@ try {
 
   const writtenCategory = await categoryRepository.createOrUpdate(category);
 
-  const productRepository: ProductRepository = new PostgresProductRepository(pool);
+  const productRepository: ProductRepository = new PostgresProductRepository(
+    pool,
+  );
 
-  for await (const product of scraper.scrapeProductsOfCategory(writtenCategory)) {
+  for await (const product of scraper.scrapeProductsOfCategory(
+    writtenCategory,
+  )) {
     try {
       await productRepository.createOrUpdate(product);
     } catch (error) {

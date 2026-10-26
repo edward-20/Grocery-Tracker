@@ -28,7 +28,6 @@
 		let bottomIndex = topIndex - 9 > 0 ? topIndex - 9 : 1;
 		return Array.from({ length: topIndex - bottomIndex + 1 }, (_, index) => bottomIndex + index);
 	});
-
 </script>
 
 <div class="border-b-solid border-b-1 p-4">
@@ -70,7 +69,9 @@
 					}}>or if you want to search by name</button
 				>
 			{/if}
-			<a class="link" style="color: var(--color-secondary);" href={resolve('/advanced-search')}>Advanced Search</a>
+			<a class="link" style="color: var(--color-secondary);" href={resolve('/advanced-search')}
+				>Advanced Search</a
+			>
 		</div>
 	</form>
 </div>
@@ -86,13 +87,18 @@
 				<p class="text-sm">ID: {item.retailerProductId}</p>
 				<p>Cost: {item.currentValue.price}</p>
 				<p>Size: {item.currentValue.size}</p>
-				<p>Unit Pricing: {item.currentValue.unitPricing === undefined ? "N/A" : 
-					item.currentValue.unitPricing.unitPrice + "/" 
-					+ item.currentValue.unitPricing.unitPriceQuantity 
-					+ item.currentValue.unitPricing.unitPriceUnitofMeasurement
-				}</p>
-				<a class="link" style="color: var(--color-primary);"
-				href={resolve(`/product/${encodeURIComponent(item.uid as string)}`)}
+				<p>
+					Unit Pricing: {item.currentValue.unitPricing === undefined
+						? 'N/A'
+						: item.currentValue.unitPricing.unitPrice +
+							'/' +
+							item.currentValue.unitPricing.unitPriceQuantity +
+							item.currentValue.unitPricing.unitPriceUnitofMeasurement}
+				</p>
+				<a
+					class="link"
+					style="color: var(--color-primary);"
+					href={resolve(`/product/${encodeURIComponent(item.uid as string)}`)}
 					>Price history & chart</a
 				>
 			</li>
@@ -105,10 +111,14 @@
 		{#if data.type === 'success'}
 			{#if currentPage > 1}
 				<li class="inline">
-					<a class="link" style="color: var(--color-secondary);"
-						href={`/search?name=${encodeURIComponent(nameQuery)}&page=${currentPage - 1}`}
-						onclick={() => { pageNumber-- }}
-					>Previous</a>
+					<a
+						class="link"
+						style="color: var(--color-secondary);"
+						href={resolve(`/search?name=${encodeURIComponent(nameQuery)}&page=${currentPage - 1}`)}
+						onclick={() => {
+							pageNumber--;
+						}}>Previous</a
+					>
 				</li>
 			{/if}
 			{#each pagesToShow as pageValue (pageValue)}
@@ -122,25 +132,35 @@
 				-->
 				<!--eslint-disable-next-line svelte/no-navigation-without-resolve-->
 				<li class={`inline p-3 ${currentPage === pageValue ? '!font-extrabold' : '!font-thin'}`}>
-					<a class="link" style="color: var(--color-secondary);"
-						href={`/search?name=${encodeURIComponent(nameQuery)}&page=${pageValue}`} aria-current={currentPage === pageValue}
-						onclick={() => {pageNumber = pageValue}}
-						>{pageValue}</a
+					<a
+						class="link"
+						style="color: var(--color-secondary);"
+						href={resolve(`/search?name=${encodeURIComponent(nameQuery)}&page=${pageValue}`)}
+						aria-current={currentPage === pageValue}
+						onclick={() => {
+							pageNumber = pageValue;
+						}}>{pageValue}</a
 					>
 				</li>
 			{/each}
 			{#if currentPage < data.totalPages}
 				<li class="inline">
-					<a class="link" style="color: var(--color-secondary);"
-						href={`/search?name=${encodeURIComponent(nameQuery)}&page=${currentPage + 1}`} 
-						onclick={() => { pageNumber++ }}
-					>Next</a>
+					<a
+						class="link"
+						style="color: var(--color-secondary);"
+						href={resolve(`/search?name=${encodeURIComponent(nameQuery)}&page=${currentPage + 1}`)}
+						onclick={() => {
+							pageNumber++;
+						}}>Next</a
+					>
 				</li>
 			{/if}
 		{/if}
 	</ul>
 </nav>
-<a class="link px-3 pb-3" style="color: var(--color-secondary)" href={resolve('/')}>← Back to search</a>
+<a class="link px-3 pb-3" style="color: var(--color-secondary)" href={resolve('/')}
+	>← Back to search</a
+>
 
 <style>
 	ul {
