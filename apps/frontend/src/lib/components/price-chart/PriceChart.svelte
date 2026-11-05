@@ -46,7 +46,7 @@
 				data: {
 					datasets: [
 						{
-							label: 'Price (¢)',
+							label: 'Price ($)',
 							data: toXY(points),
 							borderColor: 'rgb(29, 120, 63)',
 							backgroundColor: 'rgba(29, 120, 63, 0.08)',
@@ -92,7 +92,7 @@
 							ticks: { maxRotation: 45, minRotation: 0 }
 						},
 						y: {
-							title: { display: true, text: 'Price (cents)' },
+							title: { display: true, text: 'Price (dollars)' },
 							beginAtZero: false
 						}
 					}
