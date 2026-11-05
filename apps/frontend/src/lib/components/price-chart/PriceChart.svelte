@@ -66,7 +66,7 @@
 								label(ctx) {
 									const v = ctx.parsed.y;
 									if (v == null) return '';
-									return `${ctx.dataset.label?.replace(' (¢)', '') ?? ''}: ${v}¢`;
+									return `Price: $${v.toFixed(2)}`;
 								}
 							}
 						}
